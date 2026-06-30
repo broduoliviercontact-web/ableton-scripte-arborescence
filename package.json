@@ -14,6 +14,7 @@
     "generate:mermaid:kanban": "tsx mermaid/generateMermaid.ts --profile kanban --output exports/session-map-kanban.mmd --file-suffix kanban",
     "generate:session-grid": "tsx session-grid/generateSessionGrid.ts",
     "create:routing-overrides": "tsx scripts/createRoutingOverrides.ts",
+    "create:device-classification-overrides": "tsx scripts/createDeviceClassificationOverrides.ts",
     "refresh:routing-overrides": "tsx scripts/createRoutingOverrides.ts --refresh",
     "render:mermaid": "tsx mermaid/renderMermaid.ts",
     "render:mermaid:flow": "tsx mermaid/renderMermaid.ts --profile flow --input exports/session-map-flow.mmd --svg exports/session-map-flow.svg --png exports/session-map-flow.png --html exports/session-map-mermaid-flow.html --file-suffix flow",

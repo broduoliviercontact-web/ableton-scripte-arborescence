@@ -18,19 +18,21 @@ const columns: InternalViewerModel["sessionPreviewColumns"] = [
     { name: "Drum Rack", summary: "Drum Rack · Rack · pads:16", isRack: true, category: "rack", categoryLabel: "Rack", categoryBadge: "RACK", categorySource: "sdk", categoryConfidence: "high" },
     { name: "Glue Compressor", summary: "Glue Compressor · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
   ] },
-  { index: 3, name: "Bass Sequence", kind: "midi", sectionType: "track", deviceCount: 3, sendCount: 2, rackCount: 1, deviceCards: [
+  { index: 3, name: "Bass Sequence", kind: "midi", sectionType: "track", deviceCount: 4, sendCount: 2, rackCount: 1, deviceCards: [
     { name: "Bass Engine", summary: "Bass Engine · Rack · chains:3", isRack: true, category: "rack", categoryLabel: "Rack", categoryBadge: "RACK", categorySource: "inferred", categoryConfidence: "high" },
-    { name: "LFO", summary: "LFO · Max for Live", isRack: false, category: "max-for-live", categoryLabel: "Max for Live", categoryBadge: "M4L", categorySource: "inferred", categoryConfidence: "high" },
-    { name: "Roar", summary: "Roar · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "Max MIDI Effect", summary: "Max MIDI Effect · Max for Live", isRack: false, category: "max-for-live", categoryLabel: "Max for Live", categoryBadge: "M4L MIDI", categorySource: "sdk", categoryConfidence: "high", m4lKind: "midi" },
+    { name: "STING!64", summary: "STING!64 · Max for Live", isRack: false, category: "max-for-live", categoryLabel: "Max for Live", categoryBadge: "M4L MIDI", categorySource: "manual", categoryConfidence: "high", m4lKind: "midi" },
+    { name: "MPE Control", summary: "MPE Control · MIDI FX", isRack: false, category: "midi-effect", categoryLabel: "MIDI FX", categoryBadge: "MIDI FX", categorySource: "inferred", categoryConfidence: "high" },
   ] },
   { index: 4, name: "Juno Chords", kind: "audio", sectionType: "track", deviceCount: 2, sendCount: 2, rackCount: 0, deviceCards: [
     { name: "Auto Filter", summary: "Auto Filter · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
     { name: "Chorus-Ensemble", summary: "Chorus-Ensemble · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
   ] },
-  { index: 5, name: "Lead Atmosphere", kind: "midi", sectionType: "track", deviceCount: 3, sendCount: 2, rackCount: 1, deviceCards: [
+  { index: 5, name: "Lead Atmosphere", kind: "midi", sectionType: "track", deviceCount: 4, sendCount: 2, rackCount: 1, deviceCards: [
     { name: "Wavetable", summary: "Wavetable · Instrument", isRack: false, category: "instrument", categoryLabel: "Instrument", categoryBadge: "INST", categorySource: "inferred", categoryConfidence: "high" },
     { name: "Movement Rack", summary: "Movement Rack · Rack · chains:2", isRack: true, category: "rack", categoryLabel: "Rack", categoryBadge: "RACK", categorySource: "inferred", categoryConfidence: "high" },
-    { name: "Echo", summary: "Echo · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "DS Clap", summary: "DS Clap · Instrument", isRack: false, category: "instrument", categoryLabel: "Instrument", categoryBadge: "INST", categorySource: "manual", categoryConfidence: "high" },
+    { name: "Mystery Patch", summary: "Mystery Patch · Unknown", isRack: false, category: "unknown", categoryLabel: "Unknown", categoryBadge: "?", categorySource: "unknown", categoryConfidence: "low" },
   ] },
   { index: 0, name: "A — Short Verb", kind: "return", sectionType: "return", deviceCount: 2, sendCount: 0, rackCount: 0, deviceCards: [
     { name: "Hybrid Reverb", summary: "Hybrid Reverb · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
@@ -96,7 +98,7 @@ const model: InternalViewerModel = {
   statusMessage: "Latest export metadata loaded. Use Quick Open or Files to jump to external outputs.",
   warningMessage: null,
   scanMode: "ultra-safe",
-  metrics: { tracks: 6, returns: 2, devices: 22, racks: 5, sends: 12 },
+  metrics: { tracks: 6, returns: 2, devices: 24, racks: 5, sends: 12 },
   quickLinks: [
     { key: "launcher", label: "Open External Launcher", exists: true },
     { key: "report", label: "Open HTML Report", exists: true },

@@ -40,19 +40,40 @@ const INSTRUMENT_NAMES = [
   "massive",
   "kontakt",
   "pigments",
+  "drum synth",
+  "ds clap",
+  "ds kick",
+  "ds snare",
+  "ds hh",
+  "ds cymbal",
+  "ds tom",
 ];
 
 const MIDI_EFFECT_NAMES = [
   "arpeggiator",
   "chord",
   "scale",
+  "scale awareness",
   "pitch",
   "random",
   "velocity",
   "note length",
+  "note echo",
   "midi monitor",
+  "mpe control",
   "expression control",
+  "envelope midi",
+  "cc control",
   "midi effect rack",
+];
+
+const WEAK_INSTRUMENT_NAMES = [
+  "bass",
+  "piano",
+  "e-piano",
+  "clap",
+  "kick",
+  "snare",
 ];
 
 const AUDIO_EFFECT_NAMES = [
@@ -83,14 +104,69 @@ const AUDIO_EFFECT_NAMES = [
 
 const MAX_FOR_LIVE_NAMES = [
   "max for live",
-  " max ",
+  "max midi effect",
+  "max audio effect",
+  "max instrument",
   "m4l",
   ".amxd",
   "lfo",
   "envelope follower",
   "shaper",
+  "shaper midi",
+  "multimap",
+  "expression control",
+  "midi monitor",
+  "sting",
+  "sting!64",
   "maxdevice",
 ];
+
+const MAX_FOR_LIVE_SDK_HINTS = [
+  "max",
+  "maxdevice",
+  "max for live",
+  "amxd",
+  ".amxd",
+  "m4l",
+];
+
+type DeviceClassificationCategory =
+  | "instrument"
+  | "midi-effect"
+  | "audio-effect"
+  | "max-for-live"
+  | "rack"
+  | "unknown";
+
+type DeviceClassificationSource = "sdk" | "inferred" | "manual" | "unknown";
+type DeviceClassificationConfidence = "high" | "medium" | "low";
+type DeviceM4lKind = "midi" | "audio" | "instrument" | "unknown";
+
+interface DeviceClassificationOverrideEntry {
+  category: DeviceClassificationCategory;
+  label?: string;
+  badge?: string;
+  confidence?: DeviceClassificationConfidence;
+  m4lKind?: DeviceM4lKind;
+  notes?: string;
+}
+
+interface DeviceClassificationOverrideFile {
+  version?: string;
+  devices?: Record<string, DeviceClassificationOverrideEntry>;
+}
+
+interface DeviceClassificationOverrides {
+  sourcePath: string | null;
+  devices: Map<string, DeviceClassificationOverrideEntry>;
+}
+
+interface DeviceClassificationContext {
+  overrides: DeviceClassificationOverrides;
+  loggedManualMatches: Set<string>;
+  loggedInferredMatches: Set<string>;
+  loggedUnknownMatches: Set<string>;
+}
 
 type ExportReadStatus = "ok" | "missing" | "invalid";
 
@@ -190,168 +266,312 @@ function includesKnownName(value: string, knownNames: string[]): boolean {
   return knownNames.some((name) => value.includes(name));
 }
 
+function buildClassificationResult(
+  category: DeviceClassificationCategory,
+  categorySource: DeviceClassificationSource,
+  categoryConfidence: DeviceClassificationConfidence,
+  options?: {
+    m4lKind?: DeviceM4lKind;
+    label?: string;
+    badge?: string;
+  },
+): Pick<
+  InternalViewerDeviceDescriptor,
+  "category" | "categoryLabel" | "categoryBadge" | "categorySource" | "categoryConfidence" | "m4lKind"
+> {
+  const defaultLabel = category === "max-for-live"
+    ? "Max for Live"
+    : category === "midi-effect"
+      ? "MIDI FX"
+      : category === "audio-effect"
+        ? "Audio FX"
+        : category === "instrument"
+          ? "Instrument"
+          : category === "rack"
+            ? "Rack"
+            : "Unknown";
+
+  const defaultBadge = category === "max-for-live"
+    ? options?.m4lKind === "midi"
+      ? "M4L MIDI"
+      : options?.m4lKind === "audio"
+        ? "M4L AUDIO"
+        : options?.m4lKind === "instrument"
+          ? "M4L INST"
+          : "M4L"
+    : category === "midi-effect"
+      ? "MIDI FX"
+      : category === "audio-effect"
+        ? "AUDIO FX"
+        : category === "instrument"
+          ? "INST"
+          : category === "rack"
+            ? "RACK"
+            : "?";
+
+  return {
+    category,
+    categoryLabel: options?.label ?? defaultLabel,
+    categoryBadge: options?.badge ?? defaultBadge,
+    categorySource,
+    categoryConfidence,
+    ...(options?.m4lKind ? { m4lKind: options.m4lKind } : {}),
+  };
+}
+
+function normalizeDeviceText(device: DeviceInfo): { rawName: string; rawType: string } {
+  const rawName = `${device.name} ${device.type}`.toLowerCase();
+  const deviceRecord = device as unknown as Record<string, unknown>;
+  const rawType = String(
+    deviceRecord.deviceType ??
+      deviceRecord.className ??
+      deviceRecord.kind ??
+      deviceRecord.objectType ??
+      device.type ??
+      "",
+  ).toLowerCase();
+  return { rawName, rawType };
+}
+
+function determineM4lKind(rawName: string, rawType: string): DeviceM4lKind {
+  if (rawName.includes("max midi effect") || rawType.includes("max midi effect")) return "midi";
+  if (rawName.includes("max audio effect") || rawType.includes("max audio effect")) return "audio";
+  if (rawName.includes("max instrument") || rawType.includes("max instrument")) return "instrument";
+  if (
+    rawName.includes("shaper midi") ||
+    rawName.includes("midi monitor") ||
+    rawName.includes("multimap") ||
+    rawName.includes("expression control") ||
+    rawName.includes("sting")
+  ) {
+    return "midi";
+  }
+  return "unknown";
+}
+
+function isLikelyInstrumentName(rawName: string, track: TrackInfo): boolean {
+  if (includesKnownName(rawName, INSTRUMENT_NAMES)) return true;
+  if (track.kind !== "midi") return false;
+  return includesKnownName(rawName, WEAK_INSTRUMENT_NAMES);
+}
+
+function findFirstLikelyInstrumentIndex(track: TrackInfo): number {
+  return track.devices.findIndex((device) => {
+    const { rawName, rawType } = normalizeDeviceText(device);
+    if (rawType.includes("instrument")) return true;
+    return isLikelyInstrumentName(rawName, track);
+  });
+}
+
+function normalizeOverrideEntry(
+  deviceName: string,
+  entry: unknown,
+): DeviceClassificationOverrideEntry | null {
+  if (!entry || typeof entry !== "object") return null;
+  const record = entry as Record<string, unknown>;
+  const category = record.category;
+  const allowedCategories: DeviceClassificationCategory[] = [
+    "instrument",
+    "midi-effect",
+    "audio-effect",
+    "max-for-live",
+    "rack",
+    "unknown",
+  ];
+
+  if (typeof category !== "string" || !allowedCategories.includes(category as DeviceClassificationCategory)) {
+    console.warn(`[Ableton Session Mapper] Device classification override invalid category for ${deviceName}.`);
+    return null;
+  }
+
+  const allowedConfidence: DeviceClassificationConfidence[] = ["high", "medium", "low"];
+  const confidence = typeof record.confidence === "string" && allowedConfidence.includes(record.confidence as DeviceClassificationConfidence)
+    ? record.confidence as DeviceClassificationConfidence
+    : "high";
+
+  const allowedM4lKinds: DeviceM4lKind[] = ["midi", "audio", "instrument", "unknown"];
+  const m4lKind = typeof record.m4lKind === "string" && allowedM4lKinds.includes(record.m4lKind as DeviceM4lKind)
+    ? record.m4lKind as DeviceM4lKind
+    : undefined;
+
+  return {
+    category: category as DeviceClassificationCategory,
+    ...(typeof record.label === "string" ? { label: record.label } : {}),
+    ...(typeof record.badge === "string" ? { badge: record.badge } : {}),
+    confidence,
+    ...(m4lKind ? { m4lKind } : {}),
+    ...(typeof record.notes === "string" ? { notes: record.notes } : {}),
+  };
+}
+
+async function loadDeviceClassificationOverrides(projectRoot: string, exportDirectory: string): Promise<DeviceClassificationOverrides> {
+  const candidatePaths = [
+    join(exportDirectory, "device-classification-overrides.json"),
+    join(projectRoot, "config", "device-classification-overrides.json"),
+  ];
+
+  for (const candidatePath of candidatePaths) {
+    if (!(await pathExists(candidatePath))) continue;
+
+    try {
+      const raw = await readFile(candidatePath, "utf8");
+      const parsed = JSON.parse(raw) as DeviceClassificationOverrideFile;
+      const devices = new Map<string, DeviceClassificationOverrideEntry>();
+
+      for (const [deviceName, entry] of Object.entries(parsed.devices ?? {})) {
+        const normalized = normalizeOverrideEntry(deviceName, entry);
+        if (normalized) devices.set(deviceName.trim(), normalized);
+      }
+
+      console.log(`[Ableton Session Mapper] Device classification override loaded: ${candidatePath}`);
+      return {
+        sourcePath: candidatePath,
+        devices,
+      };
+    } catch (error) {
+      console.warn(`[Ableton Session Mapper] Device classification override invalid: ${candidatePath}`, error);
+      return {
+        sourcePath: candidatePath,
+        devices: new Map(),
+      };
+    }
+  }
+
+  console.log("[Ableton Session Mapper] Device classification override missing");
+  return {
+    sourcePath: null,
+    devices: new Map(),
+  };
+}
+
 function classifyDevice(
   device: DeviceInfo,
   track: TrackInfo,
   deviceIndex: number,
   firstKnownInstrumentIndex: number,
+  context: DeviceClassificationContext,
 ): Pick<
   InternalViewerDeviceDescriptor,
-  "category" | "categoryLabel" | "categoryBadge" | "categorySource" | "categoryConfidence"
+  "category" | "categoryLabel" | "categoryBadge" | "categorySource" | "categoryConfidence" | "m4lKind"
 > {
-  const rawName = `${device.name} ${device.type}`.toLowerCase();
-  const deviceRecord = device as unknown as Record<string, unknown>;
-  const rawType = String(
-    deviceRecord.deviceType ??
-    deviceRecord.className ??
-    deviceRecord.kind ??
-    deviceRecord.objectType ??
-    device.type ??
-    "",
-  ).toLowerCase();
+  const { rawName, rawType } = normalizeDeviceText(device);
 
-  const looksLikeM4L =
-    rawType.includes("max") ||
-    rawType.includes("amxd") ||
-    rawType.includes("maxdevice") ||
-    MAX_FOR_LIVE_NAMES.some((name) => rawName.includes(name));
-
-  if (looksLikeM4L) {
-    const source =
-      rawType.includes("max") ||
-      rawType.includes("amxd") ||
-      rawType.includes("maxdevice")
-        ? "sdk"
-        : "inferred";
-
-    return {
-      category: "max-for-live",
-      categoryLabel: "Max for Live",
-      categoryBadge: "M4L",
-      categorySource: source,
-      categoryConfidence: source === "sdk" ? "high" : "medium",
-    };
+  const manualOverride = context.overrides.devices.get(device.name.trim());
+  if (manualOverride) {
+    if (!context.loggedManualMatches.has(device.name)) {
+      console.log(`[Ableton Session Mapper] Device classification manual match: ${device.name}`);
+      context.loggedManualMatches.add(device.name);
+    }
+    return buildClassificationResult(
+      manualOverride.category,
+      "manual",
+      manualOverride.confidence ?? "high",
+      {
+        ...(manualOverride.m4lKind ? { m4lKind: manualOverride.m4lKind } : {}),
+        ...(manualOverride.label ? { label: manualOverride.label } : {}),
+        ...(manualOverride.badge ? { badge: manualOverride.badge } : {}),
+      },
+    );
   }
 
   if (rawType.includes("rack") || rawType.includes("drum") || isRackLike(device)) {
-    return {
-      category: "rack",
-      categoryLabel: "Rack",
-      categoryBadge: "RACK",
-      categorySource: rawType.includes("rack") || rawType.includes("drum") ? "sdk" : "inferred",
-      categoryConfidence: rawType.includes("rack") || rawType.includes("drum") ? "high" : "medium",
-    };
+    return buildClassificationResult(
+      "rack",
+      rawType.includes("rack") || rawType.includes("drum") ? "sdk" : "inferred",
+      rawType.includes("rack") || rawType.includes("drum") ? "high" : "medium",
+    );
+  }
+
+  const explicitM4lSdkHint = MAX_FOR_LIVE_SDK_HINTS.some((hint) => rawType.includes(hint));
+  const explicitM4lName = MAX_FOR_LIVE_NAMES.some((name) => rawName.includes(name));
+  if (explicitM4lSdkHint || explicitM4lName) {
+    if (!explicitM4lSdkHint && !context.loggedInferredMatches.has(device.name)) {
+      console.log(`[Ableton Session Mapper] Device classification inferred: ${device.name} -> max-for-live`);
+      context.loggedInferredMatches.add(device.name);
+    }
+
+    const m4lKind = determineM4lKind(rawName, rawType);
+    const confidence: DeviceClassificationConfidence =
+      rawName.includes("max midi effect") ||
+      rawName.includes("max audio effect") ||
+      rawName.includes("max instrument") ||
+      rawType.includes("max midi effect") ||
+      rawType.includes("max audio effect") ||
+      rawType.includes("max instrument") ||
+      rawName.includes(".amxd") ||
+      rawType.includes(".amxd") ||
+      rawType.includes("maxdevice")
+        ? "high"
+        : "medium";
+
+    return buildClassificationResult(
+      "max-for-live",
+      explicitM4lSdkHint ? "sdk" : "inferred",
+      confidence,
+      { m4lKind },
+    );
   }
 
   if (rawType.includes("instrument")) {
-    return {
-      category: "instrument",
-      categoryLabel: "Instrument",
-      categoryBadge: "INST",
-      categorySource: "sdk",
-      categoryConfidence: "high",
-    };
+    return buildClassificationResult("instrument", "sdk", "high");
   }
 
   if (rawType.includes("midi") && rawType.includes("effect")) {
-    return {
-      category: "midi-effect",
-      categoryLabel: "MIDI FX",
-      categoryBadge: "MIDI FX",
-      categorySource: "sdk",
-      categoryConfidence: "high",
-    };
+    return buildClassificationResult("midi-effect", "sdk", "high");
   }
 
   if (rawType.includes("audio") && rawType.includes("effect")) {
-    return {
-      category: "audio-effect",
-      categoryLabel: "Audio FX",
-      categoryBadge: "AUDIO FX",
-      categorySource: "sdk",
-      categoryConfidence: "high",
-    };
-  }
-
-  if (includesKnownName(rawName, INSTRUMENT_NAMES)) {
-    return {
-      category: "instrument",
-      categoryLabel: "Instrument",
-      categoryBadge: "INST",
-      categorySource: "inferred",
-      categoryConfidence: "high",
-    };
+    return buildClassificationResult("audio-effect", "sdk", "high");
   }
 
   if (includesKnownName(rawName, MIDI_EFFECT_NAMES)) {
-    return {
-      category: "midi-effect",
-      categoryLabel: "MIDI FX",
-      categoryBadge: "MIDI FX",
-      categorySource: "inferred",
-      categoryConfidence: "high",
-    };
+    if (!context.loggedInferredMatches.has(device.name)) {
+      console.log(`[Ableton Session Mapper] Device classification inferred: ${device.name} -> midi-effect`);
+      context.loggedInferredMatches.add(device.name);
+    }
+    return buildClassificationResult("midi-effect", "inferred", "high");
+  }
+
+  if (isLikelyInstrumentName(rawName, track)) {
+    if (!context.loggedInferredMatches.has(device.name)) {
+      console.log(`[Ableton Session Mapper] Device classification inferred: ${device.name} -> instrument`);
+      context.loggedInferredMatches.add(device.name);
+    }
+    return buildClassificationResult("instrument", "inferred", track.kind === "midi" ? "high" : "medium");
   }
 
   if (includesKnownName(rawName, AUDIO_EFFECT_NAMES)) {
-    return {
-      category: "audio-effect",
-      categoryLabel: "Audio FX",
-      categoryBadge: "AUDIO FX",
-      categorySource: "inferred",
-      categoryConfidence: "high",
-    };
+    if (!context.loggedInferredMatches.has(device.name)) {
+      console.log(`[Ableton Session Mapper] Device classification inferred: ${device.name} -> audio-effect`);
+      context.loggedInferredMatches.add(device.name);
+    }
+    return buildClassificationResult("audio-effect", "inferred", "high");
   }
 
   if (track.kind === "audio") {
-    return {
-      category: "audio-effect",
-      categoryLabel: "Audio FX",
-      categoryBadge: "AUDIO FX",
-      categorySource: "inferred",
-      categoryConfidence: "medium",
-    };
+    return buildClassificationResult("audio-effect", "inferred", "medium");
   }
 
   if (track.kind === "midi") {
     if (firstKnownInstrumentIndex >= 0) {
       if (deviceIndex < firstKnownInstrumentIndex) {
-        return {
-          category: "midi-effect",
-          categoryLabel: "MIDI FX",
-          categoryBadge: "MIDI FX",
-          categorySource: "inferred",
-          categoryConfidence: "medium",
-        };
+        return buildClassificationResult("midi-effect", "inferred", "medium");
       }
 
       if (deviceIndex === firstKnownInstrumentIndex) {
-        return {
-          category: "instrument",
-          categoryLabel: "Instrument",
-          categoryBadge: "INST",
-          categorySource: "inferred",
-          categoryConfidence: "high",
-        };
+        return buildClassificationResult("instrument", "inferred", "high");
       }
 
-      return {
-        category: "audio-effect",
-        categoryLabel: "Audio FX",
-        categoryBadge: "AUDIO FX",
-        categorySource: "inferred",
-        categoryConfidence: "medium",
-      };
+      return buildClassificationResult("audio-effect", "inferred", "medium");
     }
   }
 
-  return {
-    category: "unknown",
-    categoryLabel: "Unknown",
-    categoryBadge: "?",
-    categorySource: "unknown",
-    categoryConfidence: "low",
-  };
+  if (!context.loggedUnknownMatches.has(device.name)) {
+    console.log(`[Ableton Session Mapper] Device classification inferred: ${device.name} -> unknown`);
+    context.loggedUnknownMatches.add(device.name);
+  }
+
+  return buildClassificationResult("unknown", "unknown", "low");
 }
 
 function toDeviceDescriptor(
@@ -360,8 +580,9 @@ function toDeviceDescriptor(
   deviceIndex: number,
   firstKnownInstrumentIndex: number,
   summary: string,
+  context: DeviceClassificationContext,
 ): InternalViewerDeviceDescriptor {
-  const classification = classifyDevice(device, track, deviceIndex, firstKnownInstrumentIndex);
+  const classification = classifyDevice(device, track, deviceIndex, firstKnownInstrumentIndex, context);
 
   return {
     name: device.name,
@@ -603,7 +824,10 @@ function buildOutputsModel(sessionMap: SessionMap | null): {
   return { outputs, hasMissingRoutingData };
 }
 
-function buildDevicesModel(sessionMap: SessionMap | null): InternalViewerDeviceTrack[] {
+function buildDevicesModel(
+  sessionMap: SessionMap | null,
+  classificationContext: DeviceClassificationContext,
+): InternalViewerDeviceTrack[] {
   if (!sessionMap) {
     console.log("[Ableton Session Mapper] Internal Viewer devices built");
     return [];
@@ -611,12 +835,10 @@ function buildDevicesModel(sessionMap: SessionMap | null): InternalViewerDeviceT
 
   const model = orderedTracks(sessionMap).map(({ track, sectionType }) => {
     const rackDevices = track.devices.filter((device) => isRackLike(device));
-    const firstKnownInstrumentIndex = track.devices.findIndex((device) =>
-      includesKnownName(`${device.name} ${device.type}`.toLowerCase(), INSTRUMENT_NAMES),
-    );
+    const firstKnownInstrumentIndex = findFirstLikelyInstrumentIndex(track);
     const deviceItems = track.devices
       .slice(0, MAX_DEVICE_SUMMARY_ITEMS)
-      .map((device, index) => toDeviceDescriptor(device, track, index, firstKnownInstrumentIndex, describeDevice(device)));
+      .map((device, index) => toDeviceDescriptor(device, track, index, firstKnownInstrumentIndex, describeDevice(device), classificationContext));
     if (track.devices.length > MAX_DEVICE_SUMMARY_ITEMS) {
       deviceItems.push({
         name: "More devices",
@@ -632,7 +854,7 @@ function buildDevicesModel(sessionMap: SessionMap | null): InternalViewerDeviceT
 
     const rackItems = rackDevices
       .slice(0, MAX_RACK_SUMMARY_ITEMS)
-      .map((device) => toDeviceDescriptor(device, track, track.devices.indexOf(device), firstKnownInstrumentIndex, describeRack(device)));
+      .map((device) => toDeviceDescriptor(device, track, track.devices.indexOf(device), firstKnownInstrumentIndex, describeRack(device), classificationContext));
     if (rackDevices.length > MAX_RACK_SUMMARY_ITEMS) {
       rackItems.push({
         name: "More racks",
@@ -662,7 +884,10 @@ function buildDevicesModel(sessionMap: SessionMap | null): InternalViewerDeviceT
   return model;
 }
 
-function buildSessionPreviewColumns(sessionMap: SessionMap | null): InternalViewerModel["sessionPreviewColumns"] {
+function buildSessionPreviewColumns(
+  sessionMap: SessionMap | null,
+  classificationContext: DeviceClassificationContext,
+): InternalViewerModel["sessionPreviewColumns"] {
   if (!ENABLE_INTERNAL_VISUAL_PREVIEW || !sessionMap) {
     console.log("[Ableton Session Mapper] Internal Viewer session preview built");
     console.log("[Ableton Session Mapper] Internal Viewer kanban preview built");
@@ -672,12 +897,10 @@ function buildSessionPreviewColumns(sessionMap: SessionMap | null): InternalView
 
   const columns = orderedTracks(sessionMap).map(({ track, sectionType }) => {
     const rackCount = track.devices.filter((device) => isRackLike(device)).length;
-    const firstKnownInstrumentIndex = track.devices.findIndex((device) =>
-      includesKnownName(`${device.name} ${device.type}`.toLowerCase(), INSTRUMENT_NAMES),
-    );
+    const firstKnownInstrumentIndex = findFirstLikelyInstrumentIndex(track);
     const deviceCards = track.devices
       .slice(0, MAX_PREVIEW_DEVICE_ITEMS)
-      .map((device, index) => toDeviceDescriptor(device, track, index, firstKnownInstrumentIndex, describePreviewDevice(device)));
+      .map((device, index) => toDeviceDescriptor(device, track, index, firstKnownInstrumentIndex, describePreviewDevice(device), classificationContext));
 
     if (track.devices.length > MAX_PREVIEW_DEVICE_ITEMS) {
       deviceCards.push({
@@ -714,6 +937,7 @@ function buildModel(
   latest: LatestSessionMapState,
   links: LinkTarget[],
   exportDirectory: string,
+  classificationContext: DeviceClassificationContext,
 ): InternalViewerModel {
   const sessionMap = latest.sessionMap;
   const ordered = sessionMap ? orderedTracks(sessionMap).map((entry) => entry.track) : [];
@@ -725,8 +949,8 @@ function buildModel(
   const sends = ordered.reduce((sum, track) => sum + track.sends.length, 0);
 
   const { outputs, hasMissingRoutingData } = buildOutputsModel(sessionMap);
-  const deviceTracks = buildDevicesModel(sessionMap);
-  const sessionPreviewColumns = buildSessionPreviewColumns(sessionMap);
+  const deviceTracks = buildDevicesModel(sessionMap, classificationContext);
+  const sessionPreviewColumns = buildSessionPreviewColumns(sessionMap, classificationContext);
   const quickLinks: InternalViewerQuickLink[] = links
     .filter((link) => link.quickOpen)
     .map(({ key, label, exists }) => ({ key, label, exists }));
@@ -808,6 +1032,17 @@ export async function showInternalViewerExperimental(
   let overrideState = latestSessionMapFromOverride(options?.sessionMapOverride);
 
   while (true) {
+    const classificationOverrides = await loadDeviceClassificationOverrides(
+      locations.projectRoot,
+      locations.exportDirectory,
+    );
+    const classificationContext: DeviceClassificationContext = {
+      overrides: classificationOverrides,
+      loggedManualMatches: new Set(),
+      loggedInferredMatches: new Set(),
+      loggedUnknownMatches: new Set(),
+    };
+
     const links = await buildLinkTargets(
       locations.exportDirectory,
       locations.sessionMapJsonPath,
@@ -817,7 +1052,7 @@ export async function showInternalViewerExperimental(
     );
     const latest = overrideState ?? await readLatestSessionMap(locations.sessionMapJsonPath);
     overrideState = null;
-    const model = buildModel(latest, links, locations.exportDirectory);
+    const model = buildModel(latest, links, locations.exportDirectory, classificationContext);
     console.log("[Ableton Session Mapper] Build internal viewer model completed");
 
     const html = createInternalViewerHtml(model);

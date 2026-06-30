@@ -59,8 +59,9 @@ export interface InternalViewerDeviceDescriptor {
   category: InternalViewerDeviceCategory;
   categoryLabel: string;
   categoryBadge: string;
-  categorySource: "sdk" | "inferred" | "unknown";
+  categorySource: "sdk" | "inferred" | "manual" | "unknown";
   categoryConfidence: "high" | "medium" | "low";
+  m4lKind?: "midi" | "audio" | "instrument" | "unknown";
 }
 
 export interface InternalViewerSessionPreviewDeviceCard extends InternalViewerDeviceDescriptor {}
@@ -148,9 +149,7 @@ function truncateLabel(value: string, max = 18): string {
 }
 
 function renderDeviceBadge(device: InternalViewerDeviceDescriptor): string {
-  const sourceTag = device.categorySource === "inferred"
-    ? `<span class="device-source" title="Device category inferred">inferred</span>`
-    : "";
+  const sourceTag = `<span class="device-source device-source-${escapeHtml(device.categorySource)}" title="Device category source: ${escapeHtml(device.categorySource)}">${escapeHtml(device.categorySource)}</span>`;
 
   return `<div class="device-badge-row">
     <span class="device-type-badge device-type-${escapeHtml(device.category)}">${escapeHtml(device.categoryBadge)}</span>
@@ -164,10 +163,10 @@ function renderDeviceLegend(): string {
     <span class="device-type-badge device-type-instrument">INST</span>
     <span class="device-type-badge device-type-midi-effect">MIDI FX</span>
     <span class="device-type-badge device-type-audio-effect">AUDIO FX</span>
-    <span class="device-type-badge device-type-max-for-live">M4L</span>
+    <span class="device-type-badge device-type-max-for-live">M4L / M4L MIDI</span>
     <span class="device-type-badge device-type-rack">RACK</span>
     <span class="device-type-badge device-type-unknown">?</span>
-    <small>Device categories may be inferred when the SDK does not expose a stable device class.</small>
+    <small>Device categories may be inferred or manually overridden when the SDK does not expose a stable device class.</small>
   </div>`;
 }
 
@@ -869,6 +868,15 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       text-transform: uppercase;
       letter-spacing: 0.04em;
       color: rgba(17,17,17,0.56);
+    }
+    .device-source-manual {
+      color: rgba(120, 38, 102, 0.88);
+    }
+    .device-source-sdk {
+      color: rgba(17,17,17,0.68);
+    }
+    .device-source-unknown {
+      color: rgba(17,17,17,0.42);
     }
     .section-header {
       display: flex;

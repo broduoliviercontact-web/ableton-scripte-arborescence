@@ -121,6 +121,9 @@ légère :
 - la v1.2.2 ajoute un code couleur spécifique aux devices Max for Live et
   retire l’onglet Kanban de la modale intégrée, tout en conservant les exports
   Mermaid Kanban disponibles en externe.
+- la v1.2.3 affine la classification visuelle des devices : meilleure
+  reconnaissance des Max for Live, des MIDI FX natifs, des instruments drum /
+  synth et possibilité d’overrides manuels pour les patches custom.
 
 En usage normal, le menu **Extensions** n'affiche qu'une seule entrée :
 
@@ -138,6 +141,7 @@ npm start
 npm run preview
 npm run generate:session-grid
 npm run create:routing-overrides
+npm run create:device-classification-overrides
 npm run refresh:routing-overrides
 npm run generate:diagrams-index
 npm run generate:mermaid
@@ -170,6 +174,7 @@ npm run generate:mermaid:flow
 npm run generate:mermaid:git
 npm run generate:mermaid:kanban
 npm run create:routing-overrides
+npm run create:device-classification-overrides
 npm run refresh:routing-overrides
 npm run export:diagram:flow
 npm run export:diagram:git
@@ -468,10 +473,9 @@ Cette fenêtre interne reste volontairement légère :
 
 - modale demandée en **1400 x 950** ;
 - fallback scrollable si Live / le SDK limite la taille réelle ;
-- onglets **Session / Kanban / Git-Metro / Outputs / Devices / Files / Overview** ;
+- onglets **Session / Git-Metro / Outputs / Devices / Files / Overview** ;
 - navigation par **tabs CSS-only** sans dépendre du JS pour changer de vue ;
 - preview interne légère type Session View, basée uniquement sur le JSON exporté ;
-- preview **Kanban** interne en HTML/CSS ;
 - preview **Git / Metro** interne en HTML/CSS ;
 - métriques simples + date d'export + mode `ultra-safe` ;
 - table légère des outputs basée sur `session-map.json` ;
@@ -490,6 +494,37 @@ Notes importantes :
 - les vues internes ne chargent **ni Mermaid.js ni SVG/PNG lourds** ;
 - la preview interne n'est **pas** un rendu Mermaid complet ;
 - le workflow recommandé reste toujours le launcher externe.
+
+### Device classification tuning
+
+La classification affichée dans la modale intégrée est une couche visuelle. Elle
+ne modifie pas le scan stable ni `session-map.json`.
+
+- le SDK peut parfois exposer une classe exploitable ;
+- sinon la catégorie est **inferred** à partir du nom, du type de piste et de
+  la position du device ;
+- pour les patches custom, un override manuel exact par nom est possible via
+  `exports/device-classification-overrides.json`.
+
+Commande utile :
+
+```bash
+npm run create:device-classification-overrides
+```
+
+Elle crée :
+
+- `exports/device-classification-overrides.example.json`
+
+Vous pouvez ensuite copier ce template vers :
+
+- `exports/device-classification-overrides.json`
+
+Exemples de cas utiles :
+
+- `STING!64` → `max-for-live`
+- `DS Clap` → `instrument`
+- `Max MIDI Effect` → `max-for-live` avec badge `M4L MIDI`
 
 Important :
 

@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "devices": {
+    "STING!64": {
+      "category": "max-for-live",
+      "label": "Max for Live",
+      "badge": "M4L MIDI",
+      "m4lKind": "midi",
+      "confidence": "high",
+      "notes": "Manual classification override"
+    },
+    "DS Clap": {
+      "category": "instrument",
+      "label": "Instrument",
+      "badge": "INST",
+      "confidence": "high",
+      "notes": "Manual classification override"
+    }
+  }
+}
