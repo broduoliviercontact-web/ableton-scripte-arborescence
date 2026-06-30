@@ -129,6 +129,7 @@ npm start
 npm run preview
 npm run generate:session-grid
 npm run create:routing-overrides
+npm run refresh:routing-overrides
 npm run generate:diagrams-index
 npm run generate:mermaid
 npm run render:mermaid
@@ -159,6 +160,8 @@ npm run generate:diagrams-index
 npm run generate:mermaid:flow
 npm run generate:mermaid:git
 npm run generate:mermaid:kanban
+npm run create:routing-overrides
+npm run refresh:routing-overrides
 npm run export:diagram:flow
 npm run export:diagram:git
 npm run export:diagram:kanban
@@ -552,6 +555,18 @@ Workflow :
 npm run create:routing-overrides
 ```
 
+Pour régénérer le template quand vous changez de Live Set :
+
+```bash
+npm run refresh:routing-overrides
+```
+
+Ou, si vous voulez garder la même commande avec écrasement explicite :
+
+```bash
+npm run create:routing-overrides -- --force
+```
+
 Puis éditer :
 
 - `exports/routing-overrides.json`
@@ -579,6 +594,46 @@ Comportement de sécurité :
 - si le JSON est invalide, warning uniquement ;
 - si une piste référencée est absente, warning uniquement ;
 - aucun routing n'est inventé automatiquement.
+- `npm run create:routing-overrides` reste **non destructif** ;
+- `npm run refresh:routing-overrides` crée toujours un backup avant réécriture ;
+- `npm run create:routing-overrides -- --force` crée aussi un backup avant réécriture.
+
+### Refreshing routing overrides when changing Live Set
+
+Quand vous passez d'un Set à un autre, l'ancien `routing-overrides.json` peut
+encore référencer des pistes qui n'existent plus. Dans ce cas, la modale
+Integrated Viewer affiche correctement des warnings de type :
+
+- `Manual routing override references missing track: ...`
+
+Workflow recommandé :
+
+1. Dans Live : **Export Session Map**
+2. Depuis la racine du projet :
+
+   ```bash
+   npm run refresh:routing-overrides
+   ```
+
+3. Éditer `exports/routing-overrides.json`
+4. Relancer **Export Session Map**
+5. Vérifier les onglets **Outputs** et **Routing** dans la modale
+
+Comportement :
+
+- lit `exports/session-map.json` latest ;
+- archive l'ancien `exports/routing-overrides.json` si présent ;
+- écrit un nouveau template aligné sur le Set courant ;
+- garde l'ordre Ableton :
+  1. `session.tracks`
+  2. `returnTracks`
+  3. `masterTrack`
+
+Backups :
+
+- `exports/routing-overrides_YYYY-MM-DD_HH-mm.backup.json`
+
+En cas de collision, un suffixe numérique est ajouté.
 
 ### Actions de diagnostic en mode développement
 

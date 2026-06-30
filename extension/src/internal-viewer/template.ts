@@ -456,6 +456,10 @@ function renderRouting(model: InternalViewerModel): string {
       </div>`
     : "";
 
+  const hasMissingTrackWarnings = model.manualRoutingWarnings.some((warning) =>
+    warning.toLowerCase().includes("references missing track"),
+  );
+
   const connectionsBlock = model.connections.length
     ? `<section class="file-group">
         <div class="section-header">
@@ -525,6 +529,11 @@ function renderRouting(model: InternalViewerModel): string {
     </div>
     <div class="notice">${escapeHtml(statusNotice)}</div>
     <div class="notice">Path: ${escapeHtml(model.routingOverridesPath)}</div>
+    ${
+      hasMissingTrackWarnings
+        ? `<div class="notice warning">Some manual routing overrides reference tracks that are not in the current Set. Run <code>npm run refresh:routing-overrides</code> to regenerate a template for this Set.</div>`
+        : ""
+    }
     ${warningRows}
     ${connectionsBlock}
     ${sidechainsBlock}`;

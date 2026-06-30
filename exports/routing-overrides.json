@@ -1,0 +1,169 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-06-30T10:04:50.605Z",
+  "source": "manual-routing-overrides",
+  "notes": "Manual routing information because the SDK does not expose routing I/O in the current scan.",
+  "tracks": {
+    "1-505 Core Kit": {
+      "kind": "midi",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": null,
+      "sends": {
+        "A-Reverb": null,
+        "B-Delay": null
+      },
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    },
+    "2-AG Techno Kit": {
+      "kind": "midi",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": null,
+      "sends": {
+        "A-Reverb": null,
+        "B-Delay": null
+      },
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    },
+    "3-808 Drifter": {
+      "kind": "midi",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": null,
+      "sends": {
+        "A-Reverb": null,
+        "B-Delay": null
+      },
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    },
+    "4-Audio": {
+      "kind": "audio",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": null,
+      "sends": {
+        "A-Reverb": null,
+        "B-Delay": null
+      },
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    },
+    "5-Audio": {
+      "kind": "audio",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": null,
+      "sends": {
+        "A-Reverb": null,
+        "B-Delay": null
+      },
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    },
+    "6-Audio": {
+      "kind": "audio",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": null,
+      "sends": {
+        "A-Reverb": null,
+        "B-Delay": null
+      },
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    },
+    "7-Alien Army": {
+      "kind": "midi",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": null,
+      "sends": {
+        "A-Reverb": null,
+        "B-Delay": null
+      },
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    },
+    "8-E-Piano Faceplant": {
+      "kind": "midi",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": null,
+      "sends": {
+        "A-Reverb": null,
+        "B-Delay": null
+      },
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    },
+    "9-Balafon Bright": {
+      "kind": "midi",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": null,
+      "sends": {
+        "A-Reverb": null,
+        "B-Delay": null
+      },
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    },
+    "A-Reverb": {
+      "kind": "return",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": "Sends",
+      "audioTo": null,
+      "monitor": null,
+      "sends": {},
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    },
+    "B-Delay": {
+      "kind": "return",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": "Sends",
+      "audioTo": null,
+      "monitor": null,
+      "sends": {},
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    },
+    "Main": {
+      "kind": "master",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": "Tracks + Returns",
+      "audioTo": null,
+      "monitor": null,
+      "sends": {},
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    }
+  },
+  "sidechains": [],
+  "connections": []
+}
