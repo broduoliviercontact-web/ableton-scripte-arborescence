@@ -149,9 +149,15 @@ function truncateLabel(value: string, max = 18): string {
 }
 
 function renderDeviceBadge(device: InternalViewerDeviceDescriptor): string {
-  const sourceTag = `<span class="device-source device-source-${escapeHtml(device.categorySource)}" title="Device category source: ${escapeHtml(device.categorySource)}">${escapeHtml(device.categorySource)}</span>`;
+  const sourceTitle = device.categorySource === "inferred"
+    ? ` title="Category inferred from device name/track context"`
+    : "";
+  const sourceTag =
+    device.categorySource === "manual" || device.categorySource === "unknown"
+      ? `<span class="device-source device-source-${escapeHtml(device.categorySource)}" title="Device category source: ${escapeHtml(device.categorySource)}">${escapeHtml(device.categorySource)}</span>`
+      : "";
 
-  return `<div class="device-badge-row">
+  return `<div class="device-badge-row"${sourceTitle}>
     <span class="device-type-badge device-type-${escapeHtml(device.category)}">${escapeHtml(device.categoryBadge)}</span>
     ${sourceTag}
   </div>`;

@@ -1,7 +1,8 @@
-import { access, readFile, writeFile } from "node:fs/promises";
+import { access, readFile, stat, writeFile } from "node:fs/promises";
 import { basename, dirname, relative, resolve } from "node:path";
 
 type TrackKind = "audio" | "midi" | "group" | "return" | "master" | "unknown";
+type ArtifactStatus = "current" | "outdated" | "missing";
 
 interface DeviceInfo {
   type: string;
@@ -22,23 +23,34 @@ interface SessionMap {
     name: string | null;
     tempo: number | null;
   };
+  scan?: {
+    mode?: string;
+  };
   tracks: TrackInfo[];
   returnTracks: TrackInfo[];
   masterTrack: TrackInfo | null;
 }
 
-interface FileAction {
+interface FileMetadata {
+  exists: boolean;
+  mtimeMs: number | null;
+}
+
+interface ArtifactEntry {
   label: string;
   fileName: string;
-  exists: boolean;
+  href: string;
+  status: ArtifactStatus;
+  note?: string;
 }
 
 interface LauncherCard {
   title: string;
   description: string;
   accentClass: string;
-  actions: FileAction[];
-  missingHint?: string;
+  summary: string;
+  artifacts: ArtifactEntry[];
+  footerNote?: string;
 }
 
 export interface GenerateDiagramsIndexOptions {
@@ -46,6 +58,29 @@ export interface GenerateDiagramsIndexOptions {
   outputPath: string;
   rootDirectory: string;
 }
+
+const DIAGRAM_FILES = [
+  "session-map.html",
+  "session-map-session-grid.html",
+  "session-map-mermaid-flow.html",
+  "session-map-flow.mmd",
+  "session-map-flow.svg",
+  "session-map-flow.png",
+  "session-map-mermaid-git.html",
+  "session-map-git.mmd",
+  "session-map-git.svg",
+  "session-map-git.png",
+  "session-map-mermaid-kanban.html",
+  "session-map-kanban.mmd",
+  "session-map-kanban.svg",
+  "session-map-kanban.png",
+] as const;
+
+const SDK_MATRIX_FILES = [
+  "sdk-capability-matrix.html",
+  "sdk-capability-matrix.json",
+  "sdk-capability-matrix.md",
+] as const;
 
 function escapeHtml(value: string): string {
   return String(value)
@@ -74,6 +109,18 @@ async function pathExists(path: string): Promise<boolean> {
   }
 }
 
+async function getFileMetadata(path: string): Promise<FileMetadata> {
+  if (!(await pathExists(path))) {
+    return { exists: false, mtimeMs: null };
+  }
+
+  const details = await stat(path);
+  return {
+    exists: true,
+    mtimeMs: details.mtimeMs,
+  };
+}
+
 function isRackLike(device: DeviceInfo): boolean {
   return (
     device.type.toLowerCase().includes("rack") ||
@@ -94,6 +141,7 @@ function metricSummary(sessionMap: SessionMap): Array<{ value: string; label: st
     0,
   );
   const sendCount = allTracks.reduce((sum, track) => sum + track.sends.length, 0);
+
   return [
     { value: String(sessionMap.tracks.length), label: "Tracks" },
     { value: String(sessionMap.returnTracks.length), label: "Returns" },
@@ -103,147 +151,93 @@ function metricSummary(sessionMap: SessionMap): Array<{ value: string; label: st
   ];
 }
 
-function buildActionButton(action: FileAction): string {
-  if (!action.exists) {
-    return `<span class="action-link is-disabled">${escapeHtml(action.label)}</span>`;
+function statusLabel(status: ArtifactStatus): string {
+  switch (status) {
+    case "current":
+      return "Current";
+    case "outdated":
+      return "Outdated";
+    default:
+      return "Missing";
   }
-
-  return `<a class="action-link" href="${escapeHtml(action.fileName)}">${escapeHtml(action.label)}</a>`;
 }
 
-function buildMissingState(actions: FileAction[], hint?: string): string {
-  const missing = actions.filter((action) => !action.exists);
-  if (missing.length === 0) return `<p class="card-status ok">Available now</p>`;
+function statusNote(status: ArtifactStatus, type: "diagram" | "matrix"): string | undefined {
+  if (status === "outdated") {
+    return type === "matrix"
+      ? "This diagnostic report may be from an older session export."
+      : "This diagram may be from an older Live Set.";
+  }
+  if (status === "missing") {
+    return "Not generated yet.";
+  }
+  return undefined;
+}
 
-  return `<div class="missing-state">
-    <p class="card-status warn">Not generated yet</p>
-    <ul>
-      ${missing.map((action) => `<li>${escapeHtml(action.label)} not generated yet.</li>`).join("")}
-    </ul>
-    ${hint ? `<code>${escapeHtml(hint)}</code>` : ""}
+function artifactStatus(metadata: FileMetadata, jsonMtimeMs: number): ArtifactStatus {
+  if (!metadata.exists) return "missing";
+  if (metadata.mtimeMs != null && metadata.mtimeMs < jsonMtimeMs) return "outdated";
+  return "current";
+}
+
+function buildArtifact(
+  fileName: string,
+  label: string,
+  metadataMap: Map<string, FileMetadata>,
+  jsonMtimeMs: number,
+  type: "diagram" | "matrix",
+): ArtifactEntry {
+  const metadata = metadataMap.get(fileName) ?? { exists: false, mtimeMs: null };
+  const status = artifactStatus(metadata, jsonMtimeMs);
+  return {
+    label,
+    fileName,
+    href: fileName,
+    status,
+    note: statusNote(status, type),
+  };
+}
+
+function buildCardSummary(artifacts: ArtifactEntry[]): string {
+  const current = artifacts.filter((artifact) => artifact.status === "current").length;
+  const outdated = artifacts.filter((artifact) => artifact.status === "outdated").length;
+  const missing = artifacts.filter((artifact) => artifact.status === "missing").length;
+  return `${current} current · ${outdated} outdated · ${missing} missing`;
+}
+
+function buildArtifactRow(artifact: ArtifactEntry): string {
+  const isLink = artifact.status !== "missing";
+  const button = isLink
+    ? `<a class="artifact-button ${artifact.status === "outdated" ? "is-warning" : ""}" href="${escapeHtml(artifact.href)}">${escapeHtml(artifact.label)}</a>`
+    : `<span class="artifact-button is-disabled">${escapeHtml(artifact.label)}</span>`;
+
+  return `<div class="artifact-row">
+    <div class="artifact-meta">
+      <strong>${escapeHtml(artifact.label)}</strong>
+      <span>${escapeHtml(artifact.fileName)}</span>
+      ${artifact.note ? `<small>${escapeHtml(artifact.note)}</small>` : ""}
+    </div>
+    <div class="artifact-actions">
+      <span class="status-pill status-${artifact.status}">${escapeHtml(statusLabel(artifact.status))}</span>
+      ${button}
+    </div>
   </div>`;
 }
 
 function buildCard(card: LauncherCard): string {
   return `<section class="launcher-card ${escapeHtml(card.accentClass)}">
     <div class="card-head">
-      <h2>${escapeHtml(card.title)}</h2>
-      <p>${escapeHtml(card.description)}</p>
+      <div>
+        <h2>${escapeHtml(card.title)}</h2>
+        <p>${escapeHtml(card.description)}</p>
+      </div>
+      <span class="card-summary">${escapeHtml(card.summary)}</span>
     </div>
-    <div class="card-actions">
-      ${card.actions.map(buildActionButton).join("")}
+    <div class="artifact-list">
+      ${card.artifacts.map((artifact) => buildArtifactRow(artifact)).join("")}
     </div>
-    ${buildMissingState(card.actions, card.missingHint)}
+    ${card.footerNote ? `<p class="card-footnote">${escapeHtml(card.footerNote)}</p>` : ""}
   </section>`;
-}
-
-async function buildCards(rootDirectory: string): Promise<string> {
-  const exportsDirectory = resolve(rootDirectory, "exports");
-  const allPaths = [
-    "session-map-session-grid.html",
-    "session-map.html",
-    "session-map-mermaid-flow.html",
-    "session-map-flow.svg",
-    "session-map-flow.png",
-    "session-map-flow.mmd",
-    "session-map-mermaid-git.html",
-    "session-map-git.svg",
-    "session-map-git.png",
-    "session-map-git.mmd",
-    "session-map-mermaid-kanban.html",
-    "session-map-kanban.svg",
-    "session-map-kanban.png",
-    "session-map-kanban.mmd",
-    "session-map.json",
-    "sdk-capability-matrix.html",
-    "sdk-capability-matrix.json",
-    "sdk-capability-matrix.md",
-  ];
-
-  const existence = new Map<string, boolean>();
-  await Promise.all(
-    allPaths.map(async (fileName) => {
-      existence.set(fileName, await pathExists(resolve(exportsDirectory, fileName)));
-    }),
-  );
-
-  const cards: LauncherCard[] = [
-    {
-      title: "Session Grid",
-      description: "Vue proche de la Session View Ableton.",
-      accentClass: "accent-grid",
-      actions: [
-        { label: "Open Session Grid", fileName: "session-map-session-grid.html", exists: existence.get("session-map-session-grid.html") === true },
-      ],
-    },
-    {
-      title: "HTML Report",
-      description: "Rapport détaillé avec pistes, devices, sends et racks.",
-      accentClass: "accent-report",
-      actions: [
-        { label: "Open Report", fileName: "session-map.html", exists: existence.get("session-map.html") === true },
-      ],
-    },
-    {
-      title: "Flow",
-      description: "Arborescence technique du Live Set.",
-      accentClass: "accent-flow",
-      actions: [
-        { label: "Open HTML", fileName: "session-map-mermaid-flow.html", exists: existence.get("session-map-mermaid-flow.html") === true },
-        { label: "Open SVG", fileName: "session-map-flow.svg", exists: existence.get("session-map-flow.svg") === true },
-        { label: "Open PNG", fileName: "session-map-flow.png", exists: existence.get("session-map-flow.png") === true },
-        { label: "Open .mmd", fileName: "session-map-flow.mmd", exists: existence.get("session-map-flow.mmd") === true },
-      ],
-      missingHint: "npm run export:diagram:flow",
-    },
-    {
-      title: "Git / Metro",
-      description: "Vue métro stylisée des pistes.",
-      accentClass: "accent-git",
-      actions: [
-        { label: "Open HTML", fileName: "session-map-mermaid-git.html", exists: existence.get("session-map-mermaid-git.html") === true },
-        { label: "Open SVG", fileName: "session-map-git.svg", exists: existence.get("session-map-git.svg") === true },
-        { label: "Open PNG", fileName: "session-map-git.png", exists: existence.get("session-map-git.png") === true },
-        { label: "Open .mmd", fileName: "session-map-git.mmd", exists: existence.get("session-map-git.mmd") === true },
-      ],
-      missingHint: "npm run export:diagram:git",
-    },
-    {
-      title: "Kanban",
-      description: "Pistes en colonnes, devices dessous.",
-      accentClass: "accent-kanban",
-      actions: [
-        { label: "Open HTML", fileName: "session-map-mermaid-kanban.html", exists: existence.get("session-map-mermaid-kanban.html") === true },
-        { label: "Open SVG", fileName: "session-map-kanban.svg", exists: existence.get("session-map-kanban.svg") === true },
-        { label: "Open PNG", fileName: "session-map-kanban.png", exists: existence.get("session-map-kanban.png") === true },
-        { label: "Open .mmd", fileName: "session-map-kanban.mmd", exists: existence.get("session-map-kanban.mmd") === true },
-      ],
-      missingHint: "npm run export:diagram:kanban",
-    },
-    {
-      title: "Raw Data",
-      description: "Données exportées et accès rapide au dossier exports.",
-      accentClass: "accent-raw",
-      actions: [
-        { label: "Open JSON", fileName: "session-map.json", exists: existence.get("session-map.json") === true },
-        { label: "Open exports folder", fileName: `file://${exportsDirectory}`, exists: true },
-      ],
-      missingHint: "npm run export:diagram:all",
-    },
-    {
-      title: "SDK Capability Matrix",
-      description: "Diagnostic dev des capacités réellement exposées par le SDK.",
-      accentClass: "accent-report",
-      actions: [
-        { label: "Open HTML", fileName: "sdk-capability-matrix.html", exists: existence.get("sdk-capability-matrix.html") === true },
-        { label: "Open JSON", fileName: "sdk-capability-matrix.json", exists: existence.get("sdk-capability-matrix.json") === true },
-        { label: "Open Markdown", fileName: "sdk-capability-matrix.md", exists: existence.get("sdk-capability-matrix.md") === true },
-      ],
-      missingHint: "ENABLE_CAPABILITY_MATRIX=true npm start",
-    },
-  ];
-
-  return cards.map(buildCard).join("\n");
 }
 
 function buildMetricsHtml(sessionMap: SessionMap): string {
@@ -256,338 +250,522 @@ function buildMetricsHtml(sessionMap: SessionMap): string {
     )
     .join("\n");
 }
+
 export async function buildDiagramsIndexHtml(
   options: GenerateDiagramsIndexOptions,
 ): Promise<string> {
   const json = await readFile(options.jsonPath, "utf8");
   const sessionMap = JSON.parse(json) as SessionMap;
-  const cards = await buildCards(options.rootDirectory);
-  const metrics = buildMetricsHtml(sessionMap);
+  const jsonStats = await stat(options.jsonPath);
+  const jsonMtimeMs = jsonStats.mtimeMs;
   const outputDirectory = dirname(options.outputPath);
   const exportsDirectory = resolve(options.rootDirectory, "exports");
   const relativeJsonPath = relative(outputDirectory, options.jsonPath) || basename(options.jsonPath);
   const projectName = sessionMap.set.name?.trim() || "Ableton Live Set";
+
+  const trackedFiles = [
+    ...DIAGRAM_FILES,
+    ...SDK_MATRIX_FILES,
+    "session-map.json",
+  ];
+  const metadataMap = new Map<string, FileMetadata>();
+  await Promise.all(
+    trackedFiles.map(async (fileName) => {
+      metadataMap.set(fileName, await getFileMetadata(resolve(exportsDirectory, fileName)));
+    }),
+  );
+
+  const diagramArtifacts = {
+    sessionGrid: [buildArtifact("session-map-session-grid.html", "HTML view", metadataMap, jsonMtimeMs, "diagram")],
+    report: [buildArtifact("session-map.html", "HTML report", metadataMap, jsonMtimeMs, "diagram")],
+    flow: [
+      buildArtifact("session-map-mermaid-flow.html", "HTML", metadataMap, jsonMtimeMs, "diagram"),
+      buildArtifact("session-map-flow.mmd", ".mmd", metadataMap, jsonMtimeMs, "diagram"),
+      buildArtifact("session-map-flow.svg", "SVG", metadataMap, jsonMtimeMs, "diagram"),
+      buildArtifact("session-map-flow.png", "PNG", metadataMap, jsonMtimeMs, "diagram"),
+    ],
+    git: [
+      buildArtifact("session-map-mermaid-git.html", "HTML", metadataMap, jsonMtimeMs, "diagram"),
+      buildArtifact("session-map-git.mmd", ".mmd", metadataMap, jsonMtimeMs, "diagram"),
+      buildArtifact("session-map-git.svg", "SVG", metadataMap, jsonMtimeMs, "diagram"),
+      buildArtifact("session-map-git.png", "PNG", metadataMap, jsonMtimeMs, "diagram"),
+    ],
+    kanban: [
+      buildArtifact("session-map-mermaid-kanban.html", "HTML", metadataMap, jsonMtimeMs, "diagram"),
+      buildArtifact("session-map-kanban.mmd", ".mmd", metadataMap, jsonMtimeMs, "diagram"),
+      buildArtifact("session-map-kanban.svg", "SVG", metadataMap, jsonMtimeMs, "diagram"),
+      buildArtifact("session-map-kanban.png", "PNG", metadataMap, jsonMtimeMs, "diagram"),
+    ],
+  };
+
+  const sdkArtifacts = [
+    buildArtifact("sdk-capability-matrix.html", "HTML", metadataMap, jsonMtimeMs, "matrix"),
+    buildArtifact("sdk-capability-matrix.json", "JSON", metadataMap, jsonMtimeMs, "matrix"),
+    buildArtifact("sdk-capability-matrix.md", "Markdown", metadataMap, jsonMtimeMs, "matrix"),
+  ];
+
+  const cards: LauncherCard[] = [
+    {
+      title: "Session Grid",
+      description: "Live-like session overview generated on export.",
+      accentClass: "accent-grid",
+      artifacts: diagramArtifacts.sessionGrid,
+      footerNote: "HTML views are generated on export.",
+      summary: buildCardSummary(diagramArtifacts.sessionGrid),
+    },
+    {
+      title: "HTML Report",
+      description: "Detailed report with tracks, devices, sends and rack summaries.",
+      accentClass: "accent-report",
+      artifacts: diagramArtifacts.report,
+      footerNote: "HTML views are generated on export.",
+      summary: buildCardSummary(diagramArtifacts.report),
+    },
+    {
+      title: "Flow",
+      description: "Technical tree of the latest Live Set.",
+      accentClass: "accent-flow",
+      artifacts: diagramArtifacts.flow,
+      footerNote: "HTML + .mmd are refreshed on export. SVG/PNG are manual renders.",
+      summary: buildCardSummary(diagramArtifacts.flow),
+    },
+    {
+      title: "Git / Metro",
+      description: "Metro-style track map aligned with the latest export.",
+      accentClass: "accent-git",
+      artifacts: diagramArtifacts.git,
+      footerNote: "HTML + .mmd are refreshed on export. SVG/PNG are manual renders.",
+      summary: buildCardSummary(diagramArtifacts.git),
+    },
+    {
+      title: "Kanban",
+      description: "Session-order columns with devices under each track.",
+      accentClass: "accent-kanban",
+      artifacts: diagramArtifacts.kanban,
+      footerNote: "Kanban stays external. HTML + .mmd are refreshed on export.",
+      summary: buildCardSummary(diagramArtifacts.kanban),
+    },
+    {
+      title: "Raw Data",
+      description: "Latest JSON export and quick access to the exports folder.",
+      accentClass: "accent-raw",
+      artifacts: [
+        buildArtifact("session-map.json", "session-map.json", metadataMap, jsonMtimeMs, "diagram"),
+        {
+          label: "Exports folder",
+          fileName: "Open folder",
+          href: `file://${exportsDirectory}`,
+          status: "current",
+        },
+      ],
+      footerNote: "Use this when you want the raw export or archived files directly.",
+      summary: buildCardSummary([buildArtifact("session-map.json", "session-map.json", metadataMap, jsonMtimeMs, "diagram")]),
+    },
+    {
+      title: "SDK Capability Matrix",
+      description: "Separate diagnostic report about SDK exposure.",
+      accentClass: "accent-matrix",
+      artifacts: sdkArtifacts,
+      footerNote: "Refresh from Live with ENABLE_CAPABILITY_MATRIX=true.",
+      summary: buildCardSummary(sdkArtifacts),
+    },
+  ];
+
+  const hasOutdatedDiagrams = Object.values(diagramArtifacts)
+    .flat()
+    .some((artifact) => artifact.status === "outdated");
+  const hasOutdatedSdkMatrix = sdkArtifacts.some((artifact) => artifact.status === "outdated");
+  const localhostLauncherUrl = "http://localhost:5177/exports/session-map-diagrams.html";
 
   return `<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="dark">
-  <title>Ableton Session Mapper — Visual Launcher</title>
+  <title>Ableton Session Mapper — External Launcher</title>
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #090d12;
-      --panel: rgba(18, 24, 32, 0.92);
-      --panel-2: rgba(14, 18, 24, 0.88);
-      --line: rgba(255,255,255,0.08);
-      --text: #f5f7fa;
-      --muted: #8e99aa;
-      --accent: #f5a623;
-      --accent-blue: #5aa4ff;
-      --accent-cyan: #46d7ff;
-      --accent-violet: #9181ff;
+      --live-bg: #b9b9b9;
+      --live-panel: #cdcdcd;
+      --live-panel-light: #d9d9d9;
+      --live-border: #8a8a8a;
+      --live-grid: rgba(0,0,0,0.04);
+      --live-text: #202020;
+      --live-muted: #5d5d5d;
+      --live-orange: #f5a623;
+      --live-orange-dark: #d88900;
+      --live-cyan: #3fc2d7;
+      --live-magenta: #d86ec0;
+      --ok: #4c8d4c;
+      --warn: #c68619;
+      --missing: #8b6f5f;
+      --matrix: #4fb98f;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      color: var(--text);
+      color: var(--live-text);
       background:
-        radial-gradient(circle at top left, rgba(245,166,35,0.14), transparent 30%),
-        radial-gradient(circle at top right, rgba(90,164,255,0.12), transparent 28%),
-        linear-gradient(180deg, #0d1219, #090d12 28%, #070a0e);
-      font-family: "Avenir Next", "SF Pro Display", "Segoe UI", sans-serif;
+        linear-gradient(180deg, rgba(255,255,255,0.18), transparent 22%),
+        repeating-linear-gradient(0deg, var(--live-grid) 0 1px, transparent 1px 24px),
+        repeating-linear-gradient(90deg, var(--live-grid) 0 1px, transparent 1px 24px),
+        var(--live-bg);
+      font-family: "Avenir Next", "SF Pro Text", "Segoe UI", sans-serif;
     }
     .shell {
-      max-width: 1320px;
+      max-width: 1360px;
       margin: 0 auto;
-      padding: 28px 20px 40px;
+      padding: 18px;
+    }
+    .hero, .metrics, .workflow, .launcher-card {
+      background: var(--live-panel);
+      border: 1px solid var(--live-border);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
     }
     .hero {
       display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
-      gap: 18px;
-      align-items: stretch;
-      margin-bottom: 18px;
-    }
-    .hero-main,
-    .hero-side,
-    .workflow,
-    .launcher-card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      box-shadow: 0 20px 48px rgba(0,0,0,0.26);
-    }
-    .hero-main {
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-main::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(120deg, rgba(245,166,35,0.14), transparent 34%),
-        linear-gradient(180deg, rgba(255,255,255,0.03), transparent 60%);
-      pointer-events: none;
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.9fr);
+      gap: 14px;
+      padding: 16px;
+      margin-bottom: 12px;
     }
     .eyebrow {
-      margin: 0 0 10px;
-      font-size: 12px;
-      letter-spacing: 0.18em;
+      margin: 0 0 4px;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--accent);
+      font-weight: 700;
+      color: var(--live-orange-dark);
     }
     h1 {
       margin: 0;
-      font-size: clamp(34px, 6vw, 58px);
-      line-height: 0.95;
-      letter-spacing: -0.04em;
+      font-size: 24px;
+      line-height: 1.1;
     }
     .subtitle {
-      margin: 14px 0 0;
-      max-width: 38rem;
-      color: #d1d8e2;
-      font-size: 17px;
-      line-height: 1.55;
+      margin: 8px 0 0;
+      max-width: 48rem;
+      color: var(--live-muted);
+      font-size: 13px;
+      line-height: 1.5;
     }
     .hero-side {
-      padding: 20px;
-      background: var(--panel-2);
       display: grid;
-      gap: 14px;
+      gap: 10px;
       align-content: start;
     }
     .meta-label {
-      margin: 0 0 5px;
-      font-size: 11px;
-      letter-spacing: 0.14em;
+      margin: 0 0 2px;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--live-muted);
+      font-weight: 700;
     }
     .meta-value {
       margin: 0;
-      font-size: 15px;
-      line-height: 1.45;
-      color: var(--text);
-      word-break: break-word;
+      font-size: 13px;
+      line-height: 1.4;
     }
     .metrics {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
+      overflow: hidden;
     }
     .metric {
-      padding: 16px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.03);
+      padding: 14px;
+      border-right: 1px solid var(--live-border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
     }
+    .metric:last-child { border-right: 0; }
     .metric strong {
       display: block;
-      margin-bottom: 4px;
-      font-size: 28px;
+      font-size: 24px;
       line-height: 1;
+      margin-bottom: 4px;
     }
     .metric span {
-      color: var(--muted);
-      font-size: 13px;
+      font-size: 11px;
+      color: var(--live-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
     .workflow {
-      margin-bottom: 18px;
-      padding: 20px 22px;
-      background:
-        linear-gradient(90deg, rgba(245,166,35,0.12), rgba(255,255,255,0.02));
+      padding: 14px 16px;
+      margin-bottom: 12px;
     }
     .workflow h2 {
-      margin: 0 0 10px;
-      font-size: 18px;
+      margin: 0 0 8px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
-    .workflow ol {
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 16px;
+    }
+    .workflow p, .workflow li {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .workflow ul, .workflow ol {
       margin: 0;
       padding-left: 18px;
-      color: #e2e8f0;
-      line-height: 1.8;
     }
-    .workflow code,
-    .missing-state code {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      color: #f8fafc;
-      font-family: "SFMono-Regular", "JetBrains Mono", monospace;
+    .note {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(0,0,0,0.08);
       font-size: 12px;
+      line-height: 1.45;
+    }
+    .note.is-warning {
+      background: rgba(245,166,35,0.16);
+      border-color: rgba(180,120,0,0.24);
+    }
+    .note.is-matrix {
+      background: rgba(79,185,143,0.14);
+      border-color: rgba(79,185,143,0.24);
+    }
+    .note a {
+      color: #1f4c73;
+      font-weight: 700;
+      text-decoration: none;
     }
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 12px;
     }
     .launcher-card {
-      padding: 18px;
-      position: relative;
-      overflow: hidden;
+      padding: 14px;
+      display: grid;
+      gap: 12px;
     }
-    .launcher-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: 0.8;
-      pointer-events: none;
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent 36%);
+    .accent-grid { border-left: 4px solid #8b7dff; }
+    .accent-report { border-left: 4px solid var(--live-orange); }
+    .accent-flow { border-left: 4px solid #6ba7ff; }
+    .accent-git { border-left: 4px solid var(--live-cyan); }
+    .accent-kanban { border-left: 4px solid var(--live-magenta); }
+    .accent-raw { border-left: 4px solid #6e6e6e; }
+    .accent-matrix { border-left: 4px solid var(--matrix); }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
     }
-    .accent-grid { box-shadow: inset 0 0 0 1px rgba(145,129,255,0.14), 0 20px 48px rgba(0,0,0,0.26); }
-    .accent-report { box-shadow: inset 0 0 0 1px rgba(245,166,35,0.14), 0 20px 48px rgba(0,0,0,0.26); }
-    .accent-flow { box-shadow: inset 0 0 0 1px rgba(90,164,255,0.14), 0 20px 48px rgba(0,0,0,0.26); }
-    .accent-git { box-shadow: inset 0 0 0 1px rgba(70,215,255,0.14), 0 20px 48px rgba(0,0,0,0.26); }
-    .accent-kanban { box-shadow: inset 0 0 0 1px rgba(145,129,255,0.14), 0 20px 48px rgba(0,0,0,0.26); }
-    .accent-raw { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12), 0 20px 48px rgba(0,0,0,0.26); }
     .card-head h2 {
-      margin: 0 0 8px;
-      font-size: 20px;
+      margin: 0 0 4px;
+      font-size: 16px;
+      line-height: 1.2;
     }
     .card-head p {
       margin: 0;
-      color: #c5ced9;
-      line-height: 1.55;
-      min-height: 48px;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.45;
     }
-    .card-actions {
-      display: flex;
-      flex-wrap: wrap;
+    .card-summary {
+      flex: 0 0 auto;
+      font-size: 10px;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--live-muted);
+      padding: 7px 8px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .artifact-list {
+      display: grid;
+      gap: 8px;
+    }
+    .artifact-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
       gap: 10px;
-      margin-top: 16px;
-      margin-bottom: 14px;
-      position: relative;
-      z-index: 1;
+      align-items: center;
+      padding: 9px 10px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.14);
+      border-radius: 4px;
     }
-    .action-link {
+    .artifact-meta {
+      min-width: 0;
+      display: grid;
+      gap: 2px;
+    }
+    .artifact-meta strong {
+      font-size: 12px;
+      line-height: 1.25;
+    }
+    .artifact-meta span,
+    .artifact-meta small {
+      font-size: 11px;
+      color: var(--live-muted);
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    .artifact-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .status-pill {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      min-height: 40px;
-      padding: 10px 14px;
+      min-height: 24px;
+      padding: 0 8px;
       border-radius: 999px;
-      border: 1px solid rgba(245,166,35,0.24);
-      background: rgba(245,166,35,0.08);
-      color: #f5f7fa;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: rgba(255,255,255,0.14);
+    }
+    .status-current { color: #1f4d1f; background: rgba(76,141,76,0.2); }
+    .status-outdated { color: #8a5600; background: rgba(198,134,25,0.2); }
+    .status-missing { color: #6f5645; background: rgba(139,111,95,0.18); }
+    .artifact-button {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 4px;
+      border: 1px solid #8b8b8b;
+      background: linear-gradient(180deg, #eeeeee, #cfcfcf);
+      color: #1a1a1a;
       text-decoration: none;
-      font-size: 14px;
-      transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
     }
-    .action-link:hover {
-      transform: translateY(-1px);
-      background: rgba(245,166,35,0.15);
-      border-color: rgba(245,166,35,0.42);
+    .artifact-button.is-warning {
+      background: linear-gradient(180deg, #ffd48a, #eab255);
+      border-color: #a97000;
     }
-    .action-link.is-disabled {
-      opacity: 0.42;
-      cursor: not-allowed;
-      background: rgba(255,255,255,0.04);
-      border-color: rgba(255,255,255,0.08);
+    .artifact-button.is-disabled {
+      opacity: 0.5;
+      background: linear-gradient(180deg, #dddddd, #c4c4c4);
+      color: #6a6a6a;
+      cursor: default;
     }
-    .card-status {
+    .card-footnote {
       margin: 0;
-      font-size: 13px;
-      letter-spacing: 0.03em;
-    }
-    .card-status.ok { color: #97f0b2; }
-    .card-status.warn { color: #ffd389; }
-    .missing-state ul {
-      margin: 8px 0 0;
-      padding-left: 18px;
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 13px;
+      color: var(--live-muted);
+      font-size: 11px;
+      line-height: 1.45;
     }
     .footer {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
-      margin-top: 22px;
-      color: var(--muted);
-      font-size: 12px;
+      margin-top: 12px;
+      padding: 12px 4px 0;
+      color: var(--live-muted);
+      font-size: 11px;
     }
     .footer a {
-      color: #7f8da3;
+      color: var(--live-muted);
       text-decoration: none;
     }
     .footer a:hover {
-      color: var(--accent);
+      color: var(--live-orange-dark);
     }
-    @media (max-width: 960px) {
-      .hero {
+    @media (max-width: 980px) {
+      .hero, .workflow-grid { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .artifact-row,
+      .card-head,
+      .footer {
+        display: grid;
         grid-template-columns: 1fr;
       }
-      .metrics {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-    @media (max-width: 640px) {
-      .shell {
-        padding-inline: 14px;
-      }
-      .metrics {
-        grid-template-columns: 1fr 1fr;
-      }
-      .footer {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+      .artifact-actions { justify-content: start; }
+      .metrics { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <section class="hero">
-      <div class="hero-main">
-        <p class="eyebrow">Ableton Session Mapper / v0.7.4</p>
-        <h1>Ableton Session Mapper</h1>
-        <p class="subtitle">Choose a visualization. This launcher stays external to Ableton, keeps the stable export path, and gives you a clean entry point to Session Grid, Report, Flow, Git / Metro, Kanban, and raw data.</p>
+      <div>
+        <p class="eyebrow">Session Mapper / External Launcher</p>
+        <h1>Session Mapper</h1>
+        <p class="subtitle">Live-like external launcher aligned with the integrated modal. Mermaid HTML views are refreshed on export. Heavy SVG/PNG renders stay optional.</p>
       </div>
       <aside class="hero-side">
         <div>
-          <p class="meta-label">Set name</p>
+          <p class="meta-label">Set</p>
           <p class="meta-value">${escapeHtml(projectName)}</p>
         </div>
         <div>
-          <p class="meta-label">Exported at</p>
+          <p class="meta-label">Export date</p>
           <p class="meta-value">${escapeHtml(formatExportDate(sessionMap.exportedAt))}</p>
         </div>
         <div>
-          <p class="meta-label">Tempo</p>
-          <p class="meta-value">${sessionMap.set.tempo !== null ? `${escapeHtml(String(sessionMap.set.tempo))} BPM` : "Unavailable"}</p>
+          <p class="meta-label">Mode</p>
+          <p class="meta-value">${escapeHtml(sessionMap.scan?.mode ?? "unknown")}</p>
         </div>
         <div>
-          <p class="meta-label">Current JSON</p>
+          <p class="meta-label">Last export</p>
           <p class="meta-value">${escapeHtml(relativeJsonPath)}</p>
         </div>
       </aside>
     </section>
 
     <section class="metrics" aria-label="Session metrics">
-      ${metrics}
+      ${buildMetricsHtml(sessionMap)}
     </section>
 
     <section class="workflow">
       <h2>Recommended workflow</h2>
-      <ol>
-        <li>Depuis Ableton : <strong>Export Session Map</strong></li>
-        <li>Pour générer les diagrammes : <strong>npm run export:diagram:all</strong></li>
-        <li>Pour rouvrir ce launcher : <strong>npm run open:diagrams</strong></li>
-      </ol>
+      <div class="workflow-grid">
+        <div>
+          <ol>
+            <li>Depuis Live : <strong>Export Session Map</strong></li>
+            <li>La modale intégrée s’ouvre</li>
+            <li>Le launcher externe donne accès aux vues HTML à jour</li>
+          </ol>
+        </div>
+        <div>
+          <ul>
+            <li><strong>HTML views:</strong> generated on export</li>
+            <li><strong>SVG/PNG:</strong> render manually with <strong>npm run export:diagram:all</strong></li>
+            <li><strong>SDK Matrix:</strong> refresh from Live with <strong>ENABLE_CAPABILITY_MATRIX=true</strong></li>
+          </ul>
+        </div>
+      </div>
+      ${hasOutdatedDiagrams ? `<div class="note is-warning">Some diagram renders are older than the latest export.</div>` : ""}
+      ${hasOutdatedSdkMatrix ? `<div class="note is-matrix">SDK Capability Matrix is a separate diagnostic report and may be older than the latest export.</div>` : ""}
+      <div class="note">
+        <strong>Open without CORS issues</strong><br>
+        If Mermaid HTML does not render from <code>file://</code>: run <strong>npm run serve:exports</strong> then open
+        <a href="${localhostLauncherUrl}">${localhostLauncherUrl}</a>
+      </div>
     </section>
+
     <section class="cards" aria-label="Visualization launcher">
-      ${cards}
+      ${cards.map((card) => buildCard(card)).join("\n")}
     </section>
 
     <footer class="footer">

@@ -378,6 +378,63 @@ export async function generateMermaidDiagrams(
   ]);
 }
 
+export async function generateMermaidHtmlArtifacts(
+  context: ExtensionContext<"1.0.0">,
+): Promise<void> {
+  const locations = await resolveExportLocations(context);
+
+  await runTsxScript(locations.projectRoot, "mermaid/generateMermaid.ts", [
+    "--profile",
+    "flow",
+    "--output",
+    "exports/session-map-flow.mmd",
+    "--file-suffix",
+    "flow",
+  ]);
+  await runTsxScript(locations.projectRoot, "mermaid/generateMermaidHtml.ts", [
+    "--profile",
+    "flow",
+    "--input",
+    "exports/session-map-flow.mmd",
+    "--output",
+    "exports/session-map-mermaid-flow.html",
+  ]);
+
+  await runTsxScript(locations.projectRoot, "mermaid/generateMermaid.ts", [
+    "--profile",
+    "git",
+    "--output",
+    "exports/session-map-git.mmd",
+    "--file-suffix",
+    "git",
+  ]);
+  await runTsxScript(locations.projectRoot, "mermaid/generateMermaidHtml.ts", [
+    "--profile",
+    "git",
+    "--input",
+    "exports/session-map-git.mmd",
+    "--output",
+    "exports/session-map-mermaid-git.html",
+  ]);
+
+  await runTsxScript(locations.projectRoot, "mermaid/generateMermaid.ts", [
+    "--profile",
+    "kanban",
+    "--output",
+    "exports/session-map-kanban.mmd",
+    "--file-suffix",
+    "kanban",
+  ]);
+  await runTsxScript(locations.projectRoot, "mermaid/generateMermaidHtml.ts", [
+    "--profile",
+    "kanban",
+    "--input",
+    "exports/session-map-kanban.mmd",
+    "--output",
+    "exports/session-map-mermaid-kanban.html",
+  ]);
+}
+
 export async function exportDiagnosticJson(
   context: ExtensionContext<"1.0.0">,
   diagnostic: SdkDiagnostic,

@@ -33,7 +33,9 @@
     "open:diagram:kanban": "open exports/session-map-kanban.svg",
     "open:diagram:session-grid": "open exports/session-map-session-grid.html",
     "open:diagrams": "open exports/session-map-diagrams.html",
+    "open:diagrams:http": "open http://localhost:5177/exports/session-map-diagrams.html",
     "preview": "npm run generate:html && open exports/session-map.html",
+    "serve:exports": "python3 -m http.server 5177",
     "generate:internal-viewer-preview": "tsx internal-viewer-preview/generate.ts",
     "preview:internal-viewer": "npm run generate:internal-viewer-preview && open internal-viewer-preview/index.html"
   },

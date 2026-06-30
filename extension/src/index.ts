@@ -11,6 +11,7 @@ import {
   exportRackDiagnosticJson,
   generateDiagramsIndex,
   generateHtml,
+  generateMermaidHtmlArtifacts,
   generateMermaidDiagrams,
   generateSessionGrid,
   resolveCapabilityMatrixExportPaths,
@@ -39,6 +40,7 @@ const ENABLE_DIAGNOSTIC_ACTIONS = process.env.ENABLE_DIAGNOSTIC_ACTIONS === "tru
 const ENABLE_CAPABILITY_MATRIX = process.env.ENABLE_CAPABILITY_MATRIX === "true";
 const ENABLE_OPEN_HTML = process.env.ENABLE_OPEN_HTML !== "false";
 const GENERATE_DIAGRAMS_ON_EXPORT = process.env.GENERATE_DIAGRAMS_ON_EXPORT === "true";
+const GENERATE_MERMAID_HTML_ON_EXPORT = process.env.GENERATE_MERMAID_HTML_ON_EXPORT !== "false";
 const ENABLE_INTERNAL_VIEWER_DEV_ACTION = process.env.ENABLE_INTERNAL_VIEWER_DEV_ACTION === "true";
 const OPEN_INTERNAL_MODAL_ON_EXPORT = process.env.OPEN_INTERNAL_MODAL_ON_EXPORT !== "false";
 const FALLBACK_TO_EXTERNAL_LAUNCHER = process.env.FALLBACK_TO_EXTERNAL_LAUNCHER !== "false";
@@ -212,6 +214,22 @@ async function exportSession(
           );
           console.log(`[Ableton Session Mapper] Generated Session Grid: ${sessionGridPath}`);
           console.log("[Ableton Session Mapper] Generate Session Grid completed");
+
+          if (GENERATE_MERMAID_HTML_ON_EXPORT) {
+            await update("Generating Mermaid HTML views…", 93);
+            if (signal.aborted) return;
+            console.log("[Ableton Session Mapper] Generate Mermaid HTML on export enabled");
+            console.log("[Ableton Session Mapper] Generate Mermaid flow started");
+            console.log("[Ableton Session Mapper] Generate Mermaid git started");
+            console.log("[Ableton Session Mapper] Generate Mermaid kanban started");
+            await generateMermaidHtmlArtifacts(context);
+            console.log("[Ableton Session Mapper] Generate Mermaid flow completed");
+            console.log("[Ableton Session Mapper] Generate Mermaid git completed");
+            console.log("[Ableton Session Mapper] Generate Mermaid kanban completed");
+            if (!GENERATE_DIAGRAMS_ON_EXPORT) {
+              console.log("[Ableton Session Mapper] Mermaid SVG/PNG render skipped on export");
+            }
+          }
 
           if (GENERATE_DIAGRAMS_ON_EXPORT) {
             await update("Generating Mermaid diagrams…", 94);
@@ -487,6 +505,7 @@ export function activate(activation: ActivationContext): void {
   );
   console.log(
     `[Ableton Session Mapper] Mermaid diagram generation on export ${GENERATE_DIAGRAMS_ON_EXPORT ? "enabled" : "disabled"}${GENERATE_DIAGRAMS_ON_EXPORT ? " via GENERATE_DIAGRAMS_ON_EXPORT=true" : " by default"}.`,
+    `[Ableton Session Mapper] Mermaid HTML generation on export ${GENERATE_MERMAID_HTML_ON_EXPORT ? "enabled" : "disabled"}${GENERATE_MERMAID_HTML_ON_EXPORT ? " by default" : " via GENERATE_MERMAID_HTML_ON_EXPORT=false"}.`,
   );
   console.log(
     `[Ableton Session Mapper] Internal Viewer dev action ${(ENABLE_DIAGNOSTIC_ACTIONS || ENABLE_INTERNAL_VIEWER_DEV_ACTION) ? "enabled" : "disabled"}${ENABLE_INTERNAL_VIEWER_DEV_ACTION ? " via ENABLE_INTERNAL_VIEWER_DEV_ACTION=true" : ""}.`,

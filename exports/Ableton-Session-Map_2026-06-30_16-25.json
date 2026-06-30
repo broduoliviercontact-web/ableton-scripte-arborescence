@@ -1,0 +1,3902 @@
+{
+  "version": "1.0.0",
+  "exportedAt": "2026-06-30T14:25:40.214Z",
+  "set": {
+    "name": null,
+    "tempo": 120
+  },
+  "scan": {
+    "mode": "ultra-safe",
+    "maxDeviceDepth": 0,
+    "scanInternalChainDevices": false,
+    "scanNestedRacks": false,
+    "partial": false,
+    "warnings": [],
+    "totalScannedDevices": 21,
+    "maxTotalScannedDevices": 500
+  },
+  "tracks": [
+    {
+      "id": "1364527316563618643517918699682369338370687099",
+      "index": 0,
+      "name": "1-606 Core Kit",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "1364875765707345684504505195280379469019218043",
+          "index": 0,
+          "name": "Producer_Pal",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "1365572663994799766477678186476399730316279931",
+              "index": 1,
+              "name": "live.button",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1365921113138526807464264682074409860964810875",
+              "index": 2,
+              "name": "live.text[2]",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1366269562282253848450851177672419991613341819",
+              "index": 3,
+              "name": "live.text[2]",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        },
+        {
+          "id": "1983372995822843435695534881748361370161643643",
+          "index": 1,
+          "name": "606 Core Kit",
+          "type": "DrumRack",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "1986857487260113845561399837728462676646953083",
+              "index": 9,
+              "name": "Macro 9",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1987205936403840886547986333326472807295484027",
+              "index": 10,
+              "name": "Macro 10",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1987554385547567927534572828924482937944014971",
+              "index": 11,
+              "name": "Macro 11",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1987902834691294968521159324522493068592545915",
+              "index": 12,
+              "name": "Macro 12",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1988251283835022009507745820120503199241076859",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1988599732978749050494332315718513329889607803",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1988948182122476091480918811316523460538138747",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1989296631266203132467505306914533591186669691",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 126.0078125,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1984069894110297517668707872944381631458705531",
+              "index": 1,
+              "name": "Low Gain  ",
+              "value": 63.35280227661133,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1984418343254024558655294368542391762107236475",
+              "index": 2,
+              "name": "Mid Gain",
+              "value": 63.5,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1984766792397751599641880864140401892755767419",
+              "index": 3,
+              "name": "High Gain",
+              "value": 63.35280227661133,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1985115241541478640628467359738412023404298363",
+              "index": 4,
+              "name": "Gain",
+              "value": 47.679195404052734,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 16,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": 37,
+                "deviceCount": 1
+              },
+              {
+                "index": 1,
+                "name": "Chain 02",
+                "note": null,
+                "receivingNote": 38,
+                "deviceCount": 1
+              },
+              {
+                "index": 2,
+                "name": "Chain 03",
+                "note": null,
+                "receivingNote": 39,
+                "deviceCount": 1
+              },
+              {
+                "index": 3,
+                "name": "Chain 04",
+                "note": null,
+                "receivingNote": 40,
+                "deviceCount": 1
+              },
+              {
+                "index": 4,
+                "name": "Chain 05",
+                "note": null,
+                "receivingNote": 44,
+                "deviceCount": 1
+              },
+              {
+                "index": 5,
+                "name": "Chain 06",
+                "note": null,
+                "receivingNote": 45,
+                "deviceCount": 1
+              },
+              {
+                "index": 6,
+                "name": "Chain 07",
+                "note": null,
+                "receivingNote": 48,
+                "deviceCount": 1
+              },
+              {
+                "index": 7,
+                "name": "Chain 08",
+                "note": null,
+                "receivingNote": 50,
+                "deviceCount": 1
+              },
+              {
+                "index": 8,
+                "name": "Chain 09",
+                "note": null,
+                "receivingNote": 42,
+                "deviceCount": 1
+              },
+              {
+                "index": 9,
+                "name": "Chain 10",
+                "note": null,
+                "receivingNote": 43,
+                "deviceCount": 1
+              },
+              {
+                "index": 10,
+                "name": "Chain 11",
+                "note": null,
+                "receivingNote": 46,
+                "deviceCount": 1
+              },
+              {
+                "index": 11,
+                "name": "Chain 12",
+                "note": null,
+                "receivingNote": 47,
+                "deviceCount": 1
+              },
+              {
+                "index": 12,
+                "name": "Chain 13",
+                "note": null,
+                "receivingNote": 36,
+                "deviceCount": 1
+              },
+              {
+                "index": 13,
+                "name": "Chain 14",
+                "note": null,
+                "receivingNote": 41,
+                "deviceCount": 1
+              },
+              {
+                "index": 14,
+                "name": "Chain 15",
+                "note": null,
+                "receivingNote": 49,
+                "deviceCount": 1
+              },
+              {
+                "index": 15,
+                "name": "Chain 16",
+                "note": null,
+                "receivingNote": 51,
+                "deviceCount": 1
+              }
+            ]
+          },
+          "padsSummary": {
+            "count": 16,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": 37,
+                "receivingNote": 37,
+                "deviceCount": 1
+              },
+              {
+                "index": 1,
+                "name": "Chain 02",
+                "note": 38,
+                "receivingNote": 38,
+                "deviceCount": 1
+              },
+              {
+                "index": 2,
+                "name": "Chain 03",
+                "note": 39,
+                "receivingNote": 39,
+                "deviceCount": 1
+              },
+              {
+                "index": 3,
+                "name": "Chain 04",
+                "note": 40,
+                "receivingNote": 40,
+                "deviceCount": 1
+              },
+              {
+                "index": 4,
+                "name": "Chain 05",
+                "note": 44,
+                "receivingNote": 44,
+                "deviceCount": 1
+              },
+              {
+                "index": 5,
+                "name": "Chain 06",
+                "note": 45,
+                "receivingNote": 45,
+                "deviceCount": 1
+              },
+              {
+                "index": 6,
+                "name": "Chain 07",
+                "note": 48,
+                "receivingNote": 48,
+                "deviceCount": 1
+              },
+              {
+                "index": 7,
+                "name": "Chain 08",
+                "note": 50,
+                "receivingNote": 50,
+                "deviceCount": 1
+              },
+              {
+                "index": 8,
+                "name": "Chain 09",
+                "note": 42,
+                "receivingNote": 42,
+                "deviceCount": 1
+              },
+              {
+                "index": 9,
+                "name": "Chain 10",
+                "note": 43,
+                "receivingNote": 43,
+                "deviceCount": 1
+              },
+              {
+                "index": 10,
+                "name": "Chain 11",
+                "note": 46,
+                "receivingNote": 46,
+                "deviceCount": 1
+              },
+              {
+                "index": 11,
+                "name": "Chain 12",
+                "note": 47,
+                "receivingNote": 47,
+                "deviceCount": 1
+              },
+              {
+                "index": 12,
+                "name": "Chain 13",
+                "note": 36,
+                "receivingNote": 36,
+                "deviceCount": 1
+              },
+              {
+                "index": 13,
+                "name": "Chain 14",
+                "note": 41,
+                "receivingNote": 41,
+                "deviceCount": 1
+              },
+              {
+                "index": 14,
+                "name": "Chain 15",
+                "note": 49,
+                "receivingNote": 49,
+                "deviceCount": 1
+              },
+              {
+                "index": 15,
+                "name": "Chain 16",
+                "note": 51,
+                "receivingNote": 51,
+                "deviceCount": 1
+              }
+            ]
+          }
+        }
+      ],
+      "sends": [
+        {
+          "id": "1369405604575797217330129638054511167450120315",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "1369754053719524258316716133652521298098651259",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "1422369874422307447291276968952051026026823803",
+      "index": 1,
+      "name": "2-808 Core Kit",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "1519587185522151882548909240796877476966957179",
+          "index": 0,
+          "name": "808 Core Kit",
+          "type": "DrumRack",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "1523071676959422292414774196776978783452266619",
+              "index": 9,
+              "name": "Macro 9",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1523420126103149333401360692374988914100797563",
+              "index": 10,
+              "name": "Macro 10",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1523768575246876374387947187972999044749328507",
+              "index": 11,
+              "name": "Macro 11",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1524117024390603415374533683571009175397859451",
+              "index": 12,
+              "name": "Macro 12",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1524465473534330456361120179169019306046390395",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1524813922678057497347706674767029436694921339",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1525162371821784538334293170365039567343452283",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1525510820965511579320879665963049697991983227",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 126.0078125,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1520284083809605964522082231992897738264019067",
+              "index": 1,
+              "name": "Low Gain  ",
+              "value": 63.35280227661133,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1520632532953333005508668727590907868912550011",
+              "index": 2,
+              "name": "Mid Gain",
+              "value": 63.5,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1520980982097060046495255223188917999561080955",
+              "index": 3,
+              "name": "High Gain",
+              "value": 63.35280227661133,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1521329431240787087481841718786928130209611899",
+              "index": 4,
+              "name": "Gain",
+              "value": 26.585193634033203,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 16,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": 36,
+                "deviceCount": 1
+              },
+              {
+                "index": 1,
+                "name": "Chain 02",
+                "note": null,
+                "receivingNote": 37,
+                "deviceCount": 1
+              },
+              {
+                "index": 2,
+                "name": "Chain 03",
+                "note": null,
+                "receivingNote": 38,
+                "deviceCount": 1
+              },
+              {
+                "index": 3,
+                "name": "Chain 04",
+                "note": null,
+                "receivingNote": 39,
+                "deviceCount": 1
+              },
+              {
+                "index": 4,
+                "name": "Chain 05",
+                "note": null,
+                "receivingNote": 40,
+                "deviceCount": 1
+              },
+              {
+                "index": 5,
+                "name": "Chain 06",
+                "note": null,
+                "receivingNote": 41,
+                "deviceCount": 1
+              },
+              {
+                "index": 6,
+                "name": "Chain 07",
+                "note": null,
+                "receivingNote": 42,
+                "deviceCount": 1
+              },
+              {
+                "index": 7,
+                "name": "Chain 08",
+                "note": null,
+                "receivingNote": 43,
+                "deviceCount": 1
+              },
+              {
+                "index": 8,
+                "name": "Chain 09",
+                "note": null,
+                "receivingNote": 48,
+                "deviceCount": 1
+              },
+              {
+                "index": 9,
+                "name": "Chain 10",
+                "note": null,
+                "receivingNote": 44,
+                "deviceCount": 1
+              },
+              {
+                "index": 10,
+                "name": "Chain 11",
+                "note": null,
+                "receivingNote": 46,
+                "deviceCount": 1
+              },
+              {
+                "index": 11,
+                "name": "Chain 12",
+                "note": null,
+                "receivingNote": 45,
+                "deviceCount": 1
+              },
+              {
+                "index": 12,
+                "name": "Chain 13",
+                "note": null,
+                "receivingNote": 47,
+                "deviceCount": 1
+              },
+              {
+                "index": 13,
+                "name": "Chain 14",
+                "note": null,
+                "receivingNote": 49,
+                "deviceCount": 1
+              },
+              {
+                "index": 14,
+                "name": "Chain 15",
+                "note": null,
+                "receivingNote": 50,
+                "deviceCount": 1
+              },
+              {
+                "index": 15,
+                "name": "Chain 16",
+                "note": null,
+                "receivingNote": 51,
+                "deviceCount": 1
+              }
+            ]
+          },
+          "padsSummary": {
+            "count": 16,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": 36,
+                "receivingNote": 36,
+                "deviceCount": 1
+              },
+              {
+                "index": 1,
+                "name": "Chain 02",
+                "note": 37,
+                "receivingNote": 37,
+                "deviceCount": 1
+              },
+              {
+                "index": 2,
+                "name": "Chain 03",
+                "note": 38,
+                "receivingNote": 38,
+                "deviceCount": 1
+              },
+              {
+                "index": 3,
+                "name": "Chain 04",
+                "note": 39,
+                "receivingNote": 39,
+                "deviceCount": 1
+              },
+              {
+                "index": 4,
+                "name": "Chain 05",
+                "note": 40,
+                "receivingNote": 40,
+                "deviceCount": 1
+              },
+              {
+                "index": 5,
+                "name": "Chain 06",
+                "note": 41,
+                "receivingNote": 41,
+                "deviceCount": 1
+              },
+              {
+                "index": 6,
+                "name": "Chain 07",
+                "note": 42,
+                "receivingNote": 42,
+                "deviceCount": 1
+              },
+              {
+                "index": 7,
+                "name": "Chain 08",
+                "note": 43,
+                "receivingNote": 43,
+                "deviceCount": 1
+              },
+              {
+                "index": 8,
+                "name": "Chain 09",
+                "note": 48,
+                "receivingNote": 48,
+                "deviceCount": 1
+              },
+              {
+                "index": 9,
+                "name": "Chain 10",
+                "note": 44,
+                "receivingNote": 44,
+                "deviceCount": 1
+              },
+              {
+                "index": 10,
+                "name": "Chain 11",
+                "note": 46,
+                "receivingNote": 46,
+                "deviceCount": 1
+              },
+              {
+                "index": 11,
+                "name": "Chain 12",
+                "note": 45,
+                "receivingNote": 45,
+                "deviceCount": 1
+              },
+              {
+                "index": 12,
+                "name": "Chain 13",
+                "note": 47,
+                "receivingNote": 47,
+                "deviceCount": 1
+              },
+              {
+                "index": 13,
+                "name": "Chain 14",
+                "note": 49,
+                "receivingNote": 49,
+                "deviceCount": 1
+              },
+              {
+                "index": 14,
+                "name": "Chain 15",
+                "note": 50,
+                "receivingNote": 50,
+                "deviceCount": 1
+              },
+              {
+                "index": 15,
+                "name": "Chain 16",
+                "note": 51,
+                "receivingNote": 51,
+                "deviceCount": 1
+              }
+            ]
+          }
+        }
+      ],
+      "sends": [
+        {
+          "id": "1425505916715850816170555429334142201863602299",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "1425854365859577857157141924932152332512133243",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "1442231475614748783526707218038628472993087611",
+      "index": 2,
+      "name": "3-808 Drifter",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "2471201797040700816916628718962544278104965243",
+          "index": 0,
+          "name": "808 Drifter",
+          "type": "RackDevice",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "2474686288477971226782493674942645584590274683",
+              "index": 9,
+              "name": "Macro 9",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2475034737621698267769080170540655715238805627",
+              "index": 10,
+              "name": "Macro 10",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2475383186765425308755666666138665845887336571",
+              "index": 11,
+              "name": "Macro 11",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2475731635909152349742253161736675976535867515",
+              "index": 12,
+              "name": "Macro 12",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2476080085052879390728839657334686107184398459",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2476428534196606431715426152932696237832929403",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2476776983340333472702012648530706368481460347",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2477125432484060513688599144128716499129991291",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2471898695328154898889801710158564539402027131",
+              "index": 1,
+              "name": "Filter Cutoff",
+              "value": 56,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2472247144471881939876388205756574670050558075",
+              "index": 2,
+              "name": "Filter Reso",
+              "value": 39,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2472595593615608980862974701354584800699089019",
+              "index": 3,
+              "name": "Sculpt",
+              "value": 127,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2472944042759336021849561196952594931347619963",
+              "index": 4,
+              "name": "Shape",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 1,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 8
+              }
+            ]
+          },
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "1445367517908292152405985678420719648829866107",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "1445715967052019193392572174018729779478397051",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "1463486873382098283708483449517246442553475195",
+      "index": 3,
+      "name": "4-A Soft Chord",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "2584447768751989137557239788315836738877522043",
+          "index": 0,
+          "name": "A Soft Chord",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "2585144667039443219530412779511857000174583931",
+              "index": 1,
+              "name": "Osc 1 On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "2585493116183170260516999275109867130823114875",
+              "index": 2,
+              "name": "Osc 1 Transp",
+              "value": 0,
+              "min": -24,
+              "max": 24,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2585841565326897301503585770707877261471645819",
+              "index": 3,
+              "name": "Osc 1 Detune",
+              "value": 0.5234375,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2586190014470624342490172266305887392120176763",
+              "index": 4,
+              "name": "Osc 1 Pos",
+              "value": 0.8151260614395142,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2586538463614351383476758761903897522768707707",
+              "index": 5,
+              "name": "Osc 1 Effect 1",
+              "value": 0.5,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2586886912758078424463345257501907653417238651",
+              "index": 6,
+              "name": "Osc 1 Effect 2",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2587235361901805465449931753099917784065769595",
+              "index": 7,
+              "name": "Osc 1 Pan",
+              "value": 0.2578125,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2587583811045532506436518248697927914714300539",
+              "index": 8,
+              "name": "Osc 1 Gain",
+              "value": 0.7647058963775635,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2587932260189259547423104744295938045362831483",
+              "index": 9,
+              "name": "Osc 2 On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "2588280709332986588409691239893948176011362427",
+              "index": 10,
+              "name": "Osc 2 Transp",
+              "value": 7,
+              "min": -24,
+              "max": 24,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2588629158476713629396277735491958306659893371",
+              "index": 11,
+              "name": "Osc 2 Detune",
+              "value": 0.5,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2588977607620440670382864231089968437308424315",
+              "index": 12,
+              "name": "Osc 2 Pos",
+              "value": 0.6890756487846375,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "1466622915675641652587761909899337618390253691",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "1466971364819368693574348405497347749038784635",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "1486136067724355947836605663387904934707986555",
+      "index": 4,
+      "name": "5-Audio",
+      "kind": "audio",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "2685149571289103982680737016140764496302964859",
+          "index": 0,
+          "name": "Basic Heavy Guitar Amp",
+          "type": "RackDevice",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "2688634062726374392546601972120865802788274299",
+              "index": 9,
+              "name": "Macro 9",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2688982511870101433533188467718875933436805243",
+              "index": 10,
+              "name": "Macro 10",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2689330961013828474519774963316886064085336187",
+              "index": 11,
+              "name": "Macro 11",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2689679410157555515506361458914896194733867131",
+              "index": 12,
+              "name": "Macro 12",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2690027859301282556492947954512906325382398075",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2690376308445009597479534450110916456030929019",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2690724757588736638466120945708926586679459963",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2691073206732463679452707441306936717327990907",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2685846469576558064653910007336784757600026747",
+              "index": 1,
+              "name": "Amp Gain",
+              "value": 59,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2686194918720285105640496502934794888248557691",
+              "index": 2,
+              "name": "Bass",
+              "value": 78,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2686543367864012146627082998532805018897088635",
+              "index": 3,
+              "name": "Middle",
+              "value": 77,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2686891817007739187613669494130815149545619579",
+              "index": 4,
+              "name": "Treble",
+              "value": 74,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 1,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 3
+              }
+            ]
+          },
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "1489272110017899316715884123769996110544765051",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "1489620559161626357702470619368006241193295995",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "1495892643748713095461027540132188592866852987",
+      "index": 5,
+      "name": "6-Audio",
+      "kind": "audio",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "2621383377987055482135408321704910587621802107",
+          "index": 0,
+          "name": "Live Mode",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "2622080276274509564108581312900930848918863995",
+              "index": 1,
+              "name": "Input Gain",
+              "value": 0.5,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2622777174561963646081754304096951110215925883",
+              "index": 3,
+              "name": "Scale Aware",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "2623125623705690687068340799694961240864456827",
+              "index": 4,
+              "name": "Glide Time",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2623474072849417728054927295292971371512987771",
+              "index": 5,
+              "name": "PB Range",
+              "value": 6,
+              "min": 0,
+              "max": 48,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2623822521993144769041513790890981502161518715",
+              "index": 6,
+              "name": "Attack Time",
+              "value": 0.1414213478565216,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2624170971136871810028100286488991632810049659",
+              "index": 7,
+              "name": "Release Time",
+              "value": 0.1587400734424591,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2624519420280598851014686782087001763458580603",
+              "index": 8,
+              "name": "Latch",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "2624867869424325892001273277685011894107111547",
+              "index": 9,
+              "name": "Pitch St.",
+              "value": 0,
+              "min": -12,
+              "max": 12,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2625216318568052932987859773283022024755642491",
+              "index": 10,
+              "name": "Pitch Scale Deg.",
+              "value": 0,
+              "min": -12,
+              "max": 12,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2625564767711779973974446268881032155404173435",
+              "index": 11,
+              "name": "Pitch Fine",
+              "value": 0.5,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2625913216855507014961032764479042286052704379",
+              "index": 12,
+              "name": "Formant Shift",
+              "value": 0.5,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2626261665999234055947619260077052416701235323",
+              "index": 13,
+              "name": "Formant Follow",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "1499028686042256464340306000514279768703631483",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "1499377135185983505326892496112289899352162427",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "1507043016347978407031795399268512773619843195",
+      "index": 6,
+      "name": "7-Audio",
+      "kind": "audio",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "2639502733460861613437906092801437381345411195",
+          "index": 0,
+          "name": "Bit-ter",
+          "type": "RackDevice",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "2642987224898132023303771048781538687830720635",
+              "index": 9,
+              "name": "Macro 9",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2643335674041859064290357544379548818479251579",
+              "index": 10,
+              "name": "Macro 10",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2643684123185586105276944039977558949127782523",
+              "index": 11,
+              "name": "Macro 11",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2644032572329313146263530535575569079776313467",
+              "index": 12,
+              "name": "Macro 12",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2644381021473040187250117031173579210424844411",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2644729470616767228236703526771589341073375355",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2645077919760494269223290022369599471721906299",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2645426368904221310209876517967609602370437243",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2640199631748315695411079083997457642642473083",
+              "index": 1,
+              "name": "Bit Depth",
+              "value": 41.1875,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2640548080892042736397665579595467773291004027",
+              "index": 2,
+              "name": "Down Sample",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2640896530035769777384252075193477903939534971",
+              "index": 3,
+              "name": "Reverb Level",
+              "value": 14.38671875,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2641244979179496818370838570791488034588065915",
+              "index": 4,
+              "name": "Stereo Width",
+              "value": 63.5,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 2,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 4
+              },
+              {
+                "index": 1,
+                "name": "Chain 02",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 0
+              }
+            ]
+          },
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "1510179058641521775911073859650603949456621691",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "1510527507785248816897660355248614080105152635",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "2719646036518081040352800080343767430507528315",
+      "index": 7,
+      "name": "8-Audio",
+      "kind": "audio",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "2719994485661808081339386575941777561156059259",
+          "index": 0,
+          "name": "Car Listening Environment",
+          "type": "RackDevice",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "2723478977099078491205251531921878867641368699",
+              "index": 9,
+              "name": "Macro 9",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2723827426242805532191838027519888998289899643",
+              "index": 10,
+              "name": "Macro 10",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2724175875386532573178424523117899128938430587",
+              "index": 11,
+              "name": "Macro 11",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2724524324530259614165011018715909259586961531",
+              "index": 12,
+              "name": "Macro 12",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2724872773673986655151597514313919390235492475",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2725221222817713696138184009911929520884023419",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2725569671961440737124770505509939651532554363",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2725918121105167778111357001107949782181085307",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2720691383949262163312559567137797822453121147",
+              "index": 1,
+              "name": "Low Band",
+              "value": 72,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2721039833092989204299146062735807953101652091",
+              "index": 2,
+              "name": "Mid-Hi Band",
+              "value": 87,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2721388282236716245285732558333818083750183035",
+              "index": 3,
+              "name": "Trim Amount",
+              "value": 35,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2721736731380443286272319053931828214398713979",
+              "index": 4,
+              "name": "Trnsnt",
+              "value": 73,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 1,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 6
+              }
+            ]
+          },
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "2793517254988213729509137147121915127996088443",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "2793865704131940770495723642719925258644619387",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "2813378856180655065744567396208492574962352251",
+      "index": 8,
+      "name": "9-Audio",
+      "kind": "audio",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "2813727305324382106731153891806502705610883195",
+          "index": 0,
+          "name": "Electric Piano Amp",
+          "type": "RackDevice",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "2817211796761652516597018847786604012096192635",
+              "index": 9,
+              "name": "Macro 9",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2817560245905379557583605343384614142744723579",
+              "index": 10,
+              "name": "Macro 10",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2817908695049106598570191838982624273393254523",
+              "index": 11,
+              "name": "Macro 11",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2818257144192833639556778334580634404041785467",
+              "index": 12,
+              "name": "Macro 12",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2818605593336560680543364830178644534690316411",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2818954042480287721529951325776654665338847355",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2819302491624014762516537821374664795987378299",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2819650940767741803503124316972674926635909243",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2814424203611836188704326883002522966907945083",
+              "index": 1,
+              "name": "Input Gain",
+              "value": 73,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2814772652755563229690913378600533097556476027",
+              "index": 2,
+              "name": "Bass",
+              "value": 64,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2815121101899290270677499874198543228205006971",
+              "index": 3,
+              "name": "Middle",
+              "value": 54,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2815469551043017311664086369796553358853537915",
+              "index": 4,
+              "name": "Drive",
+              "value": 33.82072448730469,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 1,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 4
+              }
+            ]
+          },
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "2841254787678818344671487044049303026844827771",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "2841603236822545385658073539647313157493358715",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "3229427133790742003728843140232588569308299387",
+      "index": 9,
+      "name": "10-DS Clap",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": true,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "3229775582934469044715429635830598699956830331",
+          "index": 0,
+          "name": "DS Clap",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "3230472481221923126688602627026618961253892219",
+              "index": 1,
+              "name": "Decay",
+              "value": 30,
+              "min": 0,
+              "max": 100,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3230820930365650167675189122624629091902423163",
+              "index": 2,
+              "name": "Sloppy",
+              "value": 24,
+              "min": 0,
+              "max": 100,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3231169379509377208661775618222639222550954107",
+              "index": 3,
+              "name": "Spread",
+              "value": 76,
+              "min": 0,
+              "max": 100,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3231517828653104249648362113820649353199485051",
+              "index": 4,
+              "name": "Tail",
+              "value": 65,
+              "min": 0,
+              "max": 100,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3231866277796831290634948609418659483848015995",
+              "index": 5,
+              "name": "Tone",
+              "value": 32,
+              "min": 0,
+              "max": 100,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3232214726940558331621535105016669614496546939",
+              "index": 6,
+              "name": "Tune",
+              "value": 42.42640686035156,
+              "min": 0,
+              "max": 100,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "3236047667521555782473986556594781051630387323",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "3236396116665282823460573052192791182278918267",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "3267408090456989471266771160415692809998172283",
+      "index": 10,
+      "name": "11-MIDI",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "3267756539600716512253357656013702940646703227",
+          "index": 0,
+          "name": "MIDI Monitor",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "3271241031037986922119222611993804247132012667",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "3271589480181713963105809107591814377780543611",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "3292147979661609381314412347874412086043869307",
+      "index": 11,
+      "name": "12-MIDI",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "3292496428805336422300998843472422216692400251",
+          "index": 0,
+          "name": "Max MIDI Effect",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "3295980920242606832166863799452523523177709691",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "3296329369386333873153450295050533653826240635",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "3318281665441137455308399517725171884683690107",
+      "index": 12,
+      "name": "13-MIDI",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "3318630114584864496294986013323182015332221051",
+          "index": 0,
+          "name": "STING!64",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "3319327012872318578268159004519202276629282939",
+              "index": 1,
+              "name": "accent",
+              "value": 80,
+              "min": 1,
+              "max": 100,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3319675462016045619254745500117212407277813883",
+              "index": 2,
+              "name": "density",
+              "value": 32,
+              "min": 1,
+              "max": 64,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3320023911159772660241331995715222537926344827",
+              "index": 3,
+              "name": "length",
+              "value": 16,
+              "min": 0,
+              "max": 64,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3320372360303499701227918491313232668574875771",
+              "index": 4,
+              "name": "randomize",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "3320720809447226742214504986911242799223406715",
+              "index": 5,
+              "name": "swing",
+              "value": 0,
+              "min": 0,
+              "max": 100,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3321069258590953783201091482509252929871937659",
+              "index": 6,
+              "name": "transpose",
+              "value": 0,
+              "min": -6,
+              "max": 6,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "3324205300884497152080369942891344105708716155",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "3324553750028224193066956438489354236357247099",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "3347899842657935939168251643556032989808820347",
+      "index": 13,
+      "name": "14-MIDI",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "3348248291801662980154838139154043120457351291",
+          "index": 0,
+          "name": "MPE Control",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "3348945190089117062128011130350063381754413179",
+              "index": 1,
+              "name": "Note PB On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "3349293639232844103114597625948073512402944123",
+              "index": 2,
+              "name": "Press Default",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3349642088376571144101184121546083643051475067",
+              "index": 3,
+              "name": "Press On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "3349990537520298185087770617144093773700006011",
+              "index": 4,
+              "name": "Slide Default",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3350338986664025226074357112742103904348536955",
+              "index": 5,
+              "name": "Slide On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "3350687435807752267060943608340114034997067899",
+              "index": 6,
+              "name": "Pitch 1",
+              "value": 0,
+              "min": -1,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3351035884951479308047530103938124165645598843",
+              "index": 7,
+              "name": "Pitch 2",
+              "value": 0,
+              "min": -1,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3351384334095206349034116599536134296294129787",
+              "index": 8,
+              "name": "Pitch Curve",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "3351732783238933390020703095134144426942660731",
+              "index": 9,
+              "name": "Pitch Link",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "3352081232382660431007289590732154557591191675",
+              "index": 10,
+              "name": "Pitch Max",
+              "value": 127,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3352429681526387471993876086330164688239722619",
+              "index": 11,
+              "name": "Pitch X",
+              "value": 64,
+              "min": 1,
+              "max": 126,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "3352778130670114512980462581928174818888253563",
+              "index": 12,
+              "name": "Pitch Y",
+              "value": 64,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "3363231604981925742578057449868478738344181883",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "3363580054125652783564643945466488868992712827",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    }
+  ],
+  "returnTracks": [
+    {
+      "id": "1384737366899787020739935444366956915985481851",
+      "index": 0,
+      "name": "A-Reverb | EQ Three Rack",
+      "kind": "return",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "1385085816043514061726521939964967046634012795",
+          "index": 0,
+          "name": "Reverb",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "1385782714330968143699694931160987307931074683",
+              "index": 1,
+              "name": "Predelay",
+              "value": 0.2589765787124634,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1386131163474695184686281426758997438579605627",
+              "index": 2,
+              "name": "In Lo Cut On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1386479612618422225672867922357007569228136571",
+              "index": 3,
+              "name": "In Hi Cut On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1386828061762149266659454417955017699876667515",
+              "index": 4,
+              "name": "Input Freq",
+              "value": 0.47729402780532837,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1387176510905876307646040913553027830525198459",
+              "index": 5,
+              "name": "Input Width",
+              "value": 0.6294117569923401,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1387524960049603348632627409151037961173729403",
+              "index": 6,
+              "name": "ER Spin On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1387873409193330389619213904749048091822260347",
+              "index": 7,
+              "name": "ER Spin Rate",
+              "value": 0.4296875298023224,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1388221858337057430605800400347058222470791291",
+              "index": 8,
+              "name": "ER Spin Amount",
+              "value": 0.12234228849411011,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1388570307480784471592386895945068353119322235",
+              "index": 9,
+              "name": "ER Shape",
+              "value": 0.5,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1388918756624511512578973391543078483767853179",
+              "index": 10,
+              "name": "Diff. Hi On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1389267205768238553565559887141088614416384123",
+              "index": 11,
+              "name": "Diff. Hi Type",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1389615654911965594552146382739098745064915067",
+              "index": 12,
+              "name": "Diff. Hi Freq",
+              "value": 0.8102341890335083,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        },
+        {
+          "id": "2858677244865170394000811823949809559271374971",
+          "index": 1,
+          "name": "EQ Three Rack",
+          "type": "RackDevice",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "2860419490583805598933744301939860212514029691",
+              "index": 4,
+              "name": "Macro 4",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2862161736302440803866676779929910865756684411",
+              "index": 9,
+              "name": "Macro 9",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2862510185446167844853263275527920996405215355",
+              "index": 10,
+              "name": "Macro 10",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2862858634589894885839849771125931127053746299",
+              "index": 11,
+              "name": "Macro 11",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2863207083733621926826436266723941257702277243",
+              "index": 12,
+              "name": "Macro 12",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2863555532877348967813022762321951388350808187",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2863903982021076008799609257919961518999339131",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2864252431164803049786195753517971649647870075",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2864600880308530090772782249115981780296401019",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "2859374143152624475973984815145829820568436859",
+              "index": 1,
+              "name": "Low",
+              "value": 64,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2859722592296351516960571310743839951216967803",
+              "index": 2,
+              "name": "Middle",
+              "value": 64,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "2860071041440078557947157806341850081865498747",
+              "index": 3,
+              "name": "High",
+              "value": 64,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 1,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 3
+              }
+            ]
+          },
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "1396933086930233455270462790297311488684064891",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "1397281536073960496257049285895321619332595835",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "none",
+        "audioFrom": null,
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": ""
+      }
+    },
+    {
+      "id": "1400766027511230906122914241875422925817905275",
+      "index": 1,
+      "name": "B-Delay",
+      "kind": "return",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "1401114476654957947109500737473433056466436219",
+          "index": 0,
+          "name": "Delay",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "1401811374942412029082673728669453317763498107",
+              "index": 1,
+              "name": "Smoothing",
+              "value": 0,
+              "min": 0,
+              "max": 2,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1402159824086139070069260224267463448412029051",
+              "index": 2,
+              "name": "Link",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1402508273229866111055846719865473579060559995",
+              "index": 3,
+              "name": "Ping Pong",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1402856722373593152042433215463483709709090939",
+              "index": 4,
+              "name": "L Sync",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1403205171517320193029019711061493840357621883",
+              "index": 5,
+              "name": "R Sync",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1403553620661047234015606206659503971006152827",
+              "index": 6,
+              "name": "L Time",
+              "value": 0.3350270390510559,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1403902069804774275002192702257514101654683771",
+              "index": 7,
+              "name": "R Time",
+              "value": 0.33752983808517456,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1404250518948501315988779197855524232303214715",
+              "index": 8,
+              "name": "L 16th",
+              "value": 2,
+              "min": 0,
+              "max": 7,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1404598968092228356975365693453534362951745659",
+              "index": 9,
+              "name": "R 16th",
+              "value": 2,
+              "min": 0,
+              "max": 7,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "1404947417235955397961952189051544493600276603",
+              "index": 10,
+              "name": "L Offset",
+              "value": 0.5,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1405295866379682438948538684649554624248807547",
+              "index": 11,
+              "name": "R Offset",
+              "value": 0.5,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1405644315523409479935125180247564754897338491",
+              "index": 12,
+              "name": "Feedback",
+              "value": 0.2210526317358017,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "1410871052679315094733922614217716714625302651",
+          "index": 0,
+          "name": "A-Reverb | EQ Three Rack",
+          "value": 0
+        },
+        {
+          "id": "1411219501823042135720509109815726845273833595",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ],
+      "routing": {
+        "source": "manual",
+        "audioFrom": "Sends",
+        "audioTo": null,
+        "midiFrom": null,
+        "midiTo": null,
+        "monitor": null,
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      }
+    }
+  ],
+  "masterTrack": {
+    "id": "3514565731718671557388207445645589043216507",
+    "index": 0,
+    "name": "Main",
+    "kind": "master",
+    "color": null,
+    "isMuted": false,
+    "isSoloed": false,
+    "isArmed": false,
+    "groupTrackId": null,
+    "input": {
+      "type": null,
+      "channel": null
+    },
+    "output": {
+      "type": null,
+      "channel": null
+    },
+    "devices": [
+      {
+        "id": "3065307587095305699046603713569817033850224763",
+        "index": 0,
+        "name": "Filter Phaser",
+        "type": "RackDevice",
+        "enabled": true,
+        "parameters": [
+          {
+            "id": "3068792078532576108912468669549918340335534203",
+            "index": 9,
+            "name": "Macro 9",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3069140527676303149899055165147928470984065147",
+            "index": 10,
+            "name": "Macro 10",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3069488976820030190885641660745938601632596091",
+            "index": 11,
+            "name": "Macro 11",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3069837425963757231872228156343948732281127035",
+            "index": 12,
+            "name": "Macro 12",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3070185875107484272858814651941958862929657979",
+            "index": 13,
+            "name": "Macro 13",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3070534324251211313845401147539968993578188923",
+            "index": 14,
+            "name": "Macro 14",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3070882773394938354831987643137979124226719867",
+            "index": 15,
+            "name": "Macro 15",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3071231222538665395818574138735989254875250811",
+            "index": 16,
+            "name": "Macro 16",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3066004485382759781019776704765837295147286651",
+            "index": 1,
+            "name": "LFO Rate 1",
+            "value": 37,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          },
+          {
+            "id": "3066352934526486822006363200363847425795817595",
+            "index": 2,
+            "name": "LFO Rate 2",
+            "value": 52,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          },
+          {
+            "id": "3066701383670213862992949695961857556444348539",
+            "index": 3,
+            "name": "LFO Rate 3",
+            "value": 54,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          },
+          {
+            "id": "3067049832813940903979536191559867687092879483",
+            "index": 4,
+            "name": "LFO Phase",
+            "value": 31,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          }
+        ],
+        "chains": [],
+        "pads": [],
+        "scanStatus": "summary",
+        "scanWarning": null,
+        "chainsSummary": {
+          "count": 2,
+          "items": [
+            {
+              "index": 0,
+              "name": "Chain 01",
+              "note": null,
+              "receivingNote": null,
+              "deviceCount": 2
+            },
+            {
+              "index": 1,
+              "name": "Chain 02",
+              "note": null,
+              "receivingNote": null,
+              "deviceCount": 0
+            }
+          ]
+        },
+        "padsSummary": null
+      },
+      {
+        "id": "3113045119785910314208953610497204932698964091",
+        "index": 1,
+        "name": "Master Bright & Edgy",
+        "type": "RackDevice",
+        "enabled": true,
+        "parameters": [
+          {
+            "id": "3116529611223180724074818566477306239184273531",
+            "index": 9,
+            "name": "Macro 9",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3116878060366907765061405062075316369832804475",
+            "index": 10,
+            "name": "Macro 10",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3117226509510634806047991557673326500481335419",
+            "index": 11,
+            "name": "Macro 11",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3117574958654361847034578053271336631129866363",
+            "index": 12,
+            "name": "Macro 12",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3117923407798088888021164548869346761778397307",
+            "index": 13,
+            "name": "Macro 13",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3118271856941815929007751044467356892426928251",
+            "index": 14,
+            "name": "Macro 14",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3118620306085542969994337540065367023075459195",
+            "index": 15,
+            "name": "Macro 15",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3118968755229270010980924035663377153723990139",
+            "index": 16,
+            "name": "Macro 16",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3113742018073364396182126601693225193996025979",
+            "index": 1,
+            "name": "Bass Gain",
+            "value": 67.73333740234375,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          },
+          {
+            "id": "3114090467217091437168713097291235324644556923",
+            "index": 2,
+            "name": "High Gain",
+            "value": 64.87340545654297,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          },
+          {
+            "id": "3114438916360818478155299592889245455293087867",
+            "index": 3,
+            "name": "Ovrdrive Drive",
+            "value": 64.5,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          },
+          {
+            "id": "3114787365504545519141886088487255585941618811",
+            "index": 4,
+            "name": "Ovrdrive Tone",
+            "value": 76.20000457763672,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          }
+        ],
+        "chains": [],
+        "pads": [],
+        "scanStatus": "summary",
+        "scanWarning": null,
+        "chainsSummary": {
+          "count": 1,
+          "items": [
+            {
+              "index": 0,
+              "name": "Chain 01",
+              "note": null,
+              "receivingNote": null,
+              "deviceCount": 4
+            }
+          ]
+        },
+        "padsSummary": null
+      },
+      {
+        "id": "3171236126788326158968898375364896751003631739",
+        "index": 2,
+        "name": "Master Bright & Edgy",
+        "type": "RackDevice",
+        "enabled": true,
+        "parameters": [
+          {
+            "id": "3174720618225596568834763331344998057488941179",
+            "index": 9,
+            "name": "Macro 9",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3175069067369323609821349826943008188137472123",
+            "index": 10,
+            "name": "Macro 10",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3175417516513050650807936322541018318786003067",
+            "index": 11,
+            "name": "Macro 11",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3175765965656777691794522818139028449434534011",
+            "index": 12,
+            "name": "Macro 12",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3176114414800504732781109313737038580083064955",
+            "index": 13,
+            "name": "Macro 13",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3176462863944231773767695809335048710731595899",
+            "index": 14,
+            "name": "Macro 14",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3176811313087958814754282304933058841380126843",
+            "index": 15,
+            "name": "Macro 15",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3177159762231685855740868800531068972028657787",
+            "index": 16,
+            "name": "Macro 16",
+            "value": 0,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": true
+          },
+          {
+            "id": "3171933025075780240942071366560917012300693627",
+            "index": 1,
+            "name": "Bass Gain",
+            "value": 67.73333740234375,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          },
+          {
+            "id": "3172281474219507281928657862158927142949224571",
+            "index": 2,
+            "name": "High Gain",
+            "value": 64.87340545654297,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          },
+          {
+            "id": "3172629923363234322915244357756937273597755515",
+            "index": 3,
+            "name": "Ovrdrive Drive",
+            "value": 64.5,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          },
+          {
+            "id": "3172978372506961363901830853354947404246286459",
+            "index": 4,
+            "name": "Ovrdrive Tone",
+            "value": 76.20000457763672,
+            "min": 0,
+            "max": 127,
+            "isQuantized": false,
+            "isMacro": false
+          }
+        ],
+        "chains": [],
+        "pads": [],
+        "scanStatus": "summary",
+        "scanWarning": null,
+        "chainsSummary": {
+          "count": 1,
+          "items": [
+            {
+              "index": 0,
+              "name": "Chain 01",
+              "note": null,
+              "receivingNote": null,
+              "deviceCount": 4
+            }
+          ]
+        },
+        "padsSummary": null
+      }
+    ],
+    "sends": [],
+    "routing": {
+      "source": "manual",
+      "audioFrom": "Tracks + Returns",
+      "audioTo": null,
+      "midiFrom": null,
+      "midiTo": null,
+      "monitor": null,
+      "group": null,
+      "notes": "Fill manually from Ableton I/O"
+    }
+  },
+  "manualRouting": {
+    "status": "loaded",
+    "stale": true,
+    "setMatch": false,
+    "sourcePath": "/Users/jeanclaude/Documents/ableton scripte arborescence/exports/routing-overrides.json",
+    "sourceModifiedAt": "2026-06-30T12:08:07.267Z",
+    "sessionMapModifiedAt": "2026-06-30T14:22:35.922Z",
+    "currentTrackCount": 17,
+    "overrideTrackCount": 9,
+    "missingFromCurrent": [
+      "1 Drift",
+      "2 Drift",
+      "3-Group",
+      "4-Beastly Kit",
+      "5-909 Core Kit",
+      "6-Basic Fine Line Bass",
+      "A-Reverb"
+    ],
+    "missingFromOverrides": [
+      "1-606 Core Kit",
+      "2-808 Core Kit",
+      "3-808 Drifter",
+      "4-A Soft Chord",
+      "5-Audio",
+      "6-Audio",
+      "7-Audio",
+      "8-Audio",
+      "9-Audio",
+      "10-DS Clap",
+      "11-MIDI",
+      "12-MIDI",
+      "13-MIDI",
+      "14-MIDI",
+      "A-Reverb | EQ Three Rack"
+    ],
+    "warnings": [
+      "Manual routing override references missing track: 1 Drift",
+      "Manual routing override references missing track: 2 Drift",
+      "Manual routing override references missing track: 3-Group",
+      "Manual routing override references missing track: 4-Beastly Kit",
+      "Manual routing override references missing track: 5-909 Core Kit",
+      "Manual routing override references missing track: 6-Basic Fine Line Bass",
+      "Manual routing override references missing track: A-Reverb",
+      "Current Set has tracks missing from routing-overrides.json: 1-606 Core Kit, 2-808 Core Kit, 3-808 Drifter, 4-A Soft Chord, 5-Audio, 6-Audio, 7-Audio, 8-Audio, 9-Audio, 10-DS Clap, 11-MIDI, 12-MIDI, 13-MIDI, 14-MIDI, A-Reverb | EQ Three Rack",
+      "routing-overrides.json is older than session-map.json. Run npm run refresh:routing-overrides."
+    ],
+    "tracks": {
+      "1 Drift": {
+        "kind": "audio",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "2 Drift": {
+        "kind": "audio",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "3-Group": {
+        "kind": "group",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "4-Beastly Kit": {
+        "kind": "midi",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "5-909 Core Kit": {
+        "kind": "midi",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "6-Basic Fine Line Bass": {
+        "kind": "midi",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "A-Reverb": {
+        "kind": "return",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": "Sends",
+        "audioTo": null,
+        "monitor": null,
+        "sends": {},
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "B-Delay": {
+        "kind": "return",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": "Sends",
+        "audioTo": null,
+        "monitor": null,
+        "sends": {},
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "Main": {
+        "kind": "master",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": "Tracks + Returns",
+        "audioTo": null,
+        "monitor": null,
+        "sends": {},
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      }
+    },
+    "sidechains": [],
+    "connections": []
+  }
+}

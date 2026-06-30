@@ -124,6 +124,9 @@ légère :
 - la v1.2.3 affine la classification visuelle des devices : meilleure
   reconnaissance des Max for Live, des MIDI FX natifs, des instruments drum /
   synth et possibilité d’overrides manuels pour les patches custom.
+- la v1.2.4 masque les marqueurs `inferred` dans la modale intégrée pour
+  garder l’UI lisible ; les classifications `manual` et `unknown` restent
+  visibles.
 
 En usage normal, le menu **Extensions** n'affiche qu'une seule entrée :
 
@@ -158,10 +161,13 @@ npm run export:diagram:git
 npm run export:diagram:kanban
 npm run export:diagram:all
 npm run open:diagrams
+npm run open:diagrams:http
+npm run serve:exports
 ```
 
 `npm run preview` régénère puis ouvre le rapport dans le navigateur par défaut.
 `npm run open:diagrams` ouvre directement le launcher visuel latest.
+`npm run serve:exports` sert le projet sur `http://localhost:5177`.
 
 ## Available commands
 
@@ -184,6 +190,8 @@ npm run open:diagrams
 npm run open:diagram:flow
 npm run open:diagram:git
 npm run open:diagram:kanban
+npm run open:diagrams:http
+npm run serve:exports
 ```
 
 La modale intégrée est activée par défaut. Pour revenir au launcher externe
@@ -218,8 +226,66 @@ GENERATE_DIAGRAMS_ON_EXPORT=true npm start
 ```
 
 Si `GENERATE_DIAGRAMS_ON_EXPORT` reste absent ou différent de `true`, le
-launcher affiche les derniers Flow / Git / Kanban déjà générés s'ils existent,
-ou un état `Not generated yet` avec la commande npm correspondante.
+launcher continue à marquer les artefacts Mermaid :
+
+- `Current`
+- `Outdated`
+- `Missing`
+
+Par défaut :
+
+- `GENERATE_MERMAID_HTML_ON_EXPORT=true`
+- les vues Mermaid **HTML + .mmd** sont régénérées à l’export ;
+- les rendus **SVG/PNG** restent manuels et optionnels.
+
+Pour désactiver la génération Mermaid HTML légère sur export :
+
+```bash
+GENERATE_MERMAID_HTML_ON_EXPORT=false npm start
+```
+
+### Opening Mermaid HTML safely
+
+Les HTML Mermaid sont maintenant générés en mode standalone pour mieux
+fonctionner en `file://`.
+
+Si un navigateur bloque encore l’exécution locale :
+
+1. lancer `npm run serve:exports`
+2. ouvrir `http://localhost:5177/exports/session-map-diagrams.html`
+
+URLs utiles :
+
+- [http://localhost:5177/exports/session-map-diagrams.html](http://localhost:5177/exports/session-map-diagrams.html)
+- [http://localhost:5177/exports/session-map-mermaid-flow.html](http://localhost:5177/exports/session-map-mermaid-flow.html)
+- [http://localhost:5177/exports/session-map-mermaid-git.html](http://localhost:5177/exports/session-map-mermaid-git.html)
+- [http://localhost:5177/exports/session-map-mermaid-kanban.html](http://localhost:5177/exports/session-map-mermaid-kanban.html)
+
+Chrome peut encore restreindre certains cas en `file://` selon sa politique
+locale. Le serveur HTTP local reste le fallback recommandé.
+
+### Difference between diagram renders and SDK Capability Matrix
+
+Le launcher distingue maintenant :
+
+- les **diagram renders** du Set courant ;
+- la **SDK Capability Matrix**, qui est un diagnostic séparé.
+
+`npm run export:diagram:all` remet à jour :
+
+- Flow
+- Git / Metro
+- Kanban
+- Session Grid
+- les rendus SVG/PNG associés
+
+Mais cette commande ne met **pas** à jour la Capability Matrix.
+
+Pour actualiser la SDK Capability Matrix :
+
+1. `cd extension`
+2. `ENABLE_CAPABILITY_MATRIX=true npm start`
+3. dans Live : **Generate SDK Capability Matrix**
 
 ### Fichiers générés
 
@@ -413,7 +479,9 @@ Ce launcher visuel reste entièrement externe au navigateur :
 - une seule action visible dans Live ;
 - export JSON stable inchangé ;
 - report HTML et Session Grid générés à chaque export ;
-- Mermaid Flow / Git / Kanban générés seulement si demandé.
+- Mermaid Flow / Git / Kanban HTML + .mmd régénérés à l’export par défaut ;
+- Mermaid SVG / PNG laissés en rendu manuel ;
+- statuts `Current / Outdated / Missing` visibles pour chaque fichier suivi.
 
 Commandes utiles :
 
@@ -428,8 +496,10 @@ npm run export:all
 Workflow recommandé :
 
 1. Dans Ableton : **Export Session Map**
-2. Pour générer tous les diagrammes : `npm run export:diagram:all`
-3. Pour rouvrir le launcher : `npm run open:diagrams`
+2. La modale intégrée s’ouvre
+3. Le launcher externe permet d’ouvrir les vues HTML à jour
+4. Pour remettre à jour tous les SVG/PNG : `npm run export:diagram:all`
+5. Pour rouvrir le launcher : `npm run open:diagrams`
 
 ## Known limitations
 
@@ -505,6 +575,8 @@ ne modifie pas le scan stable ni `session-map.json`.
   la position du device ;
 - pour les patches custom, un override manuel exact par nom est possible via
   `exports/device-classification-overrides.json`.
+- la modale intégrée masque par défaut les marqueurs `inferred` pour éviter de
+  polluer l’interface ; les cas `manual` et `unknown` restent visibles.
 
 Commande utile :
 

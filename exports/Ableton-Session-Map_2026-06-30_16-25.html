@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>Ableton Session Mapper — Untitled Set</title>
+  <style>:root {
+  --ink: #090a0a;
+  --panel: #111313;
+  --panel-raised: #171919;
+  --line: #303333;
+  --line-soft: #222525;
+  --paper: #e8e5dc;
+  --muted: #918f87;
+  --orange: #ff764d;
+  --orange-hot: #ff9a63;
+  --green: #86bd68;
+  --rack: #f0c96c;
+  --drum: #f08a53;
+  --chain: #82b9ff;
+  --font-display: "Avenir Next Condensed", "DIN Condensed", sans-serif;
+  --font-mono: "SFMono-Regular", Menlo, Monaco, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--ink); color-scheme: dark; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--paper);
+  background:
+    radial-gradient(circle at 78% -10%, rgba(255, 118, 77, .09), transparent 34rem),
+    linear-gradient(180deg, rgba(255,255,255,.02), transparent 35rem),
+    var(--ink);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+}
+
+.ambient-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .19;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, #000, transparent 70%);
+}
+
+.masthead, main, footer { position: relative; z-index: 1; }
+
+.masthead {
+  min-height: 230px;
+  padding: 42px clamp(24px, 5vw, 80px) 35px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand-block { display: flex; align-items: center; gap: 25px; }
+
+.live-mark {
+  width: 64px;
+  height: 64px;
+  padding: 12px 10px;
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  border: 1px solid var(--orange);
+}
+
+.live-mark i { width: 7px; background: var(--orange); animation: rise .7s both; }
+.live-mark i:nth-child(1) { height: 48%; }
+.live-mark i:nth-child(2) { height: 100%; animation-delay: 80ms; }
+.live-mark i:nth-child(3) { height: 72%; animation-delay: 160ms; }
+.live-mark i:nth-child(4) { height: 30%; animation-delay: 240ms; }
+
+@keyframes rise { from { height: 0; opacity: 0; } }
+
+.eyebrow, .export-time {
+  margin: 0 0 9px;
+  color: var(--orange);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  max-width: 1000px;
+  font-family: var(--font-display);
+  font-size: clamp(46px, 7vw, 94px);
+  font-weight: 700;
+  letter-spacing: -.045em;
+  line-height: .86;
+  text-transform: uppercase;
+}
+
+.export-time { color: var(--muted); white-space: nowrap; }
+
+.viewer-actions {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: 48px;
+  padding: 8px clamp(24px, 5vw, 80px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(9, 10, 10, .92);
+  backdrop-filter: blur(16px);
+}
+
+.viewer-actions > span {
+  margin-right: auto;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: .18em;
+}
+
+.viewer-actions button {
+  min-height: 30px;
+  padding: 0 13px;
+  color: var(--ink);
+  border: 1px solid var(--orange);
+  background: var(--orange);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  cursor: pointer;
+  transition: background .18s, color .18s, border-color .18s;
+}
+
+.viewer-actions button:hover { background: var(--orange-hot); }
+.viewer-actions .close-action { color: var(--muted); border-color: var(--line); background: transparent; }
+.viewer-actions .close-action:hover { color: var(--paper); border-color: var(--muted); }
+.viewer-actions .debug-action { color: var(--orange); border-color: var(--orange); background: transparent; }
+.viewer-actions .debug-action:hover { color: var(--ink); background: var(--orange); }
+
+.view-mode-switch {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.02);
+}
+
+.view-mode-switch button {
+  min-width: 72px;
+  color: var(--muted);
+  border-color: transparent;
+  background: transparent;
+}
+
+.view-mode-switch button[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: var(--orange);
+  background: var(--orange);
+}
+
+main { padding: 0 clamp(24px, 5vw, 80px) 80px; }
+
+.telemetry {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-left: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.telemetry article {
+  min-height: 118px;
+  padding: 23px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--line);
+  background: rgba(17, 19, 19, .72);
+}
+
+.metric-value {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.metric-label, .detail-label {
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+.session-sections { margin-top: 70px; }
+.track-section + .track-section { margin-top: 68px; }
+
+.section-heading {
+  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 15px;
+}
+
+.section-heading > span {
+  padding: 5px 7px;
+  color: var(--ink);
+  background: var(--orange);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 25px;
+  letter-spacing: .025em;
+  text-transform: uppercase;
+}
+
+.section-heading i { height: 1px; background: var(--line); }
+.section-heading b { color: var(--muted); font-size: 11px; }
+.track-stack { display: grid; gap: 10px; }
+
+.track-divider {
+  margin: 14px 0 2px;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.track-divider span {
+  padding: 4px 7px;
+  color: var(--orange);
+  border: 1px solid rgba(255, 118, 77, .35);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.track-divider strong {
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.track-divider i {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 118, 77, .3), var(--line));
+}
+
+.track-card {
+  --kind-accent: var(--orange);
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: rgba(17, 19, 19, .94);
+  animation: card-in .45s cubic-bezier(.2,.8,.2,1) both;
+  animation-delay: var(--delay);
+  transition: border-color .2s, transform .2s;
+}
+
+.track-card:hover { border-color: #595d5c; transform: translateX(3px); }
+.kind-midi { --kind-accent: #b7d86f; }
+.kind-audio { --kind-accent: #68b8c8; }
+.kind-return { --kind-accent: #c99ae8; }
+.kind-master { --kind-accent: var(--orange); }
+.kind-group { --kind-accent: #e9cf68; }
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+.track-rail {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border-right: 1px solid var(--line);
+  background: var(--panel-raised);
+}
+
+.track-rail span {
+  width: 100%;
+  padding: 13px 0;
+  color: var(--kind-accent);
+  border-top: 3px solid var(--kind-accent);
+  font-size: 10px;
+  text-align: center;
+}
+
+.track-body { min-width: 0; padding: 17px 20px 20px; }
+.track-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.track-header > div:first-child { display: flex; align-items: baseline; gap: 13px; min-width: 0; }
+
+.track-header h3 {
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 27px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kind-tag {
+  color: var(--kind-accent);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.track-state { display: flex; gap: 5px; }
+.state-led {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  color: #626564;
+  border: 1px solid var(--line);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.state-led.is-active { color: var(--ink); border-color: var(--orange); background: var(--orange); }
+
+.routing-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line-soft);
+}
+
+.routing-grid div { min-width: 0; padding: 9px 12px; display: flex; gap: 12px; }
+.routing-grid div + div { border-left: 1px solid var(--line-soft); }
+.routing-grid span { color: var(--kind-accent); font-size: 9px; font-weight: 800; }
+.routing-grid strong { color: var(--muted); font-size: 10px; font-weight: 400; }
+.track-detail { margin-top: 18px; }
+.detail-label { display: block; margin-bottom: 8px; }
+
+.device-chain {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  padding-bottom: 7px;
+  scrollbar-color: var(--orange) var(--line-soft);
+  scrollbar-width: thin;
+}
+
+.device-chain.depth-1,
+.device-chain.depth-2,
+.device-chain.depth-3 {
+  padding-bottom: 0;
+}
+
+.device-node {
+  flex: 0 0 auto;
+  min-width: 220px;
+  border: 1px solid #3d4140;
+  background: var(--panel-raised);
+}
+
+.device-node-head {
+  padding: 12px 13px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 12px;
+  align-items: start;
+}
+
+.device-index {
+  min-width: 28px;
+  color: var(--orange);
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.device-heading { min-width: 0; }
+.device-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px; }
+
+.node-badge {
+  padding: 3px 6px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid currentColor;
+  font-size: 8px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.tone-default { color: var(--muted); }
+.tone-device { color: var(--paper); }
+.tone-rack { color: var(--rack); }
+.tone-drum { color: var(--drum); }
+.tone-chain { color: var(--chain); }
+.tone-macro { color: var(--orange); }
+
+.device-flag {
+  padding: 3px 6px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 8px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.device-flag.is-on { color: var(--green); border-color: rgba(134, 189, 104, .5); }
+.device-flag.is-off { color: #d07864; border-color: rgba(208, 120, 100, .5); }
+
+.device-name {
+  display: block;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.device-type {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.device-parameters {
+  padding: 0 13px 13px;
+  border-top: 1px solid rgba(255,255,255,.04);
+}
+
+.device-parameters .detail-label {
+  margin: 10px 0 8px;
+}
+
+.parameter-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.parameter-chip {
+  min-width: 112px;
+  padding: 8px 9px;
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line-soft);
+  background: rgba(255,255,255,.02);
+}
+
+.parameter-chip strong {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.parameter-chip em {
+  color: var(--orange);
+  font-style: normal;
+  font-size: 9px;
+}
+
+.rack-node {
+  min-width: min(700px, 82vw);
+  border-color: rgba(240, 201, 108, .35);
+  background:
+    linear-gradient(180deg, rgba(240, 201, 108, .06), transparent 5rem),
+    var(--panel-raised);
+}
+
+.rack-node > summary {
+  list-style: none;
+  padding-right: 13px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.rack-node > summary::-webkit-details-marker { display: none; }
+
+.rack-meta {
+  color: var(--rack);
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.rack-body {
+  padding: 0 13px 13px;
+  border-top: 1px solid rgba(255,255,255,.05);
+}
+
+.rack-chain-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.chain-card {
+  padding: 12px;
+  border: 1px solid rgba(130, 185, 255, .22);
+  background: rgba(9, 16, 24, .45);
+}
+
+.chain-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.chain-header h4 {
+  margin: 6px 0 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.chain-kind {
+  color: var(--muted);
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.chain-state {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chain-state span {
+  padding: 4px 7px;
+  border: 1px solid rgba(130, 185, 255, .18);
+  color: var(--chain);
+  font-size: 8px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.nested-device-chain {
+  margin-top: 12px;
+}
+
+.nested-device-chain .device-node {
+  min-width: 200px;
+  background: #121616;
+}
+
+.chain-link {
+  flex: 0 0 20px;
+  align-self: center;
+  height: 1px;
+  background: var(--orange);
+}
+
+.chain-link::after {
+  content: "";
+  float: right;
+  margin-top: -3px;
+  border: 3px solid transparent;
+  border-left-color: var(--orange);
+}
+
+.sends-row {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+}
+
+.sends-row .detail-label { padding-top: 7px; }
+.send-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.send-chip { padding: 6px 8px; display: inline-flex; gap: 12px; border: 1px solid var(--line); background: #0d0f0f; font-size: 9px; }
+.send-chip b { font-weight: 500; }
+.send-chip em { color: var(--orange); font-style: normal; }
+.empty-state, .empty-section { margin: 0; color: #62645f; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
+.empty-state { padding: 10px 0; }
+.empty-state.compact { padding: 7px 0; }
+.empty-section { padding: 25px; border: 1px dashed var(--line); text-align: center; }
+
+body.mode-compact .rack-body,
+body.mode-compact .device-parameters,
+body.mode-compact .chain-state,
+body.mode-compact .nested-device-chain .device-parameters {
+  display: none;
+}
+
+body.mode-compact .rack-node[open] > summary {
+  border-bottom: 0;
+}
+
+.diagnostic-section { margin-top: 84px; scroll-margin-top: 70px; }
+.diagnostic-empty { padding: 28px; display: flex; flex-direction: column; gap: 8px; border: 1px dashed var(--line); color: var(--muted); font-size: 11px; }
+.diagnostic-empty strong { color: var(--paper); font-family: var(--font-display); font-size: 20px; }
+.diagnostic-summary { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border: 1px solid var(--line); }
+.diagnostic-summary article { min-height: 86px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--line); background: var(--panel); }
+.diagnostic-summary article:last-child { border-right: 0; }
+.diagnostic-summary b { color: var(--orange); font-family: var(--font-display); font-size: 30px; }
+.diagnostic-summary span { color: var(--muted); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; }
+.diagnostic-tracks { margin-top: 20px; display: grid; gap: 12px; }
+.diagnostic-track { padding: 18px; border: 1px solid var(--line); background: rgba(13,15,15,.94); }
+.diagnostic-track > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.diagnostic-track > header div { display: flex; align-items: baseline; gap: 10px; }
+.diagnostic-track > header span { color: var(--orange); font-size: 8px; text-transform: uppercase; }
+.diagnostic-track > header h3 { margin: 0; font-family: var(--font-display); font-size: 24px; }
+.diagnostic-track > header code { color: var(--muted); font-size: 9px; }
+.diagnostic-id { margin: 8px 0 14px; color: #62645f; font-size: 8px; word-break: break-all; }
+.diagnostic-object { margin-top: 8px; border: 1px solid var(--line-soft); background: #0b0d0d; }
+.diagnostic-object summary { padding: 10px 12px; display: grid; grid-template-columns: 120px 130px 1fr; gap: 10px; color: var(--muted); cursor: pointer; font-size: 9px; }
+.diagnostic-object summary b { color: var(--paper); }
+.diagnostic-object summary em { overflow: hidden; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
+.diagnostic-object-body { padding: 12px; border-top: 1px solid var(--line-soft); }
+.available-list { display: flex; flex-wrap: wrap; gap: 4px; }
+.available-list > span { width: 100%; margin-bottom: 4px; color: var(--muted); font-size: 8px; letter-spacing: .1em; text-transform: uppercase; }
+.available-list code { padding: 3px 5px; color: #9b9e98; border: 1px solid var(--line-soft); font-size: 8px; }
+.property-table { margin-top: 12px; display: grid; gap: 3px; }
+.diagnostic-property { min-height: 30px; padding: 6px 8px; display: grid; grid-template-columns: 62px 210px minmax(0, 1fr); align-items: start; gap: 8px; border-left: 2px solid var(--line); background: #101212; }
+.diagnostic-property.status-available { border-left-color: var(--green); }
+.diagnostic-property.status-error { border-left-color: #e46455; }
+.property-status { color: var(--muted); font-size: 7px; text-transform: uppercase; }
+.status-available .property-status { color: var(--green); }
+.status-error .property-status { color: #e46455; }
+.diagnostic-property code { color: var(--paper); font-size: 8px; }
+.diagnostic-property pre { margin: 0; overflow: auto; color: #898c86; font-family: var(--font-mono); font-size: 8px; white-space: pre-wrap; word-break: break-word; }
+.diagnostic-nested { margin-left: 14px; padding-left: 10px; border-left: 1px solid #282b2a; }
+.chain-diagnostic { margin-left: 14px; }
+
+footer {
+  margin: 0 clamp(24px, 5vw, 80px);
+  padding: 22px 0 35px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #5f625e;
+  border-top: 1px solid var(--line);
+  font-size: 8px;
+  letter-spacing: .16em;
+}
+
+.footer-line { height: 1px; flex: 1; background: var(--line-soft); }
+footer a { color: #777a74; text-decoration: none; transition: color .2s; }
+footer a:hover { color: var(--orange); }
+
+@media (max-width: 980px) {
+  .viewer-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .viewer-actions > span {
+    width: 100%;
+    margin-right: 0;
+    text-align: center;
+  }
+
+  .rack-node {
+    min-width: min(560px, 82vw);
+  }
+}
+
+@media (max-width: 720px) {
+  .masthead { min-height: 190px; align-items: flex-start; flex-direction: column; }
+  .live-mark { width: 48px; height: 48px; }
+  .export-time { align-self: flex-end; }
+  .viewer-actions { padding-inline: 10px; }
+  .telemetry { grid-template-columns: 1fr 1fr; }
+  .telemetry article { min-height: 95px; }
+  .metric-value { font-size: 40px; }
+  .routing-grid { grid-template-columns: 1fr; }
+  .routing-grid div + div { border-left: 0; border-top: 1px solid var(--line-soft); }
+  .sends-row { grid-template-columns: 1fr; }
+  .track-card { grid-template-columns: 34px minmax(0, 1fr); }
+  .track-body { padding: 14px; }
+  .track-header > div:first-child { display: block; }
+  .kind-tag { display: block; margin-bottom: 5px; }
+  .device-node,
+  .rack-node {
+    min-width: 82vw;
+  }
+  .diagnostic-summary { grid-template-columns: repeat(2, 1fr); }
+  .diagnostic-summary article { border-bottom: 1px solid var(--line); }
+  .diagnostic-object summary { grid-template-columns: 1fr; }
+  .diagnostic-property { grid-template-columns: 60px 1fr; }
+  .diagnostic-property pre { grid-column: 1 / -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+}
+</style>
+</head>
+<body class="mode-detailed">
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <header class="masthead">
+    <div class="brand-block">
+      <span class="live-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <div>
+        <p class="eyebrow">Ableton Session Mapper / JSON 1.0.0</p>
+        <h1 id="project-name">Session Map</h1>
+      </div>
+    </div>
+    <p class="export-time" id="export-time"></p>
+  </header>
+
+  <nav class="viewer-actions" aria-label="Actions du viewer">
+    <span>LIVE SET REPORT</span>
+    <div class="view-mode-switch" role="group" aria-label="Mode d'affichage">
+      <button type="button" data-mode="compact" onclick="setViewMode('compact')">Compact</button>
+      <button type="button" data-mode="detailed" onclick="setViewMode('detailed')">Detailed</button>
+    </div>
+    <button type="button" onclick="requestViewerAction('refresh')">↻ Refresh</button>
+    <button type="button" onclick="requestViewerAction('export-html')">⇩ Export HTML</button>
+    <button class="debug-action" type="button" onclick="requestViewerAction('debug-sdk-data')">⌁ Debug SDK Data</button>
+    <button class="close-action" type="button" onclick="requestViewerAction('close')">Close</button>
+  </nav>
+
+  <main>
+    <section class="telemetry" aria-label="Résumé de la session">
+      <article><span class="metric-value" id="tempo">—</span><span class="metric-label">BPM</span></article>
+      <article><span class="metric-value" id="track-count">0</span><span class="metric-label">Tracks</span></article>
+      <article><span class="metric-value" id="device-count">0</span><span class="metric-label">Devices</span></article>
+      <article><span class="metric-value" id="send-count">0</span><span class="metric-label">Sends</span></article>
+    </section>
+
+    <div id="session-sections" class="session-sections"></div>
+    <section id="sdk-diagnostic" class="diagnostic-section" aria-labelledby="diagnostic-title"></section>
+  </main>
+
+  <footer>
+    <span>STATIC LOCAL REPORT</span>
+    <span class="footer-line"></span>
+    <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a>
+  </footer>
+
+  <script>
+    const session = {"version":"1.0.0","exportedAt":"2026-06-30T14:25:40.214Z","set":{"name":null,"tempo":120},"scan":{"mode":"ultra-safe","maxDeviceDepth":0,"scanInternalChainDevices":false,"scanNestedRacks":false,"partial":false,"warnings":[],"totalScannedDevices":21,"maxTotalScannedDevices":500},"tracks":[{"id":"1364527316563618643517918699682369338370687099","index":0,"name":"1-606 Core Kit","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"1364875765707345684504505195280379469019218043","index":0,"name":"Producer_Pal","type":"Device","enabled":true,"parameters":[{"id":"1365572663994799766477678186476399730316279931","index":1,"name":"live.button","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"1365921113138526807464264682074409860964810875","index":2,"name":"live.text[2]","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"1366269562282253848450851177672419991613341819","index":3,"name":"live.text[2]","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null},{"id":"1983372995822843435695534881748361370161643643","index":1,"name":"606 Core Kit","type":"DrumRack","enabled":true,"parameters":[{"id":"1986857487260113845561399837728462676646953083","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1987205936403840886547986333326472807295484027","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1987554385547567927534572828924482937944014971","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1987902834691294968521159324522493068592545915","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1988251283835022009507745820120503199241076859","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1988599732978749050494332315718513329889607803","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1988948182122476091480918811316523460538138747","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1989296631266203132467505306914533591186669691","index":16,"name":"Macro 16","value":126.0078125,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1984069894110297517668707872944381631458705531","index":1,"name":"Low Gain  ","value":63.35280227661133,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1984418343254024558655294368542391762107236475","index":2,"name":"Mid Gain","value":63.5,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1984766792397751599641880864140401892755767419","index":3,"name":"High Gain","value":63.35280227661133,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1985115241541478640628467359738412023404298363","index":4,"name":"Gain","value":47.679195404052734,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":16,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":37,"deviceCount":1},{"index":1,"name":"Chain 02","note":null,"receivingNote":38,"deviceCount":1},{"index":2,"name":"Chain 03","note":null,"receivingNote":39,"deviceCount":1},{"index":3,"name":"Chain 04","note":null,"receivingNote":40,"deviceCount":1},{"index":4,"name":"Chain 05","note":null,"receivingNote":44,"deviceCount":1},{"index":5,"name":"Chain 06","note":null,"receivingNote":45,"deviceCount":1},{"index":6,"name":"Chain 07","note":null,"receivingNote":48,"deviceCount":1},{"index":7,"name":"Chain 08","note":null,"receivingNote":50,"deviceCount":1},{"index":8,"name":"Chain 09","note":null,"receivingNote":42,"deviceCount":1},{"index":9,"name":"Chain 10","note":null,"receivingNote":43,"deviceCount":1},{"index":10,"name":"Chain 11","note":null,"receivingNote":46,"deviceCount":1},{"index":11,"name":"Chain 12","note":null,"receivingNote":47,"deviceCount":1},{"index":12,"name":"Chain 13","note":null,"receivingNote":36,"deviceCount":1},{"index":13,"name":"Chain 14","note":null,"receivingNote":41,"deviceCount":1},{"index":14,"name":"Chain 15","note":null,"receivingNote":49,"deviceCount":1},{"index":15,"name":"Chain 16","note":null,"receivingNote":51,"deviceCount":1}]},"padsSummary":{"count":16,"items":[{"index":0,"name":"Chain 01","note":37,"receivingNote":37,"deviceCount":1},{"index":1,"name":"Chain 02","note":38,"receivingNote":38,"deviceCount":1},{"index":2,"name":"Chain 03","note":39,"receivingNote":39,"deviceCount":1},{"index":3,"name":"Chain 04","note":40,"receivingNote":40,"deviceCount":1},{"index":4,"name":"Chain 05","note":44,"receivingNote":44,"deviceCount":1},{"index":5,"name":"Chain 06","note":45,"receivingNote":45,"deviceCount":1},{"index":6,"name":"Chain 07","note":48,"receivingNote":48,"deviceCount":1},{"index":7,"name":"Chain 08","note":50,"receivingNote":50,"deviceCount":1},{"index":8,"name":"Chain 09","note":42,"receivingNote":42,"deviceCount":1},{"index":9,"name":"Chain 10","note":43,"receivingNote":43,"deviceCount":1},{"index":10,"name":"Chain 11","note":46,"receivingNote":46,"deviceCount":1},{"index":11,"name":"Chain 12","note":47,"receivingNote":47,"deviceCount":1},{"index":12,"name":"Chain 13","note":36,"receivingNote":36,"deviceCount":1},{"index":13,"name":"Chain 14","note":41,"receivingNote":41,"deviceCount":1},{"index":14,"name":"Chain 15","note":49,"receivingNote":49,"deviceCount":1},{"index":15,"name":"Chain 16","note":51,"receivingNote":51,"deviceCount":1}]}}],"sends":[{"id":"1369405604575797217330129638054511167450120315","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"1369754053719524258316716133652521298098651259","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"1422369874422307447291276968952051026026823803","index":1,"name":"2-808 Core Kit","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"1519587185522151882548909240796877476966957179","index":0,"name":"808 Core Kit","type":"DrumRack","enabled":true,"parameters":[{"id":"1523071676959422292414774196776978783452266619","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1523420126103149333401360692374988914100797563","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1523768575246876374387947187972999044749328507","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1524117024390603415374533683571009175397859451","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1524465473534330456361120179169019306046390395","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1524813922678057497347706674767029436694921339","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1525162371821784538334293170365039567343452283","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1525510820965511579320879665963049697991983227","index":16,"name":"Macro 16","value":126.0078125,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1520284083809605964522082231992897738264019067","index":1,"name":"Low Gain  ","value":63.35280227661133,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1520632532953333005508668727590907868912550011","index":2,"name":"Mid Gain","value":63.5,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1520980982097060046495255223188917999561080955","index":3,"name":"High Gain","value":63.35280227661133,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1521329431240787087481841718786928130209611899","index":4,"name":"Gain","value":26.585193634033203,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":16,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":36,"deviceCount":1},{"index":1,"name":"Chain 02","note":null,"receivingNote":37,"deviceCount":1},{"index":2,"name":"Chain 03","note":null,"receivingNote":38,"deviceCount":1},{"index":3,"name":"Chain 04","note":null,"receivingNote":39,"deviceCount":1},{"index":4,"name":"Chain 05","note":null,"receivingNote":40,"deviceCount":1},{"index":5,"name":"Chain 06","note":null,"receivingNote":41,"deviceCount":1},{"index":6,"name":"Chain 07","note":null,"receivingNote":42,"deviceCount":1},{"index":7,"name":"Chain 08","note":null,"receivingNote":43,"deviceCount":1},{"index":8,"name":"Chain 09","note":null,"receivingNote":48,"deviceCount":1},{"index":9,"name":"Chain 10","note":null,"receivingNote":44,"deviceCount":1},{"index":10,"name":"Chain 11","note":null,"receivingNote":46,"deviceCount":1},{"index":11,"name":"Chain 12","note":null,"receivingNote":45,"deviceCount":1},{"index":12,"name":"Chain 13","note":null,"receivingNote":47,"deviceCount":1},{"index":13,"name":"Chain 14","note":null,"receivingNote":49,"deviceCount":1},{"index":14,"name":"Chain 15","note":null,"receivingNote":50,"deviceCount":1},{"index":15,"name":"Chain 16","note":null,"receivingNote":51,"deviceCount":1}]},"padsSummary":{"count":16,"items":[{"index":0,"name":"Chain 01","note":36,"receivingNote":36,"deviceCount":1},{"index":1,"name":"Chain 02","note":37,"receivingNote":37,"deviceCount":1},{"index":2,"name":"Chain 03","note":38,"receivingNote":38,"deviceCount":1},{"index":3,"name":"Chain 04","note":39,"receivingNote":39,"deviceCount":1},{"index":4,"name":"Chain 05","note":40,"receivingNote":40,"deviceCount":1},{"index":5,"name":"Chain 06","note":41,"receivingNote":41,"deviceCount":1},{"index":6,"name":"Chain 07","note":42,"receivingNote":42,"deviceCount":1},{"index":7,"name":"Chain 08","note":43,"receivingNote":43,"deviceCount":1},{"index":8,"name":"Chain 09","note":48,"receivingNote":48,"deviceCount":1},{"index":9,"name":"Chain 10","note":44,"receivingNote":44,"deviceCount":1},{"index":10,"name":"Chain 11","note":46,"receivingNote":46,"deviceCount":1},{"index":11,"name":"Chain 12","note":45,"receivingNote":45,"deviceCount":1},{"index":12,"name":"Chain 13","note":47,"receivingNote":47,"deviceCount":1},{"index":13,"name":"Chain 14","note":49,"receivingNote":49,"deviceCount":1},{"index":14,"name":"Chain 15","note":50,"receivingNote":50,"deviceCount":1},{"index":15,"name":"Chain 16","note":51,"receivingNote":51,"deviceCount":1}]}}],"sends":[{"id":"1425505916715850816170555429334142201863602299","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"1425854365859577857157141924932152332512133243","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"1442231475614748783526707218038628472993087611","index":2,"name":"3-808 Drifter","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"2471201797040700816916628718962544278104965243","index":0,"name":"808 Drifter","type":"RackDevice","enabled":true,"parameters":[{"id":"2474686288477971226782493674942645584590274683","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2475034737621698267769080170540655715238805627","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2475383186765425308755666666138665845887336571","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2475731635909152349742253161736675976535867515","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2476080085052879390728839657334686107184398459","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2476428534196606431715426152932696237832929403","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2476776983340333472702012648530706368481460347","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2477125432484060513688599144128716499129991291","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2471898695328154898889801710158564539402027131","index":1,"name":"Filter Cutoff","value":56,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2472247144471881939876388205756574670050558075","index":2,"name":"Filter Reso","value":39,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2472595593615608980862974701354584800699089019","index":3,"name":"Sculpt","value":127,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2472944042759336021849561196952594931347619963","index":4,"name":"Shape","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":8}]},"padsSummary":null}],"sends":[{"id":"1445367517908292152405985678420719648829866107","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"1445715967052019193392572174018729779478397051","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"1463486873382098283708483449517246442553475195","index":3,"name":"4-A Soft Chord","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"2584447768751989137557239788315836738877522043","index":0,"name":"A Soft Chord","type":"Device","enabled":true,"parameters":[{"id":"2585144667039443219530412779511857000174583931","index":1,"name":"Osc 1 On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"2585493116183170260516999275109867130823114875","index":2,"name":"Osc 1 Transp","value":0,"min":-24,"max":24,"isQuantized":false,"isMacro":false},{"id":"2585841565326897301503585770707877261471645819","index":3,"name":"Osc 1 Detune","value":0.5234375,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2586190014470624342490172266305887392120176763","index":4,"name":"Osc 1 Pos","value":0.8151260614395142,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2586538463614351383476758761903897522768707707","index":5,"name":"Osc 1 Effect 1","value":0.5,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2586886912758078424463345257501907653417238651","index":6,"name":"Osc 1 Effect 2","value":0,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2587235361901805465449931753099917784065769595","index":7,"name":"Osc 1 Pan","value":0.2578125,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2587583811045532506436518248697927914714300539","index":8,"name":"Osc 1 Gain","value":0.7647058963775635,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2587932260189259547423104744295938045362831483","index":9,"name":"Osc 2 On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"2588280709332986588409691239893948176011362427","index":10,"name":"Osc 2 Transp","value":7,"min":-24,"max":24,"isQuantized":false,"isMacro":false},{"id":"2588629158476713629396277735491958306659893371","index":11,"name":"Osc 2 Detune","value":0.5,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2588977607620440670382864231089968437308424315","index":12,"name":"Osc 2 Pos","value":0.6890756487846375,"min":0,"max":1,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null}],"sends":[{"id":"1466622915675641652587761909899337618390253691","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"1466971364819368693574348405497347749038784635","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"1486136067724355947836605663387904934707986555","index":4,"name":"5-Audio","kind":"audio","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"2685149571289103982680737016140764496302964859","index":0,"name":"Basic Heavy Guitar Amp","type":"RackDevice","enabled":true,"parameters":[{"id":"2688634062726374392546601972120865802788274299","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2688982511870101433533188467718875933436805243","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2689330961013828474519774963316886064085336187","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2689679410157555515506361458914896194733867131","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2690027859301282556492947954512906325382398075","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2690376308445009597479534450110916456030929019","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2690724757588736638466120945708926586679459963","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2691073206732463679452707441306936717327990907","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2685846469576558064653910007336784757600026747","index":1,"name":"Amp Gain","value":59,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2686194918720285105640496502934794888248557691","index":2,"name":"Bass","value":78,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2686543367864012146627082998532805018897088635","index":3,"name":"Middle","value":77,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2686891817007739187613669494130815149545619579","index":4,"name":"Treble","value":74,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":3}]},"padsSummary":null}],"sends":[{"id":"1489272110017899316715884123769996110544765051","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"1489620559161626357702470619368006241193295995","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"1495892643748713095461027540132188592866852987","index":5,"name":"6-Audio","kind":"audio","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"2621383377987055482135408321704910587621802107","index":0,"name":"Live Mode","type":"Device","enabled":true,"parameters":[{"id":"2622080276274509564108581312900930848918863995","index":1,"name":"Input Gain","value":0.5,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2622777174561963646081754304096951110215925883","index":3,"name":"Scale Aware","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"2623125623705690687068340799694961240864456827","index":4,"name":"Glide Time","value":0,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2623474072849417728054927295292971371512987771","index":5,"name":"PB Range","value":6,"min":0,"max":48,"isQuantized":false,"isMacro":false},{"id":"2623822521993144769041513790890981502161518715","index":6,"name":"Attack Time","value":0.1414213478565216,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2624170971136871810028100286488991632810049659","index":7,"name":"Release Time","value":0.1587400734424591,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2624519420280598851014686782087001763458580603","index":8,"name":"Latch","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"2624867869424325892001273277685011894107111547","index":9,"name":"Pitch St.","value":0,"min":-12,"max":12,"isQuantized":false,"isMacro":false},{"id":"2625216318568052932987859773283022024755642491","index":10,"name":"Pitch Scale Deg.","value":0,"min":-12,"max":12,"isQuantized":false,"isMacro":false},{"id":"2625564767711779973974446268881032155404173435","index":11,"name":"Pitch Fine","value":0.5,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2625913216855507014961032764479042286052704379","index":12,"name":"Formant Shift","value":0.5,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"2626261665999234055947619260077052416701235323","index":13,"name":"Formant Follow","value":1,"min":0,"max":1,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null}],"sends":[{"id":"1499028686042256464340306000514279768703631483","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"1499377135185983505326892496112289899352162427","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"1507043016347978407031795399268512773619843195","index":6,"name":"7-Audio","kind":"audio","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"2639502733460861613437906092801437381345411195","index":0,"name":"Bit-ter","type":"RackDevice","enabled":true,"parameters":[{"id":"2642987224898132023303771048781538687830720635","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2643335674041859064290357544379548818479251579","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2643684123185586105276944039977558949127782523","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2644032572329313146263530535575569079776313467","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2644381021473040187250117031173579210424844411","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2644729470616767228236703526771589341073375355","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2645077919760494269223290022369599471721906299","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2645426368904221310209876517967609602370437243","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2640199631748315695411079083997457642642473083","index":1,"name":"Bit Depth","value":41.1875,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2640548080892042736397665579595467773291004027","index":2,"name":"Down Sample","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2640896530035769777384252075193477903939534971","index":3,"name":"Reverb Level","value":14.38671875,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2641244979179496818370838570791488034588065915","index":4,"name":"Stereo Width","value":63.5,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":2,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":4},{"index":1,"name":"Chain 02","note":null,"receivingNote":null,"deviceCount":0}]},"padsSummary":null}],"sends":[{"id":"1510179058641521775911073859650603949456621691","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"1510527507785248816897660355248614080105152635","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"2719646036518081040352800080343767430507528315","index":7,"name":"8-Audio","kind":"audio","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"2719994485661808081339386575941777561156059259","index":0,"name":"Car Listening Environment","type":"RackDevice","enabled":true,"parameters":[{"id":"2723478977099078491205251531921878867641368699","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2723827426242805532191838027519888998289899643","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2724175875386532573178424523117899128938430587","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2724524324530259614165011018715909259586961531","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2724872773673986655151597514313919390235492475","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2725221222817713696138184009911929520884023419","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2725569671961440737124770505509939651532554363","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2725918121105167778111357001107949782181085307","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2720691383949262163312559567137797822453121147","index":1,"name":"Low Band","value":72,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2721039833092989204299146062735807953101652091","index":2,"name":"Mid-Hi Band","value":87,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2721388282236716245285732558333818083750183035","index":3,"name":"Trim Amount","value":35,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2721736731380443286272319053931828214398713979","index":4,"name":"Trnsnt","value":73,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":6}]},"padsSummary":null}],"sends":[{"id":"2793517254988213729509137147121915127996088443","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"2793865704131940770495723642719925258644619387","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"2813378856180655065744567396208492574962352251","index":8,"name":"9-Audio","kind":"audio","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"2813727305324382106731153891806502705610883195","index":0,"name":"Electric Piano Amp","type":"RackDevice","enabled":true,"parameters":[{"id":"2817211796761652516597018847786604012096192635","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2817560245905379557583605343384614142744723579","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2817908695049106598570191838982624273393254523","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2818257144192833639556778334580634404041785467","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2818605593336560680543364830178644534690316411","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2818954042480287721529951325776654665338847355","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2819302491624014762516537821374664795987378299","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2819650940767741803503124316972674926635909243","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2814424203611836188704326883002522966907945083","index":1,"name":"Input Gain","value":73,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2814772652755563229690913378600533097556476027","index":2,"name":"Bass","value":64,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2815121101899290270677499874198543228205006971","index":3,"name":"Middle","value":54,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2815469551043017311664086369796553358853537915","index":4,"name":"Drive","value":33.82072448730469,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":4}]},"padsSummary":null}],"sends":[{"id":"2841254787678818344671487044049303026844827771","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"2841603236822545385658073539647313157493358715","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"3229427133790742003728843140232588569308299387","index":9,"name":"10-DS Clap","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":true,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"3229775582934469044715429635830598699956830331","index":0,"name":"DS Clap","type":"Device","enabled":true,"parameters":[{"id":"3230472481221923126688602627026618961253892219","index":1,"name":"Decay","value":30,"min":0,"max":100,"isQuantized":false,"isMacro":false},{"id":"3230820930365650167675189122624629091902423163","index":2,"name":"Sloppy","value":24,"min":0,"max":100,"isQuantized":false,"isMacro":false},{"id":"3231169379509377208661775618222639222550954107","index":3,"name":"Spread","value":76,"min":0,"max":100,"isQuantized":false,"isMacro":false},{"id":"3231517828653104249648362113820649353199485051","index":4,"name":"Tail","value":65,"min":0,"max":100,"isQuantized":false,"isMacro":false},{"id":"3231866277796831290634948609418659483848015995","index":5,"name":"Tone","value":32,"min":0,"max":100,"isQuantized":false,"isMacro":false},{"id":"3232214726940558331621535105016669614496546939","index":6,"name":"Tune","value":42.42640686035156,"min":0,"max":100,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null}],"sends":[{"id":"3236047667521555782473986556594781051630387323","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"3236396116665282823460573052192791182278918267","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"3267408090456989471266771160415692809998172283","index":10,"name":"11-MIDI","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"3267756539600716512253357656013702940646703227","index":0,"name":"MIDI Monitor","type":"Device","enabled":true,"parameters":[],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null}],"sends":[{"id":"3271241031037986922119222611993804247132012667","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"3271589480181713963105809107591814377780543611","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"3292147979661609381314412347874412086043869307","index":11,"name":"12-MIDI","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"3292496428805336422300998843472422216692400251","index":0,"name":"Max MIDI Effect","type":"Device","enabled":true,"parameters":[],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null}],"sends":[{"id":"3295980920242606832166863799452523523177709691","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"3296329369386333873153450295050533653826240635","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"3318281665441137455308399517725171884683690107","index":12,"name":"13-MIDI","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"3318630114584864496294986013323182015332221051","index":0,"name":"STING!64","type":"Device","enabled":true,"parameters":[{"id":"3319327012872318578268159004519202276629282939","index":1,"name":"accent","value":80,"min":1,"max":100,"isQuantized":false,"isMacro":false},{"id":"3319675462016045619254745500117212407277813883","index":2,"name":"density","value":32,"min":1,"max":64,"isQuantized":false,"isMacro":false},{"id":"3320023911159772660241331995715222537926344827","index":3,"name":"length","value":16,"min":0,"max":64,"isQuantized":false,"isMacro":false},{"id":"3320372360303499701227918491313232668574875771","index":4,"name":"randomize","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"3320720809447226742214504986911242799223406715","index":5,"name":"swing","value":0,"min":0,"max":100,"isQuantized":false,"isMacro":false},{"id":"3321069258590953783201091482509252929871937659","index":6,"name":"transpose","value":0,"min":-6,"max":6,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null}],"sends":[{"id":"3324205300884497152080369942891344105708716155","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"3324553750028224193066956438489354236357247099","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"3347899842657935939168251643556032989808820347","index":13,"name":"14-MIDI","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"3348248291801662980154838139154043120457351291","index":0,"name":"MPE Control","type":"Device","enabled":true,"parameters":[{"id":"3348945190089117062128011130350063381754413179","index":1,"name":"Note PB On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"3349293639232844103114597625948073512402944123","index":2,"name":"Press Default","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3349642088376571144101184121546083643051475067","index":3,"name":"Press On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"3349990537520298185087770617144093773700006011","index":4,"name":"Slide Default","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3350338986664025226074357112742103904348536955","index":5,"name":"Slide On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"3350687435807752267060943608340114034997067899","index":6,"name":"Pitch 1","value":0,"min":-1,"max":1,"isQuantized":false,"isMacro":false},{"id":"3351035884951479308047530103938124165645598843","index":7,"name":"Pitch 2","value":0,"min":-1,"max":1,"isQuantized":false,"isMacro":false},{"id":"3351384334095206349034116599536134296294129787","index":8,"name":"Pitch Curve","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"3351732783238933390020703095134144426942660731","index":9,"name":"Pitch Link","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"3352081232382660431007289590732154557591191675","index":10,"name":"Pitch Max","value":127,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3352429681526387471993876086330164688239722619","index":11,"name":"Pitch X","value":64,"min":1,"max":126,"isQuantized":false,"isMacro":false},{"id":"3352778130670114512980462581928174818888253563","index":12,"name":"Pitch Y","value":64,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null}],"sends":[{"id":"3363231604981925742578057449868478738344181883","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"3363580054125652783564643945466488868992712827","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}}],"returnTracks":[{"id":"1384737366899787020739935444366956915985481851","index":0,"name":"A-Reverb | EQ Three Rack","kind":"return","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"1385085816043514061726521939964967046634012795","index":0,"name":"Reverb","type":"Device","enabled":true,"parameters":[{"id":"1385782714330968143699694931160987307931074683","index":1,"name":"Predelay","value":0.2589765787124634,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"1386131163474695184686281426758997438579605627","index":2,"name":"In Lo Cut On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"1386479612618422225672867922357007569228136571","index":3,"name":"In Hi Cut On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"1386828061762149266659454417955017699876667515","index":4,"name":"Input Freq","value":0.47729402780532837,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"1387176510905876307646040913553027830525198459","index":5,"name":"Input Width","value":0.6294117569923401,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"1387524960049603348632627409151037961173729403","index":6,"name":"ER Spin On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"1387873409193330389619213904749048091822260347","index":7,"name":"ER Spin Rate","value":0.4296875298023224,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"1388221858337057430605800400347058222470791291","index":8,"name":"ER Spin Amount","value":0.12234228849411011,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"1388570307480784471592386895945068353119322235","index":9,"name":"ER Shape","value":0.5,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"1388918756624511512578973391543078483767853179","index":10,"name":"Diff. Hi On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"1389267205768238553565559887141088614416384123","index":11,"name":"Diff. Hi Type","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"1389615654911965594552146382739098745064915067","index":12,"name":"Diff. Hi Freq","value":0.8102341890335083,"min":0,"max":1,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null},{"id":"2858677244865170394000811823949809559271374971","index":1,"name":"EQ Three Rack","type":"RackDevice","enabled":true,"parameters":[{"id":"2860419490583805598933744301939860212514029691","index":4,"name":"Macro 4","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2862161736302440803866676779929910865756684411","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2862510185446167844853263275527920996405215355","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2862858634589894885839849771125931127053746299","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2863207083733621926826436266723941257702277243","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2863555532877348967813022762321951388350808187","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2863903982021076008799609257919961518999339131","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2864252431164803049786195753517971649647870075","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2864600880308530090772782249115981780296401019","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"2859374143152624475973984815145829820568436859","index":1,"name":"Low","value":64,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2859722592296351516960571310743839951216967803","index":2,"name":"Middle","value":64,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"2860071041440078557947157806341850081865498747","index":3,"name":"High","value":64,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":3}]},"padsSummary":null}],"sends":[{"id":"1396933086930233455270462790297311488684064891","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"1397281536073960496257049285895321619332595835","index":1,"name":"B-Delay","value":0}],"routing":{"source":"none","audioFrom":null,"audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":""}},{"id":"1400766027511230906122914241875422925817905275","index":1,"name":"B-Delay","kind":"return","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"1401114476654957947109500737473433056466436219","index":0,"name":"Delay","type":"Device","enabled":true,"parameters":[{"id":"1401811374942412029082673728669453317763498107","index":1,"name":"Smoothing","value":0,"min":0,"max":2,"isQuantized":true,"isMacro":false},{"id":"1402159824086139070069260224267463448412029051","index":2,"name":"Link","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"1402508273229866111055846719865473579060559995","index":3,"name":"Ping Pong","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"1402856722373593152042433215463483709709090939","index":4,"name":"L Sync","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"1403205171517320193029019711061493840357621883","index":5,"name":"R Sync","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"1403553620661047234015606206659503971006152827","index":6,"name":"L Time","value":0.3350270390510559,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"1403902069804774275002192702257514101654683771","index":7,"name":"R Time","value":0.33752983808517456,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"1404250518948501315988779197855524232303214715","index":8,"name":"L 16th","value":2,"min":0,"max":7,"isQuantized":true,"isMacro":false},{"id":"1404598968092228356975365693453534362951745659","index":9,"name":"R 16th","value":2,"min":0,"max":7,"isQuantized":true,"isMacro":false},{"id":"1404947417235955397961952189051544493600276603","index":10,"name":"L Offset","value":0.5,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"1405295866379682438948538684649554624248807547","index":11,"name":"R Offset","value":0.5,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"1405644315523409479935125180247564754897338491","index":12,"name":"Feedback","value":0.2210526317358017,"min":0,"max":1,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null}],"sends":[{"id":"1410871052679315094733922614217716714625302651","index":0,"name":"A-Reverb | EQ Three Rack","value":0},{"id":"1411219501823042135720509109815726845273833595","index":1,"name":"B-Delay","value":0}],"routing":{"source":"manual","audioFrom":"Sends","audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":"Fill manually from Ableton I/O"}}],"masterTrack":{"id":"3514565731718671557388207445645589043216507","index":0,"name":"Main","kind":"master","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"3065307587095305699046603713569817033850224763","index":0,"name":"Filter Phaser","type":"RackDevice","enabled":true,"parameters":[{"id":"3068792078532576108912468669549918340335534203","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3069140527676303149899055165147928470984065147","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3069488976820030190885641660745938601632596091","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3069837425963757231872228156343948732281127035","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3070185875107484272858814651941958862929657979","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3070534324251211313845401147539968993578188923","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3070882773394938354831987643137979124226719867","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3071231222538665395818574138735989254875250811","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3066004485382759781019776704765837295147286651","index":1,"name":"LFO Rate 1","value":37,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3066352934526486822006363200363847425795817595","index":2,"name":"LFO Rate 2","value":52,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3066701383670213862992949695961857556444348539","index":3,"name":"LFO Rate 3","value":54,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3067049832813940903979536191559867687092879483","index":4,"name":"LFO Phase","value":31,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":2,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":2},{"index":1,"name":"Chain 02","note":null,"receivingNote":null,"deviceCount":0}]},"padsSummary":null},{"id":"3113045119785910314208953610497204932698964091","index":1,"name":"Master Bright \u0026 Edgy","type":"RackDevice","enabled":true,"parameters":[{"id":"3116529611223180724074818566477306239184273531","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3116878060366907765061405062075316369832804475","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3117226509510634806047991557673326500481335419","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3117574958654361847034578053271336631129866363","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3117923407798088888021164548869346761778397307","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3118271856941815929007751044467356892426928251","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3118620306085542969994337540065367023075459195","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3118968755229270010980924035663377153723990139","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3113742018073364396182126601693225193996025979","index":1,"name":"Bass Gain","value":67.73333740234375,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3114090467217091437168713097291235324644556923","index":2,"name":"High Gain","value":64.87340545654297,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3114438916360818478155299592889245455293087867","index":3,"name":"Ovrdrive Drive","value":64.5,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3114787365504545519141886088487255585941618811","index":4,"name":"Ovrdrive Tone","value":76.20000457763672,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":4}]},"padsSummary":null},{"id":"3171236126788326158968898375364896751003631739","index":2,"name":"Master Bright \u0026 Edgy","type":"RackDevice","enabled":true,"parameters":[{"id":"3174720618225596568834763331344998057488941179","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3175069067369323609821349826943008188137472123","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3175417516513050650807936322541018318786003067","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3175765965656777691794522818139028449434534011","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3176114414800504732781109313737038580083064955","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3176462863944231773767695809335048710731595899","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3176811313087958814754282304933058841380126843","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3177159762231685855740868800531068972028657787","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"3171933025075780240942071366560917012300693627","index":1,"name":"Bass Gain","value":67.73333740234375,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3172281474219507281928657862158927142949224571","index":2,"name":"High Gain","value":64.87340545654297,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3172629923363234322915244357756937273597755515","index":3,"name":"Ovrdrive Drive","value":64.5,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"3172978372506961363901830853354947404246286459","index":4,"name":"Ovrdrive Tone","value":76.20000457763672,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":4}]},"padsSummary":null}],"sends":[],"routing":{"source":"manual","audioFrom":"Tracks + Returns","audioTo":null,"midiFrom":null,"midiTo":null,"monitor":null,"group":null,"notes":"Fill manually from Ableton I/O"}},"manualRouting":{"status":"loaded","stale":true,"setMatch":false,"sourcePath":"/Users/jeanclaude/Documents/ableton scripte arborescence/exports/routing-overrides.json","sourceModifiedAt":"2026-06-30T12:08:07.267Z","sessionMapModifiedAt":"2026-06-30T14:22:35.922Z","currentTrackCount":17,"overrideTrackCount":9,"missingFromCurrent":["1 Drift","2 Drift","3-Group","4-Beastly Kit","5-909 Core Kit","6-Basic Fine Line Bass","A-Reverb"],"missingFromOverrides":["1-606 Core Kit","2-808 Core Kit","3-808 Drifter","4-A Soft Chord","5-Audio","6-Audio","7-Audio","8-Audio","9-Audio","10-DS Clap","11-MIDI","12-MIDI","13-MIDI","14-MIDI","A-Reverb | EQ Three Rack"],"warnings":["Manual routing override references missing track: 1 Drift","Manual routing override references missing track: 2 Drift","Manual routing override references missing track: 3-Group","Manual routing override references missing track: 4-Beastly Kit","Manual routing override references missing track: 5-909 Core Kit","Manual routing override references missing track: 6-Basic Fine Line Bass","Manual routing override references missing track: A-Reverb","Current Set has tracks missing from routing-overrides.json: 1-606 Core Kit, 2-808 Core Kit, 3-808 Drifter, 4-A Soft Chord, 5-Audio, 6-Audio, 7-Audio, 8-Audio, 9-Audio, 10-DS Clap, 11-MIDI, 12-MIDI, 13-MIDI, 14-MIDI, A-Reverb | EQ Three Rack","routing-overrides.json is older than session-map.json. Run npm run refresh:routing-overrides."],"tracks":{"1 Drift":{"kind":"audio","midiFrom":null,"midiTo":null,"audioFrom":null,"audioTo":null,"monitor":null,"sends":{"A-Reverb":null,"B-Delay":null},"group":null,"notes":"Fill manually from Ableton I/O"},"2 Drift":{"kind":"audio","midiFrom":null,"midiTo":null,"audioFrom":null,"audioTo":null,"monitor":null,"sends":{"A-Reverb":null,"B-Delay":null},"group":null,"notes":"Fill manually from Ableton I/O"},"3-Group":{"kind":"group","midiFrom":null,"midiTo":null,"audioFrom":null,"audioTo":null,"monitor":null,"sends":{"A-Reverb":null,"B-Delay":null},"group":null,"notes":"Fill manually from Ableton I/O"},"4-Beastly Kit":{"kind":"midi","midiFrom":null,"midiTo":null,"audioFrom":null,"audioTo":null,"monitor":null,"sends":{"A-Reverb":null,"B-Delay":null},"group":null,"notes":"Fill manually from Ableton I/O"},"5-909 Core Kit":{"kind":"midi","midiFrom":null,"midiTo":null,"audioFrom":null,"audioTo":null,"monitor":null,"sends":{"A-Reverb":null,"B-Delay":null},"group":null,"notes":"Fill manually from Ableton I/O"},"6-Basic Fine Line Bass":{"kind":"midi","midiFrom":null,"midiTo":null,"audioFrom":null,"audioTo":null,"monitor":null,"sends":{"A-Reverb":null,"B-Delay":null},"group":null,"notes":"Fill manually from Ableton I/O"},"A-Reverb":{"kind":"return","midiFrom":null,"midiTo":null,"audioFrom":"Sends","audioTo":null,"monitor":null,"sends":{},"group":null,"notes":"Fill manually from Ableton I/O"},"B-Delay":{"kind":"return","midiFrom":null,"midiTo":null,"audioFrom":"Sends","audioTo":null,"monitor":null,"sends":{},"group":null,"notes":"Fill manually from Ableton I/O"},"Main":{"kind":"master","midiFrom":null,"midiTo":null,"audioFrom":"Tracks + Returns","audioTo":null,"monitor":null,"sends":{},"group":null,"notes":"Fill manually from Ableton I/O"}},"sidechains":[],"connections":[]}};
+    const sdkDiagnostic = null;
+
+    function requestViewerAction(action) {
+      const message = {
+        method: "close_and_send",
+        params: [JSON.stringify({ action })],
+      };
+      if (window.webkit?.messageHandlers?.live) {
+        window.webkit.messageHandlers.live.postMessage(message);
+        return;
+      }
+      if (window.chrome?.webview) {
+        window.chrome.webview.postMessage(message);
+        return;
+      }
+      if (action === "refresh") window.location.reload();
+      if (action === "debug-sdk-data") {
+        document.getElementById("sdk-diagnostic")?.scrollIntoView({ behavior: "smooth" });
+      }
+      if (action === "export-html") {
+        const blob = new Blob([document.documentElement.outerHTML], { type: "text/html" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "session-map.html";
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
+      if (action === "close") window.close();
+    }
+
+    function setViewMode(mode) {
+      const normalizedMode = mode === "compact" ? "compact" : "detailed";
+      document.body.classList.toggle("mode-compact", normalizedMode === "compact");
+      document.body.classList.toggle("mode-detailed", normalizedMode === "detailed");
+      document.querySelectorAll("[data-mode]").forEach((button) => {
+        const isActive = button.getAttribute("data-mode") === normalizedMode;
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+      try {
+        localStorage.setItem("ableton-session-mapper:view-mode", normalizedMode);
+      } catch {}
+    }
+
+    const escapeHtml = (value) => String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+    const allTracks = [
+      ...(Array.isArray(session.tracks) ? session.tracks : []),
+      ...(Array.isArray(session.returnTracks) ? session.returnTracks : []),
+      ...(session.masterTrack ? [session.masterTrack] : []),
+    ];
+    const manualRouting = session.manualRouting || {
+      status: "missing",
+      stale: false,
+      setMatch: false,
+      sourcePath: "exports/routing-overrides.json",
+      sourceModifiedAt: null,
+      sessionMapModifiedAt: null,
+      currentTrackCount: 0,
+      overrideTrackCount: 0,
+      missingFromCurrent: [],
+      missingFromOverrides: [],
+      warnings: [],
+      tracks: {},
+      sidechains: [],
+      connections: [],
+    };
+
+    const routingText = (routing) => {
+      const parts = [routing?.type, routing?.channel].filter(Boolean);
+      return parts.length ? parts.join(" / ") : "Routing I/O non disponible dans cette version du SDK";
+    };
+    const manualValue = (value) => value && String(value).trim().length ? String(value).trim() : "—";
+    const trackRoutingSource = (track) => track?.routing?.source === "manual" ? "MANUAL" : track?.routing?.source === "sdk" ? "SDK" : "NONE";
+    const effectiveManualRouting = (track) => ({
+      midiFrom: manualValue(track?.routing?.midiFrom),
+      midiTo: manualValue(track?.routing?.midiTo),
+      audioFrom: manualValue(track?.routing?.audioFrom),
+      audioTo: manualValue(track?.routing?.audioTo),
+      monitor: manualValue(track?.routing?.monitor),
+      group: manualValue(track?.routing?.group),
+      notes: manualValue(track?.routing?.notes),
+      source: trackRoutingSource(track),
+    });
+
+    const formatValue = (value, digits = 3) => typeof value === "number" ? value.toFixed(digits) : "—";
+    const asArray = (value) => Array.isArray(value) ? value : [];
+
+    const countDevicesDeep = (devices) => asArray(devices).reduce((sum, device) => {
+      const chains = asArray(device?.chains);
+      const pads = asArray(device?.pads);
+      const nestedDevices = chains.reduce((nestedSum, chain) => nestedSum + countDevicesDeep(chain?.devices), 0) +
+        pads.reduce((nestedSum, pad) => nestedSum + countDevicesDeep(pad?.devices), 0);
+      return sum + 1 + nestedDevices;
+    }, 0);
+
+    const countTrackDevices = (tracks) => asArray(tracks).reduce(
+      (sum, track) => sum + countDevicesDeep(track?.devices),
+      0,
+    );
+
+    const badge = (label, tone = "default") =>
+      '<span class="node-badge tone-' + tone + '">' + escapeHtml(label) + '</span>';
+
+    const stateLeds = (track) => [
+      ["M", track.isMuted, "Muted"],
+      ["S", track.isSoloed, "Solo"],
+      ["A", track.isArmed, "Armed"],
+    ].map(([letter, active, label]) =>
+      '<span class="state-led ' + (active ? "is-active" : "") + '" title="' + label + '">' + letter + '</span>'
+    ).join("");
+
+    const parameterStrip = (parameters) => {
+      const items = asArray(parameters);
+      if (!items.length) return '<p class="empty-state compact">No readable macros</p>';
+      return '<div class="parameter-strip">' + items.map((parameter) =>
+        '<div class="parameter-chip">' +
+          badge(parameter.isMacro ? "Macro" : "Param", parameter.isMacro ? "macro" : "device") +
+          '<strong>' + escapeHtml(parameter.name) + '</strong>' +
+          '<em>' + escapeHtml(formatValue(parameter.value)) + '</em>' +
+        '</div>'
+      ).join("") + '</div>';
+    };
+
+    const chainState = (chain) => {
+      const parts = [
+        chain?.volume !== null && chain?.volume !== undefined ? "Vol " + formatValue(chain.volume) : null,
+        chain?.pan !== null && chain?.pan !== undefined ? "Pan " + formatValue(chain.pan) : null,
+        chain?.note ? "Note " + chain.note : null,
+        chain?.isMuted === true ? "Muted" : null,
+        chain?.isSoloed === true ? "Solo" : null,
+        chain?.isActive === false ? "Inactive" : null,
+      ].filter(Boolean);
+      return parts.length ? '<div class="chain-state">' + parts.map((part) => '<span>' + escapeHtml(part) + '</span>').join("") + '</div>' : "";
+    };
+
+    const renderStructureCards = (items, label, depth) => {
+      const list = asArray(items);
+      if (!list.length) return '<p class="empty-state compact">Internal rack structure not exposed by current SDK</p>';
+      return '<div class="rack-chain-list">' + list.map((item) =>
+        '<article class="chain-card">' +
+          '<header class="chain-header">' +
+            '<div><div class="device-badges">' + badge(label === "Pads" ? "Pad" : "Chain", label === "Pads" ? "drum" : "chain") + '</div><h4>' + escapeHtml(item?.name || (label === "Pads" ? "Unnamed pad" : "Unnamed chain")) + '</h4></div>' +
+            '<span class="chain-kind">' + escapeHtml(item?.type || (label === "Pads" ? "Pad" : "Chain")) + '</span>' +
+          '</header>' +
+          chainState(item) +
+          '<div class="nested-device-chain">' + deviceChain(item?.devices, depth + 1) + '</div>' +
+        '</article>'
+      ).join("") + '</div>';
+    };
+
+    const renderDeviceNode = (device, depth = 0) => {
+      const chains = asArray(device?.chains);
+      const pads = asArray(device?.pads);
+      const parameters = asArray(device?.parameters);
+      const isRack = chains.length > 0 || pads.length > 0 || /rack/i.test(String(device?.type || ""));
+      const isDrumRack = /drum/i.test(String(device?.type || "")) || /drum/i.test(String(device?.name || ""));
+      const structureItems = isDrumRack && pads.length ? pads : chains;
+      const structureLabel = isDrumRack && pads.length ? "Pads" : "Chains";
+      const enabledLabel = device?.enabled === null || device?.enabled === undefined
+        ? ""
+        : '<span class="device-flag ' + (device.enabled ? "is-on" : "is-off") + '">' + (device.enabled ? "On" : "Off") + '</span>';
+
+      if (!isRack) {
+        return '<div class="device-node">' +
+          '<div class="device-node-head">' +
+            '<span class="device-index">' + String((device?.index ?? 0) + 1).padStart(2, "0") + '</span>' +
+            '<div class="device-heading">' +
+              '<div class="device-badges">' + badge("Device", "device") + enabledLabel + '</div>' +
+              '<span class="device-name">' + escapeHtml(device?.name || "Unnamed device") + '</span>' +
+              '<span class="device-type">' + escapeHtml(device?.type || "Device") + '</span>' +
+            '</div>' +
+          '</div>' +
+          (parameters.length
+            ? '<div class="device-parameters"><span class="detail-label">Parameters</span>' + parameterStrip(parameters) + '</div>'
+            : "") +
+        '</div>';
+      }
+
+      return '<details class="device-node rack-node" ' + (depth < 1 ? "open" : "") + '>' +
+        '<summary>' +
+          '<div class="device-node-head">' +
+            '<span class="device-index">' + String((device?.index ?? 0) + 1).padStart(2, "0") + '</span>' +
+            '<div class="device-heading">' +
+              '<div class="device-badges">' +
+                badge(isDrumRack ? "Drum Rack" : "Rack", isDrumRack ? "drum" : "rack") +
+                badge("Device", "device") +
+                enabledLabel +
+              '</div>' +
+              '<span class="device-name">' + escapeHtml(device?.name || "Unnamed rack") + '</span>' +
+              '<span class="device-type">' + escapeHtml(device?.type || "RackDevice") + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<span class="rack-meta">' + escapeHtml(String(structureItems.length)) + ' ' + escapeHtml(structureLabel.toLowerCase()) + '</span>' +
+        '</summary>' +
+        '<div class="rack-body">' +
+          '<div class="device-parameters"><span class="detail-label">Macros</span>' + parameterStrip(parameters) + '</div>' +
+          '<div class="rack-structure"><span class="detail-label">' + structureLabel + '</span>' + renderStructureCards(structureItems, structureLabel, depth) + '</div>' +
+        '</div>' +
+      '</details>';
+    };
+
+    const deviceChain = (devices, depth = 0) => {
+      const items = asArray(devices);
+      if (!items.length) return '<p class="empty-state">No devices</p>';
+      return '<div class="device-chain depth-' + depth + '">' + items.map((device, index) =>
+        renderDeviceNode({ ...device, index: device?.index ?? index }, depth)
+      ).join('<span class="chain-link" aria-hidden="true"></span>') + '</div>';
+    };
+
+    const sendsList = (sends) => {
+      const items = asArray(sends);
+      if (!items.length) return '<p class="empty-state compact">No sends</p>';
+      return '<div class="send-list">' + items.map((send) =>
+        '<span class="send-chip"><b>' + escapeHtml(send.name) + '</b><em>' + escapeHtml(formatValue(send.value)) + '</em></span>'
+      ).join("") + '</div>';
+    };
+
+    const trackCard = (track, ordinal, displayIndex) => {
+        return '<article class="track-card kind-' + escapeHtml(track.kind) + '" style="--delay:' + Math.min(ordinal * 35, 420) + 'ms">' +
+        '<div class="track-rail"><span>' + escapeHtml(displayIndex) + '</span></div>' +
+        '<div class="track-body">' +
+          '<header class="track-header">' +
+            '<div><span class="kind-tag">' + escapeHtml(track.kind) + '</span><h3>' + escapeHtml(track.name) + '</h3></div>' +
+            '<div class="track-state" aria-label="État de la piste">' + stateLeds(track) + '</div>' +
+          '</header>' +
+          '<div class="routing-grid">' +
+            '<div><span>IN</span><strong>' + escapeHtml(routingText(track.input)) + '</strong></div>' +
+            '<div><span>OUT</span><strong>' + escapeHtml(routingText(track.output)) + '</strong></div>' +
+          '</div>' +
+          '<div class="track-detail"><span class="detail-label">Device chain · ' + countDevicesDeep(track.devices) + '</span>' + deviceChain(track.devices) + '</div>' +
+          '<div class="track-detail sends-row"><span class="detail-label">Sends · ' + asArray(track.sends).length + '</span>' + sendsList(track.sends) + '</div>' +
+        '</div>' +
+      '</article>';
+      };
+
+    const sessionOrderTracks = [
+      ...session.tracks.map((track) => ({ ...track, sectionType: "track" })),
+      ...session.returnTracks.map((track) => ({ ...track, sectionType: "return" })),
+      ...(session.masterTrack ? [{ ...session.masterTrack, sectionType: "master" }] : []),
+    ];
+
+    const renderSessionOrder = () => {
+      let displayCounter = 0;
+      let hasInsertedReturnsDivider = false;
+      let hasInsertedMasterDivider = false;
+
+      return sessionOrderTracks.map((track, ordinal) => {
+        const fragments = [];
+
+        if (track.sectionType === "return" && !hasInsertedReturnsDivider) {
+          hasInsertedReturnsDivider = true;
+          fragments.push(
+            '<div class="track-divider"><span>RTN</span><strong>Returns</strong><i></i></div>',
+          );
+        }
+
+        if (track.sectionType === "master" && !hasInsertedMasterDivider) {
+          hasInsertedMasterDivider = true;
+          fragments.push(
+            '<div class="track-divider"><span>MST</span><strong>Master</strong><i></i></div>',
+          );
+        }
+
+        displayCounter += 1;
+        fragments.push(
+          trackCard(track, ordinal, String(displayCounter).padStart(2, "0")),
+        );
+        return fragments.join("");
+      }).join("");
+    };
+
+    document.getElementById("project-name").textContent = session.set?.name || "Untitled Live Set";
+    document.getElementById("tempo").textContent = session.set?.tempo ?? "—";
+    document.getElementById("track-count").textContent = String(session.tracks.length);
+    document.getElementById("device-count").textContent = String(countTrackDevices(allTracks));
+    document.getElementById("send-count").textContent = String(allTracks.reduce((sum, track) => sum + asArray(track?.sends).length, 0));
+    document.getElementById("export-time").textContent = "EXPORTED " + new Date(session.exportedAt).toLocaleString("fr-FR");
+
+    document.getElementById("session-sections").innerHTML =
+      '<section class="track-section">' +
+        '<div class="section-heading"><span>SET</span><h2>Ordre du Set</h2><i></i><b>' + sessionOrderTracks.length + '</b></div>' +
+        '<div class="track-stack">' + (sessionOrderTracks.length
+          ? renderSessionOrder()
+          : '<div class="empty-section">No tracks in this section</div>') +
+        '</div>' +
+        '</section>';
+
+    const preferredMode = (() => {
+      try {
+        return localStorage.getItem("ableton-session-mapper:view-mode") || "detailed";
+      } catch {
+        return "detailed";
+      }
+    })();
+    setViewMode(preferredMode);
+
+    const formatDiagnosticValue = (value) => {
+      if (value === undefined) return "—";
+      if (typeof value === "string") return escapeHtml(value);
+      return escapeHtml(JSON.stringify(value, null, 2));
+    };
+
+    const propertyRows = (properties) => properties.map((property) =>
+      '<div class="diagnostic-property status-' + property.status + '">' +
+        '<span class="property-status">' + property.status + '</span>' +
+        '<code>' + escapeHtml(property.property) + '</code>' +
+        '<pre>' + (property.status === "error" ? escapeHtml(property.error || "Unknown error") : formatDiagnosticValue(property.value)) + '</pre>' +
+      '</div>'
+    ).join("");
+
+    const objectDiagnostic = (object, label) => {
+      if (!object) return "";
+      return '<details class="diagnostic-object">' +
+        '<summary><span>' + escapeHtml(label) + '</span><b>' + escapeHtml(object.objectType) + '</b><em>' + escapeHtml(object.name || object.id || "anonymous") + '</em></summary>' +
+        '<div class="diagnostic-object-body">' +
+          '<div class="available-list"><span>Prototype surface</span>' + (object.availableProperties || []).map((name) => '<code>' + escapeHtml(name) + '</code>').join("") + '</div>' +
+          '<div class="property-table">' + propertyRows(object.properties || []) + '</div>' +
+        '</div>' +
+      '</details>';
+    };
+
+    const deviceDiagnostic = (device) =>
+      '<div class="diagnostic-nested">' + objectDiagnostic(device, device.isRack ? "Rack" : "Device") +
+      (device.chains || []).map((chain) =>
+        '<div class="chain-diagnostic">' + objectDiagnostic(chain, "Chain") +
+        (chain.devices || []).map(deviceDiagnostic).join("") +
+        objectDiagnostic(chain.mixer, "Chain mixer") + '</div>'
+      ).join("") + '</div>';
+
+    const diagnosticRoot = document.getElementById("sdk-diagnostic");
+    if (!sdkDiagnostic) {
+      diagnosticRoot.innerHTML =
+        '<div class="section-heading"><span>SDK</span><h2 id="diagnostic-title">Data Diagnostic</h2><i></i><b>NOT RUN</b></div>' +
+        '<div class="diagnostic-empty"><strong>No SDK diagnostic loaded.</strong><span>Use “Export SDK Diagnostic JSON” in Live, then regenerate the HTML.</span></div>';
+    } else {
+      const metrics = [
+        [sdkDiagnostic.summary.tracksInspected, "Tracks inspected"],
+        [sdkDiagnostic.summary.routingsFound, "Routings found"],
+        [sdkDiagnostic.summary.devicesInspected, "Devices inspected"],
+        [sdkDiagnostic.summary.racksDetected, "Racks detected"],
+        [sdkDiagnostic.summary.chainsDetected, "Chains detected"],
+        [sdkDiagnostic.summary.propertyErrors, "Property errors"],
+      ];
+      diagnosticRoot.innerHTML =
+        '<div class="section-heading"><span>SDK</span><h2 id="diagnostic-title">Data Diagnostic</h2><i></i><b>v' + escapeHtml(sdkDiagnostic.version) + '</b></div>' +
+        '<div class="diagnostic-summary">' + metrics.map(([value, label]) => '<article><b>' + value + '</b><span>' + label + '</span></article>').join("") + '</div>' +
+        objectDiagnostic(sdkDiagnostic.song, "Song") +
+        '<div class="diagnostic-tracks">' + sdkDiagnostic.tracks.map((track) =>
+          '<article class="diagnostic-track">' +
+            '<header><div><span>' + escapeHtml(track.role) + '</span><h3>' + escapeHtml(track.name || "Unnamed track") + '</h3></div><code>' + escapeHtml(track.detectedType) + '</code></header>' +
+            '<p class="diagnostic-id">ID ' + escapeHtml(track.id || "unavailable") + '</p>' +
+            objectDiagnostic(track, "Track properties") +
+            objectDiagnostic(track.mixer, "Mixer device") +
+            (track.devices || []).map(deviceDiagnostic).join("") +
+          '</article>'
+        ).join("") + '</div>';
+    }
+  </script>
+</body>
+</html>
