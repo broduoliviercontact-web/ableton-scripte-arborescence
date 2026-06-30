@@ -152,6 +152,16 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
       font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 120ms ease, filter 120ms ease, border-color 120ms ease;
+    }
+    .routing-health-badge:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+    .routing-health-badge:active {
+      transform: translateY(0);
     }
     .routing-health-badge.tone-success {
       color: #b8efc4;
@@ -813,7 +823,12 @@
         <div>Export: 30/06/2026 18:42:00</div>
         <div>Mode: ultra-safe</div>
         <div class="routing-health">
-    <span class="routing-health-badge tone-warning">Routing stale</span>
+    <label
+      for="internal-tab-routing"
+      class="routing-health-badge tone-warning"
+      title="Open Routing tab"
+      aria-label="Open Routing tab"
+    >Routing stale</label>
     <small>Run npm run refresh:routing-overrides.</small>
   </div>
       </div>

@@ -121,6 +121,7 @@ légère :
 - les previews internes sont en HTML/CSS simple ;
 - le launcher externe reste disponible en fallback ou en ouverture manuelle.
 - un badge global **Routing health** apparaît directement dans le header.
+- ce badge **Routing health** ouvre directement l'onglet **Routing** dans la modale.
 
 En usage normal, le menu **Extensions** n'affiche qu'une seule entrée :
 

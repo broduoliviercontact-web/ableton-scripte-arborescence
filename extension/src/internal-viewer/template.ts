@@ -196,7 +196,12 @@ function getRoutingHealth(model: InternalViewerModel): {
 function renderRoutingHealthBadge(model: InternalViewerModel): string {
   const health = getRoutingHealth(model);
   return `<div class="routing-health">
-    <span class="routing-health-badge tone-${escapeHtml(health.variant)}">${escapeHtml(health.label)}</span>
+    <label
+      for="internal-tab-routing"
+      class="routing-health-badge tone-${escapeHtml(health.variant)}"
+      title="Open Routing tab"
+      aria-label="Open Routing tab"
+    >${escapeHtml(health.label)}</label>
     <small>${escapeHtml(health.message)}</small>
   </div>`;
 }
@@ -892,6 +897,16 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       text-transform: uppercase;
       letter-spacing: 0.08em;
       font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 120ms ease, filter 120ms ease, border-color 120ms ease;
+    }
+    .routing-health-badge:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+    .routing-health-badge:active {
+      transform: translateY(0);
     }
     .routing-health-badge.tone-success {
       color: #b8efc4;
