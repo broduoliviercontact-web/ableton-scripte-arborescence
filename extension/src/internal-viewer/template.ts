@@ -39,16 +39,31 @@ export interface InternalViewerDeviceTrack {
   kind: string;
   deviceCount: number;
   rackCount: number;
-  deviceSummary: string[];
-  rackSummary: string[];
+  deviceItems: InternalViewerDeviceDescriptor[];
+  rackItems: InternalViewerDeviceDescriptor[];
   sectionType: "track" | "return" | "master";
 }
 
-export interface InternalViewerSessionPreviewDeviceCard {
+export type InternalViewerDeviceCategory =
+  | "instrument"
+  | "midi-effect"
+  | "audio-effect"
+  | "max-for-live"
+  | "rack"
+  | "unknown";
+
+export interface InternalViewerDeviceDescriptor {
   name: string;
   summary: string;
   isRack: boolean;
+  category: InternalViewerDeviceCategory;
+  categoryLabel: string;
+  categoryBadge: string;
+  categorySource: "sdk" | "inferred" | "unknown";
+  categoryConfidence: "high" | "medium" | "low";
 }
+
+export interface InternalViewerSessionPreviewDeviceCard extends InternalViewerDeviceDescriptor {}
 
 export interface InternalViewerSessionPreviewColumn {
   index: number;
@@ -132,6 +147,30 @@ function truncateLabel(value: string, max = 18): string {
   return value.length <= max ? value : `${value.slice(0, max - 1)}…`;
 }
 
+function renderDeviceBadge(device: InternalViewerDeviceDescriptor): string {
+  const sourceTag = device.categorySource === "inferred"
+    ? `<span class="device-source" title="Device category inferred">inferred</span>`
+    : "";
+
+  return `<div class="device-badge-row">
+    <span class="device-type-badge device-type-${escapeHtml(device.category)}">${escapeHtml(device.categoryBadge)}</span>
+    ${sourceTag}
+  </div>`;
+}
+
+function renderDeviceLegend(): string {
+  return `<div class="device-legend">
+    <span class="legend-title">Legend</span>
+    <span class="device-type-badge device-type-instrument">INST</span>
+    <span class="device-type-badge device-type-midi-effect">MIDI FX</span>
+    <span class="device-type-badge device-type-audio-effect">AUDIO FX</span>
+    <span class="device-type-badge device-type-max-for-live">M4L</span>
+    <span class="device-type-badge device-type-rack">RACK</span>
+    <span class="device-type-badge device-type-unknown">?</span>
+    <small>Device categories may be inferred when the SDK does not expose a stable device class.</small>
+  </div>`;
+}
+
 function renderQuickOpenButton(link: InternalViewerQuickLink): string {
   const disabledAttr = link.exists ? "" : " disabled";
   const toneClass = link.key === "launcher" ? " is-primary" : "";
@@ -179,8 +218,13 @@ function renderOverview(model: InternalViewerModel): string {
         <span class="label">Viewer</span>
         <strong>${escapeHtml(model.internalVisualPreviewEnabled ? "Internal preview enabled" : "Metadata only")}</strong>
       </article>
+      <article class="overview-card">
+        <span class="label">Device types</span>
+        <strong>INST / MIDI FX / AUDIO FX / M4L / RACK / ?</strong>
+      </article>
     </div>
     <div class="notice">${escapeHtml(model.statusMessage)}</div>
+    ${renderDeviceLegend()}
     ${warningBlock}
     <div class="quick-open">
       <div class="section-header">
@@ -211,6 +255,7 @@ function renderSessionPreview(model: InternalViewerModel): string {
   return `<div class="notice">
       Internal preview uses exported JSON. For full diagrams, open the external launcher.
     </div>
+    ${renderDeviceLegend()}
     <div class="preview-metrics-inline">
       <span>tracks:${model.metrics.tracks}</span>
       <span>returns:${model.metrics.returns}</span>
@@ -235,7 +280,8 @@ function renderSessionPreview(model: InternalViewerModel): string {
                   column.deviceCards.length > 0
                     ? column.deviceCards
                         .map(
-                          (device) => `<article class="session-device-card ${device.isRack ? "is-rack" : ""}">
+                          (device) => `<article class="session-device-card ${device.isRack ? "is-rack" : ""} device-tone-${escapeHtml(device.category)}">
+                            ${renderDeviceBadge(device)}
                             <strong>${escapeHtml(device.name)}</strong>
                             <span>${escapeHtml(device.summary)}</span>
                           </article>`,
@@ -269,37 +315,9 @@ function renderKanbanPreview(model: InternalViewerModel): string {
   return `<div class="notice">
       Kanban preview is rendered directly inside Live from exported JSON. Mermaid remains external.
     </div>
-    <div class="kanban-scroll">
-      <div class="kanban-grid">
-        ${model.sessionPreviewColumns
-          .map(
-            (column) => `<section class="kanban-column session-column-${escapeHtml(column.sectionType)} session-kind-${escapeHtml(column.kind)}">
-              <header class="kanban-column-header">
-                <strong>${escapeHtml(column.name)}</strong>
-                <span class="kind-badge kind-${escapeHtml(column.sectionType)}">${escapeHtml(column.kind)}</span>
-              </header>
-              <div class="kanban-column-body">
-                <article class="kanban-card kanban-summary-card">
-                  <strong>${escapeHtml(column.name)} · ${escapeHtml(column.kind.toUpperCase())}</strong>
-                  <span>dev:${column.deviceCount} · sends:${column.sendCount} · racks:${column.rackCount}</span>
-                </article>
-                ${
-                  column.deviceCards.length > 0
-                    ? column.deviceCards
-                        .map(
-                          (device) => `<article class="kanban-card ${device.isRack ? "is-rack" : ""}">
-                            <strong>${escapeHtml(truncateLabel(device.name, 20))}</strong>
-                            <span>${escapeHtml(device.summary)}</span>
-                          </article>`,
-                        )
-                        .join("")
-                    : `<article class="kanban-card kanban-empty-card"><span>No devices</span></article>`
-                }
-              </div>
-            </section>`,
-          )
-          .join("")}
-      </div>
+    <div class="empty-state">
+      <strong>Kanban preview moved to external diagrams.</strong>
+      <span>Use the external launcher to open Mermaid Kanban exports.</span>
     </div>`;
 }
 
@@ -321,6 +339,7 @@ function renderMetroPreview(model: InternalViewerModel): string {
   return `<div class="notice">
       Metro preview is native HTML/CSS inside Live. Full Git / Metro Mermaid remains external.
     </div>
+    ${renderDeviceLegend()}
     <div class="metro-list">
       ${model.sessionPreviewColumns
         .map(
@@ -338,10 +357,10 @@ function renderMetroPreview(model: InternalViewerModel): string {
                 </article>
                 ${column.deviceCards
                   .map(
-                    (device) => `<article class="metro-stop ${device.isRack ? "is-rack" : ""}">
-                      <span class="metro-dot"></span>
+                    (device) => `<article class="metro-stop ${device.isRack ? "is-rack" : ""} metro-${escapeHtml(device.category)}">
+                      <span class="metro-dot metro-dot-${escapeHtml(device.category)}"></span>
                       <strong>${escapeHtml(truncateLabel(device.name, 18))}</strong>
-                      <small>${escapeHtml(truncateLabel(device.summary, 24))}</small>
+                      <small>${escapeHtml(device.categoryBadge)} · ${escapeHtml(truncateLabel(device.summary, 22))}</small>
                     </article>`,
                   )
                   .join("")}
@@ -417,6 +436,7 @@ function renderDevices(model: InternalViewerModel): string {
   }
 
   return `<div class="device-list">
+    ${renderDeviceLegend()}
     ${model.deviceTracks
       .map(
         (track) => `<article class="device-card">
@@ -427,19 +447,27 @@ function renderDevices(model: InternalViewerModel): string {
             </div>
             <span class="kind-badge kind-${escapeHtml(track.sectionType)}">${escapeHtml(track.kind)}</span>
           </header>
-          <div class="chip-group">
+          <div class="chip-group chip-group-devices">
             ${
-              track.deviceSummary.length > 0
-                ? track.deviceSummary.map((item) => `<span class="chip">${escapeHtml(item)}</span>`).join("")
+              track.deviceItems.length > 0
+                ? track.deviceItems.map((item) => `<span class="chip chip-device device-tone-${escapeHtml(item.category)}">
+                    ${renderDeviceBadge(item)}
+                    <strong>${escapeHtml(truncateLabel(item.name, 24))}</strong>
+                    <em>${escapeHtml(truncateLabel(item.summary, 34))}</em>
+                  </span>`).join("")
                 : `<span class="empty-inline">No devices</span>`
             }
           </div>
           ${
-            track.rackSummary.length > 0
+            track.rackItems.length > 0
               ? `<div class="rack-summary">
                   <span class="label">Racks</span>
-                  <div class="chip-group">${track.rackSummary
-                    .map((item) => `<span class="chip chip-rack">${escapeHtml(item)}</span>`)
+                  <div class="chip-group chip-group-devices">${track.rackItems
+                    .map((item) => `<span class="chip chip-device chip-rack device-tone-rack">
+                      ${renderDeviceBadge(item)}
+                      <strong>${escapeHtml(truncateLabel(item.name, 24))}</strong>
+                      <em>${escapeHtml(truncateLabel(item.summary, 34))}</em>
+                    </span>`)
                     .join("")}</div>
                 </div>`
               : ""
@@ -540,6 +568,13 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       --live-cyan: #00cfe8;
       --live-magenta: #d26ecf;
       --live-purple: #9384ff;
+      --track-midi: #9bb4e8;
+      --device-instrument: #f5a623;
+      --device-midi-fx: #7755cc;
+      --device-audio-fx: #00bcd4;
+      --device-m4l: #ff4fd8;
+      --device-rack: #d48a00;
+      --device-unknown: #777777;
       --live-grid: rgba(0, 0, 0, 0.18);
       --live-shadow: rgba(0, 0, 0, 0.14);
       --live-slot: #d0d0d0;
@@ -692,7 +727,6 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       font-weight: 700;
     }
     #internal-tab-session:checked ~ .tab-bar label[for="internal-tab-session"],
-    #internal-tab-kanban:checked ~ .tab-bar label[for="internal-tab-kanban"],
     #internal-tab-metro:checked ~ .tab-bar label[for="internal-tab-metro"],
     #internal-tab-outputs:checked ~ .tab-bar label[for="internal-tab-outputs"],
     #internal-tab-devices:checked ~ .tab-bar label[for="internal-tab-devices"],
@@ -716,7 +750,6 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       align-content: start;
     }
     #internal-tab-session:checked ~ .panel-shell .panel-session,
-    #internal-tab-kanban:checked ~ .panel-shell .panel-kanban,
     #internal-tab-metro:checked ~ .panel-shell .panel-metro,
     #internal-tab-outputs:checked ~ .panel-shell .panel-outputs,
     #internal-tab-devices:checked ~ .panel-shell .panel-devices,
@@ -762,6 +795,80 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       color: #5a3200;
       border-color: #a87d37;
       background: #d8c29c;
+    }
+    .device-legend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border: 1px solid var(--live-border);
+      border-radius: 4px;
+      background: #d1d1d1;
+      color: var(--live-muted);
+      font-size: 10px;
+    }
+    .legend-title {
+      font-weight: 700;
+      color: var(--live-text);
+      margin-right: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .device-legend small {
+      color: var(--live-muted);
+      line-height: 1.3;
+    }
+    .device-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 14px;
+    }
+    .device-type-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 16px;
+      padding: 0 5px;
+      border-radius: 2px;
+      border: 1px solid rgba(0,0,0,0.22);
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #111;
+    }
+    .device-type-instrument {
+      background: rgba(245,166,35,0.42);
+      border-color: rgba(153,102,0,0.55);
+    }
+    .device-type-midi-effect {
+      background: rgba(122,140,255,0.34);
+      border-color: rgba(70,79,155,0.5);
+    }
+    .device-type-audio-effect {
+      background: rgba(0,188,212,0.28);
+      border-color: rgba(0,106,120,0.5);
+    }
+    .device-type-max-for-live {
+      background: rgba(255,79,216,0.28);
+      border-color: rgba(148,28,118,0.5);
+    }
+    .device-type-rack {
+      background: rgba(212,138,0,0.3);
+      border-color: rgba(130,84,0,0.56);
+    }
+    .device-type-unknown {
+      background: rgba(119,119,119,0.24);
+      border-color: rgba(79,79,79,0.48);
+    }
+    .device-source {
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: rgba(17,17,17,0.56);
     }
     .section-header {
       display: flex;
@@ -875,7 +982,7 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     }
     .session-kind-midi .session-column-header,
     .session-kind-midi .kanban-column-header {
-      background: linear-gradient(180deg, #a4b8de, #8ea0c5);
+      background: linear-gradient(180deg, #adc2f0, var(--track-midi));
     }
     .session-kind-audio .session-column-header,
     .session-kind-audio .kanban-column-header {
@@ -940,6 +1047,26 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       gap: 3px;
       line-height: 1.28;
       min-height: 46px;
+    }
+    .device-tone-instrument {
+      background: linear-gradient(180deg, rgba(245,166,35,0.22), rgba(208,208,208,0.96));
+    }
+    .device-tone-midi-effect {
+      background: linear-gradient(180deg, rgba(122,140,255,0.2), rgba(208,208,208,0.96));
+    }
+    .device-tone-audio-effect {
+      background: linear-gradient(180deg, rgba(0,188,212,0.18), rgba(208,208,208,0.96));
+    }
+    .device-tone-max-for-live {
+      background: linear-gradient(180deg, rgba(255,79,216,0.2), rgba(208,208,208,0.96));
+    }
+    .device-tone-rack {
+      background: linear-gradient(180deg, rgba(212,138,0,0.24), rgba(243,208,153,0.96));
+      border-color: #b77900;
+      box-shadow: inset 0 0 0 1px rgba(245,160,0,0.16);
+    }
+    .device-tone-unknown {
+      background: linear-gradient(180deg, rgba(119,119,119,0.16), rgba(208,208,208,0.96));
     }
     .session-device-card.is-rack,
     .kanban-card.is-rack {
@@ -1047,6 +1174,25 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     .metro-stop.is-rack .metro-dot {
       background: var(--live-orange);
     }
+    .metro-dot-instrument {
+      background: var(--device-instrument);
+    }
+    .metro-dot-midi-effect {
+      background: var(--device-midi-fx);
+    }
+    .metro-dot-audio-effect {
+      background: var(--device-audio-fx);
+    }
+    .metro-dot-max-for-live {
+      background: var(--device-m4l);
+    }
+    .metro-dot-rack {
+      background: var(--device-rack);
+      box-shadow: 0 0 0 2px rgba(212,138,0,0.18);
+    }
+    .metro-dot-unknown {
+      background: var(--device-unknown);
+    }
     .metro-stop.is-track .metro-dot {
       background: #f3f3f3;
     }
@@ -1131,6 +1277,9 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       flex-wrap: wrap;
       gap: 6px;
     }
+    .chip-group-devices {
+      gap: 8px;
+    }
     .chip {
       padding: 5px 8px;
       border-radius: 2px;
@@ -1141,6 +1290,26 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       min-height: 24px;
       display: inline-flex;
       align-items: center;
+    }
+    .chip-device {
+      display: grid;
+      align-content: start;
+      gap: 4px;
+      min-width: 148px;
+      max-width: 220px;
+      background: #d6d6d6;
+      padding: 7px 8px;
+    }
+    .chip-device strong {
+      font-size: 10px;
+      line-height: 1.2;
+      color: var(--live-text);
+    }
+    .chip-device em {
+      font-style: normal;
+      font-size: 9px;
+      line-height: 1.25;
+      color: var(--live-muted);
     }
     .chip-rack {
       background: var(--live-rack);
@@ -1302,7 +1471,6 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     </section>
 
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-session" checked>
-    <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-kanban">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-metro">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-outputs">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-devices">
@@ -1311,7 +1479,6 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
 
     <nav class="tab-bar" aria-label="Internal viewer tabs">
       <label class="tab-label" for="internal-tab-session">Session</label>
-      <label class="tab-label" for="internal-tab-kanban">Kanban</label>
       <label class="tab-label" for="internal-tab-metro">Git / Metro</label>
       <label class="tab-label" for="internal-tab-outputs">Outputs</label>
       <label class="tab-label" for="internal-tab-devices">Devices</label>
@@ -1322,9 +1489,6 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     <section class="panel-shell">
       <div class="panel panel-session">
         ${renderSessionPreview(model)}
-      </div>
-      <div class="panel panel-kanban">
-        ${renderKanbanPreview(model)}
       </div>
       <div class="panel panel-metro">
         ${renderMetroPreview(model)}

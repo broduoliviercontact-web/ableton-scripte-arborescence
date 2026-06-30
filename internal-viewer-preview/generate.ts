@@ -2,48 +2,48 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createInternalViewerHtml, type InternalViewerModel } from "../extension/src/internal-viewer/template.js";
 
-const views = ["session", "kanban", "metro", "outputs", "devices", "files", "overview"] as const;
+const views = ["session", "metro", "outputs", "devices", "files", "overview"] as const;
 
 const columns: InternalViewerModel["sessionPreviewColumns"] = [
   { index: 0, name: "DRUMS", kind: "group", sectionType: "track", deviceCount: 2, sendCount: 2, rackCount: 1, deviceCards: [
-    { name: "Drum Buss", summary: "Drum Buss · Audio Effect", isRack: false },
-    { name: "Parallel Crunch", summary: "Parallel Crunch · Rack · chains:3", isRack: true },
+    { name: "Drum Buss", summary: "Drum Buss · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "Parallel Crunch", summary: "Parallel Crunch · Rack · chains:3", isRack: true, category: "rack", categoryLabel: "Rack", categoryBadge: "RACK", categorySource: "inferred", categoryConfidence: "high" },
   ] },
   { index: 1, name: "Kick — Analog", kind: "midi", sectionType: "track", deviceCount: 3, sendCount: 2, rackCount: 1, deviceCards: [
-    { name: "Kick Designer", summary: "Kick Designer · Rack · chains:4", isRack: true },
-    { name: "Saturator", summary: "Saturator · Audio Effect", isRack: false },
-    { name: "EQ Eight", summary: "EQ Eight · Audio Effect", isRack: false },
+    { name: "Kick Designer", summary: "Kick Designer · Rack · chains:4", isRack: true, category: "rack", categoryLabel: "Rack", categoryBadge: "RACK", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "Saturator", summary: "Saturator · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "EQ Eight", summary: "EQ Eight · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
   ] },
   { index: 2, name: "Percussion", kind: "midi", sectionType: "track", deviceCount: 2, sendCount: 2, rackCount: 1, deviceCards: [
-    { name: "Drum Rack", summary: "Drum Rack · Rack · pads:16", isRack: true },
-    { name: "Glue Compressor", summary: "Glue Compressor · Audio Effect", isRack: false },
+    { name: "Drum Rack", summary: "Drum Rack · Rack · pads:16", isRack: true, category: "rack", categoryLabel: "Rack", categoryBadge: "RACK", categorySource: "sdk", categoryConfidence: "high" },
+    { name: "Glue Compressor", summary: "Glue Compressor · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
   ] },
   { index: 3, name: "Bass Sequence", kind: "midi", sectionType: "track", deviceCount: 3, sendCount: 2, rackCount: 1, deviceCards: [
-    { name: "Bass Engine", summary: "Bass Engine · Rack · chains:3", isRack: true },
-    { name: "Roar", summary: "Roar · Audio Effect", isRack: false },
-    { name: "Utility", summary: "Utility · Audio Effect", isRack: false },
+    { name: "Bass Engine", summary: "Bass Engine · Rack · chains:3", isRack: true, category: "rack", categoryLabel: "Rack", categoryBadge: "RACK", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "LFO", summary: "LFO · Max for Live", isRack: false, category: "max-for-live", categoryLabel: "Max for Live", categoryBadge: "M4L", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "Roar", summary: "Roar · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
   ] },
   { index: 4, name: "Juno Chords", kind: "audio", sectionType: "track", deviceCount: 2, sendCount: 2, rackCount: 0, deviceCards: [
-    { name: "Auto Filter", summary: "Auto Filter · Audio Effect", isRack: false },
-    { name: "Chorus-Ensemble", summary: "Chorus-Ensemble · Audio Effect", isRack: false },
+    { name: "Auto Filter", summary: "Auto Filter · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "Chorus-Ensemble", summary: "Chorus-Ensemble · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
   ] },
   { index: 5, name: "Lead Atmosphere", kind: "midi", sectionType: "track", deviceCount: 3, sendCount: 2, rackCount: 1, deviceCards: [
-    { name: "Wavetable", summary: "Wavetable · Instrument", isRack: false },
-    { name: "Movement Rack", summary: "Movement Rack · Rack · chains:2", isRack: true },
-    { name: "Echo", summary: "Echo · Audio Effect", isRack: false },
+    { name: "Wavetable", summary: "Wavetable · Instrument", isRack: false, category: "instrument", categoryLabel: "Instrument", categoryBadge: "INST", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "Movement Rack", summary: "Movement Rack · Rack · chains:2", isRack: true, category: "rack", categoryLabel: "Rack", categoryBadge: "RACK", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "Echo", summary: "Echo · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
   ] },
   { index: 0, name: "A — Short Verb", kind: "return", sectionType: "return", deviceCount: 2, sendCount: 0, rackCount: 0, deviceCards: [
-    { name: "Hybrid Reverb", summary: "Hybrid Reverb · Audio Effect", isRack: false },
-    { name: "EQ Eight", summary: "EQ Eight · Audio Effect", isRack: false },
+    { name: "Hybrid Reverb", summary: "Hybrid Reverb · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "EQ Eight", summary: "EQ Eight · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
   ] },
   { index: 1, name: "B — Tape Delay", kind: "return", sectionType: "return", deviceCount: 2, sendCount: 0, rackCount: 0, deviceCards: [
-    { name: "Echo", summary: "Echo · Audio Effect", isRack: false },
-    { name: "Saturator", summary: "Saturator · Audio Effect", isRack: false },
+    { name: "Echo", summary: "Echo · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "Saturator", summary: "Saturator · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
   ] },
   { index: 0, name: "Master", kind: "master", sectionType: "master", deviceCount: 3, sendCount: 0, rackCount: 0, deviceCards: [
-    { name: "EQ Eight", summary: "EQ Eight · Audio Effect", isRack: false },
-    { name: "Glue Compressor", summary: "Glue Compressor · Audio Effect", isRack: false },
-    { name: "Limiter", summary: "Limiter · Audio Effect", isRack: false },
+    { name: "EQ Eight", summary: "EQ Eight · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "Glue Compressor", summary: "Glue Compressor · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
+    { name: "Limiter", summary: "Limiter · Audio Effect", isRack: false, category: "audio-effect", categoryLabel: "Audio FX", categoryBadge: "AUDIO FX", categorySource: "inferred", categoryConfidence: "high" },
   ] },
 ];
 
@@ -68,8 +68,13 @@ const deviceTracks: InternalViewerModel["deviceTracks"] = columns.map((column) =
   sectionType: column.sectionType,
   deviceCount: column.deviceCount,
   rackCount: column.rackCount,
-  deviceSummary: column.deviceCards.map((device) => device.summary),
-  rackSummary: column.deviceCards.filter((device) => device.isRack).map((device) => `${device.name} · chains:${device.name === "Drum Rack" ? 16 : 3} · complete`),
+  deviceItems: column.deviceCards,
+  rackItems: column.deviceCards
+    .filter((device) => device.isRack)
+    .map((device) => ({
+      ...device,
+      summary: `${device.name} · chains:${device.name === "Drum Rack" ? 16 : 3} · complete`,
+    })),
 }));
 
 const files: InternalViewerModel["files"] = [

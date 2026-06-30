@@ -5,6 +5,7 @@ import { resolveExportLocations } from "../exportJson.js";
 import type { DeviceInfo, SessionMap, TrackInfo } from "../types.js";
 import {
   createInternalViewerHtml,
+  type InternalViewerDeviceDescriptor,
   type InternalViewerDeviceTrack,
   type InternalViewerFileEntry,
   type InternalViewerModel,
@@ -19,6 +20,77 @@ const ROUTING_NOT_EXPOSED = "Non exposé par le SDK";
 const MAX_DEVICE_SUMMARY_ITEMS = 12;
 const MAX_RACK_SUMMARY_ITEMS = 8;
 const MAX_PREVIEW_DEVICE_ITEMS = 16;
+
+const INSTRUMENT_NAMES = [
+  "drum rack",
+  "instrument rack",
+  "simpler",
+  "sampler",
+  "wavetable",
+  "operator",
+  "analog",
+  "drift",
+  "meld",
+  "collision",
+  "tension",
+  "electric",
+  "external instrument",
+  "dexed",
+  "serum",
+  "massive",
+  "kontakt",
+  "pigments",
+];
+
+const MIDI_EFFECT_NAMES = [
+  "arpeggiator",
+  "chord",
+  "scale",
+  "pitch",
+  "random",
+  "velocity",
+  "note length",
+  "midi monitor",
+  "expression control",
+  "midi effect rack",
+];
+
+const AUDIO_EFFECT_NAMES = [
+  "eq eight",
+  "auto filter",
+  "compressor",
+  "glue compressor",
+  "limiter",
+  "reverb",
+  "hybrid reverb",
+  "echo",
+  "delay",
+  "filter delay",
+  "shifter",
+  "chorus",
+  "phaser",
+  "flanger",
+  "saturator",
+  "overdrive",
+  "cabinet",
+  "amp",
+  "utility",
+  "gate",
+  "redux",
+  "roar",
+  "audio effect rack",
+];
+
+const MAX_FOR_LIVE_NAMES = [
+  "max for live",
+  " max ",
+  "m4l",
+  ".amxd",
+  "lfo",
+  "envelope follower",
+  "shaper",
+  "maxdevice",
+];
 
 type ExportReadStatus = "ok" | "missing" | "invalid";
 
@@ -112,6 +184,191 @@ function describePreviewDevice(device: DeviceInfo): string {
   if (device.chainsSummary?.count) parts.push(`chains:${device.chainsSummary.count}`);
   if (device.padsSummary?.count) parts.push(`pads:${device.padsSummary.count}`);
   return parts.join(" · ");
+}
+
+function includesKnownName(value: string, knownNames: string[]): boolean {
+  return knownNames.some((name) => value.includes(name));
+}
+
+function classifyDevice(
+  device: DeviceInfo,
+  track: TrackInfo,
+  deviceIndex: number,
+  firstKnownInstrumentIndex: number,
+): Pick<
+  InternalViewerDeviceDescriptor,
+  "category" | "categoryLabel" | "categoryBadge" | "categorySource" | "categoryConfidence"
+> {
+  const rawName = `${device.name} ${device.type}`.toLowerCase();
+  const deviceRecord = device as unknown as Record<string, unknown>;
+  const rawType = String(
+    deviceRecord.deviceType ??
+    deviceRecord.className ??
+    deviceRecord.kind ??
+    deviceRecord.objectType ??
+    device.type ??
+    "",
+  ).toLowerCase();
+
+  const looksLikeM4L =
+    rawType.includes("max") ||
+    rawType.includes("amxd") ||
+    rawType.includes("maxdevice") ||
+    MAX_FOR_LIVE_NAMES.some((name) => rawName.includes(name));
+
+  if (looksLikeM4L) {
+    const source =
+      rawType.includes("max") ||
+      rawType.includes("amxd") ||
+      rawType.includes("maxdevice")
+        ? "sdk"
+        : "inferred";
+
+    return {
+      category: "max-for-live",
+      categoryLabel: "Max for Live",
+      categoryBadge: "M4L",
+      categorySource: source,
+      categoryConfidence: source === "sdk" ? "high" : "medium",
+    };
+  }
+
+  if (rawType.includes("rack") || rawType.includes("drum") || isRackLike(device)) {
+    return {
+      category: "rack",
+      categoryLabel: "Rack",
+      categoryBadge: "RACK",
+      categorySource: rawType.includes("rack") || rawType.includes("drum") ? "sdk" : "inferred",
+      categoryConfidence: rawType.includes("rack") || rawType.includes("drum") ? "high" : "medium",
+    };
+  }
+
+  if (rawType.includes("instrument")) {
+    return {
+      category: "instrument",
+      categoryLabel: "Instrument",
+      categoryBadge: "INST",
+      categorySource: "sdk",
+      categoryConfidence: "high",
+    };
+  }
+
+  if (rawType.includes("midi") && rawType.includes("effect")) {
+    return {
+      category: "midi-effect",
+      categoryLabel: "MIDI FX",
+      categoryBadge: "MIDI FX",
+      categorySource: "sdk",
+      categoryConfidence: "high",
+    };
+  }
+
+  if (rawType.includes("audio") && rawType.includes("effect")) {
+    return {
+      category: "audio-effect",
+      categoryLabel: "Audio FX",
+      categoryBadge: "AUDIO FX",
+      categorySource: "sdk",
+      categoryConfidence: "high",
+    };
+  }
+
+  if (includesKnownName(rawName, INSTRUMENT_NAMES)) {
+    return {
+      category: "instrument",
+      categoryLabel: "Instrument",
+      categoryBadge: "INST",
+      categorySource: "inferred",
+      categoryConfidence: "high",
+    };
+  }
+
+  if (includesKnownName(rawName, MIDI_EFFECT_NAMES)) {
+    return {
+      category: "midi-effect",
+      categoryLabel: "MIDI FX",
+      categoryBadge: "MIDI FX",
+      categorySource: "inferred",
+      categoryConfidence: "high",
+    };
+  }
+
+  if (includesKnownName(rawName, AUDIO_EFFECT_NAMES)) {
+    return {
+      category: "audio-effect",
+      categoryLabel: "Audio FX",
+      categoryBadge: "AUDIO FX",
+      categorySource: "inferred",
+      categoryConfidence: "high",
+    };
+  }
+
+  if (track.kind === "audio") {
+    return {
+      category: "audio-effect",
+      categoryLabel: "Audio FX",
+      categoryBadge: "AUDIO FX",
+      categorySource: "inferred",
+      categoryConfidence: "medium",
+    };
+  }
+
+  if (track.kind === "midi") {
+    if (firstKnownInstrumentIndex >= 0) {
+      if (deviceIndex < firstKnownInstrumentIndex) {
+        return {
+          category: "midi-effect",
+          categoryLabel: "MIDI FX",
+          categoryBadge: "MIDI FX",
+          categorySource: "inferred",
+          categoryConfidence: "medium",
+        };
+      }
+
+      if (deviceIndex === firstKnownInstrumentIndex) {
+        return {
+          category: "instrument",
+          categoryLabel: "Instrument",
+          categoryBadge: "INST",
+          categorySource: "inferred",
+          categoryConfidence: "high",
+        };
+      }
+
+      return {
+        category: "audio-effect",
+        categoryLabel: "Audio FX",
+        categoryBadge: "AUDIO FX",
+        categorySource: "inferred",
+        categoryConfidence: "medium",
+      };
+    }
+  }
+
+  return {
+    category: "unknown",
+    categoryLabel: "Unknown",
+    categoryBadge: "?",
+    categorySource: "unknown",
+    categoryConfidence: "low",
+  };
+}
+
+function toDeviceDescriptor(
+  device: DeviceInfo,
+  track: TrackInfo,
+  deviceIndex: number,
+  firstKnownInstrumentIndex: number,
+  summary: string,
+): InternalViewerDeviceDescriptor {
+  const classification = classifyDevice(device, track, deviceIndex, firstKnownInstrumentIndex);
+
+  return {
+    name: device.name,
+    summary,
+    isRack: isRackLike(device),
+    ...classification,
+  };
 }
 
 function orderedTracks(sessionMap: SessionMap): Array<{
@@ -354,18 +611,39 @@ function buildDevicesModel(sessionMap: SessionMap | null): InternalViewerDeviceT
 
   const model = orderedTracks(sessionMap).map(({ track, sectionType }) => {
     const rackDevices = track.devices.filter((device) => isRackLike(device));
-    const deviceSummary = track.devices
+    const firstKnownInstrumentIndex = track.devices.findIndex((device) =>
+      includesKnownName(`${device.name} ${device.type}`.toLowerCase(), INSTRUMENT_NAMES),
+    );
+    const deviceItems = track.devices
       .slice(0, MAX_DEVICE_SUMMARY_ITEMS)
-      .map((device) => describeDevice(device));
+      .map((device, index) => toDeviceDescriptor(device, track, index, firstKnownInstrumentIndex, describeDevice(device)));
     if (track.devices.length > MAX_DEVICE_SUMMARY_ITEMS) {
-      deviceSummary.push(`+${track.devices.length - MAX_DEVICE_SUMMARY_ITEMS} more devices`);
+      deviceItems.push({
+        name: "More devices",
+        summary: `+${track.devices.length - MAX_DEVICE_SUMMARY_ITEMS} more devices`,
+        isRack: false,
+        category: "unknown",
+        categoryLabel: "Unknown",
+        categoryBadge: "?",
+        categorySource: "unknown",
+        categoryConfidence: "low",
+      });
     }
 
-    const rackSummary = rackDevices
+    const rackItems = rackDevices
       .slice(0, MAX_RACK_SUMMARY_ITEMS)
-      .map((device) => describeRack(device));
+      .map((device) => toDeviceDescriptor(device, track, track.devices.indexOf(device), firstKnownInstrumentIndex, describeRack(device)));
     if (rackDevices.length > MAX_RACK_SUMMARY_ITEMS) {
-      rackSummary.push(`+${rackDevices.length - MAX_RACK_SUMMARY_ITEMS} more racks`);
+      rackItems.push({
+        name: "More racks",
+        summary: `+${rackDevices.length - MAX_RACK_SUMMARY_ITEMS} more racks`,
+        isRack: true,
+        category: "rack",
+        categoryLabel: "Rack",
+        categoryBadge: "RACK",
+        categorySource: "inferred",
+        categoryConfidence: "medium",
+      });
     }
 
     return {
@@ -374,8 +652,8 @@ function buildDevicesModel(sessionMap: SessionMap | null): InternalViewerDeviceT
       kind: formatTrackKind(track.kind),
       deviceCount: track.devices.length,
       rackCount: rackDevices.length,
-      deviceSummary,
-      rackSummary,
+      deviceItems,
+      rackItems,
       sectionType,
     };
   });
@@ -394,19 +672,23 @@ function buildSessionPreviewColumns(sessionMap: SessionMap | null): InternalView
 
   const columns = orderedTracks(sessionMap).map(({ track, sectionType }) => {
     const rackCount = track.devices.filter((device) => isRackLike(device)).length;
+    const firstKnownInstrumentIndex = track.devices.findIndex((device) =>
+      includesKnownName(`${device.name} ${device.type}`.toLowerCase(), INSTRUMENT_NAMES),
+    );
     const deviceCards = track.devices
       .slice(0, MAX_PREVIEW_DEVICE_ITEMS)
-      .map((device) => ({
-        name: device.name,
-        summary: describePreviewDevice(device),
-        isRack: isRackLike(device),
-      }));
+      .map((device, index) => toDeviceDescriptor(device, track, index, firstKnownInstrumentIndex, describePreviewDevice(device)));
 
     if (track.devices.length > MAX_PREVIEW_DEVICE_ITEMS) {
       deviceCards.push({
         name: "More devices",
         summary: `+${track.devices.length - MAX_PREVIEW_DEVICE_ITEMS} more devices`,
         isRack: false,
+        category: "unknown",
+        categoryLabel: "Unknown",
+        categoryBadge: "?",
+        categorySource: "unknown",
+        categoryConfidence: "low",
       });
     }
 

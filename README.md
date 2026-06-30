@@ -114,6 +114,13 @@ légère :
 - elle se concentre sur les données réellement fiables exposées par le SDK.
 - la v1.2 aligne davantage son langage visuel sur une logique DAW / Live-like,
   sans utiliser de logo ou branding officiel Ableton.
+- la v1.2.1 ajoute un code couleur des types de devices dans la modale
+  intégrée. Quand le SDK n’expose pas une classe stable, la catégorie peut être
+  inférée à partir du nom du device, du type de piste et de sa position dans la
+  chaîne.
+- la v1.2.2 ajoute un code couleur spécifique aux devices Max for Live et
+  retire l’onglet Kanban de la modale intégrée, tout en conservant les exports
+  Mermaid Kanban disponibles en externe.
 
 En usage normal, le menu **Extensions** n'affiche qu'une seule entrée :
 
