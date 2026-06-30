@@ -13,6 +13,7 @@
     "generate:mermaid:git": "tsx mermaid/generateMermaid.ts --profile git --output exports/session-map-git.mmd --file-suffix git",
     "generate:mermaid:kanban": "tsx mermaid/generateMermaid.ts --profile kanban --output exports/session-map-kanban.mmd --file-suffix kanban",
     "generate:session-grid": "tsx session-grid/generateSessionGrid.ts",
+    "create:routing-overrides": "tsx scripts/createRoutingOverrides.ts",
     "render:mermaid": "tsx mermaid/renderMermaid.ts",
     "render:mermaid:flow": "tsx mermaid/renderMermaid.ts --profile flow --input exports/session-map-flow.mmd --svg exports/session-map-flow.svg --png exports/session-map-flow.png --html exports/session-map-mermaid-flow.html --file-suffix flow",
     "render:mermaid:git": "tsx mermaid/renderMermaid.ts --profile git --input exports/session-map-git.mmd --svg exports/session-map-git.svg --png exports/session-map-git.png --html exports/session-map-mermaid-git.html --file-suffix git",

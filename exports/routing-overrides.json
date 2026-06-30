@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-06-30T09:14:14.143Z",
+  "source": "manual-routing-overrides",
+  "notes": "Manual routing information because the SDK does not expose routing I/O in the current scan.",
+  "tracks": {
+    "1-MIDI": {
+      "kind": "midi",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": null,
+      "sends": {
+        "A-Reverb": null,
+        "B-Delay": null
+      },
+      "group": null,
+      "notes": "Fill manually from Ableton I/O."
+    },
+    "2-Dexed": {
+      "kind": "midi",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": null,
+      "sends": {
+        "A-Reverb": null,
+        "B-Delay": null
+      },
+      "group": null,
+      "notes": "Fill manually from Ableton I/O."
+    },
+    "A-Reverb": {
+      "kind": "return",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": "Sends",
+      "audioTo": null,
+      "monitor": null,
+      "sends": {},
+      "group": null,
+      "notes": "Placeholder. Fill manually from Ableton I/O."
+    },
+    "B-Delay": {
+      "kind": "return",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": "Sends",
+      "audioTo": null,
+      "monitor": null,
+      "sends": {},
+      "group": null,
+      "notes": "Placeholder. Fill manually from Ableton I/O."
+    },
+    "Main": {
+      "kind": "master",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": "Tracks + Returns",
+      "audioTo": null,
+      "monitor": null,
+      "sends": {},
+      "group": null,
+      "notes": "Placeholder. Fill manually from Ableton I/O."
+    }
+  },
+  "sidechains": [],
+  "connections": []
+}

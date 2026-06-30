@@ -9,6 +9,33 @@ interface RoutingInfo {
   channel: string | null;
 }
 
+interface TrackRoutingInfo {
+  source: "sdk" | "manual" | "none";
+  audioFrom: string | null;
+  audioTo: string | null;
+  midiFrom: string | null;
+  midiTo: string | null;
+  monitor: string | null;
+  group: string | null;
+  notes: string;
+}
+
+interface ManualRoutingConnection {
+  from: string;
+  to: string;
+  type: "audio" | "midi" | "sidechain" | "unknown";
+  label: string;
+}
+
+interface ManualRoutingState {
+  status: "missing" | "loaded" | "invalid";
+  sourcePath: string;
+  warnings: string[];
+  tracks: Record<string, unknown>;
+  sidechains: Array<unknown>;
+  connections: ManualRoutingConnection[];
+}
+
 interface StructureSummaryItem {
   index: number;
   name: string;
@@ -47,6 +74,7 @@ interface TrackInfo {
   color?: string | null;
   input?: RoutingInfo | null;
   output?: RoutingInfo | null;
+  routing?: TrackRoutingInfo;
   devices: DeviceInfo[];
   sends: SendInfo[];
 }
@@ -61,6 +89,7 @@ interface SessionMap {
   tracks: TrackInfo[];
   returnTracks: TrackInfo[];
   masterTrack: TrackInfo | null;
+  manualRouting?: ManualRoutingState;
 }
 
 interface OutputPaths {
@@ -235,6 +264,10 @@ function routingText(routing: RoutingInfo | null | undefined): string {
   return parts.length > 0 ? parts.join(" / ") : "Routing I/O non disponible dans cette version du SDK";
 }
 
+function manualRoutingText(value: string | null | undefined): string {
+  return value && value.trim().length > 0 ? value.trim() : "—";
+}
+
 function isRackLike(device: DeviceInfo): boolean {
   return (
     device.type.toLowerCase().includes("rack") ||
@@ -300,8 +333,12 @@ function renderDevice(device: DeviceInfo): string {
   </article>`;
 }
 
-function renderTrack(track: TrackInfo): string {
+function renderTrack(track: TrackInfo, sessionMap: SessionMap): string {
   const rackCount = track.devices.filter((device) => isRackLike(device)).length;
+  const manualRouting = track.routing;
+  const manualConnections = (sessionMap.manualRouting?.connections ?? []).filter(
+    (connection) => connection.from === track.name || connection.to === track.name,
+  );
   const deviceCards = track.devices.length
     ? track.devices.map(renderDevice).join("")
     : `<div class="empty-state">No devices on this track.</div>`;
@@ -320,17 +357,35 @@ function renderTrack(track: TrackInfo): string {
         <span>dev:${track.devices.length}</span>
         <span>sends:${track.sends.length}</span>
         ${rackCount > 0 ? `<span>racks:${rackCount}</span>` : ""}
+        ${manualRouting?.source === "manual" ? `<span>MANUAL</span>` : ""}
       </div>
     </div>
     <div class="track-routing">
       <div><strong>In</strong><span>${escapeHtml(routingText(track.input))}</span></div>
       <div><strong>Out</strong><span>${escapeHtml(routingText(track.output))}</span></div>
     </div>
+    ${
+      manualRouting?.source === "manual"
+        ? `<div class="track-routing manual-routing">
+            <div><strong>MIDI From</strong><span>${escapeHtml(manualRoutingText(manualRouting.midiFrom))}</span></div>
+            <div><strong>MIDI To</strong><span>${escapeHtml(manualRoutingText(manualRouting.midiTo))}</span></div>
+            <div><strong>Audio From</strong><span>${escapeHtml(manualRoutingText(manualRouting.audioFrom))}</span></div>
+            <div><strong>Audio To</strong><span>${escapeHtml(manualRoutingText(manualRouting.audioTo))}</span></div>
+            <div><strong>Monitor</strong><span>${escapeHtml(manualRoutingText(manualRouting.monitor))}</span></div>
+            <div><strong>Source</strong><span>MANUAL</span></div>
+          </div>`
+        : ""
+    }
     <div class="device-stack">
       ${deviceCards}
     </div>
     <div class="track-footer">
       <div class="footer-row"><strong>Sends</strong><span>${track.sends.length ? escapeHtml(track.sends.map((send) => send.name).join(", ")) : "None"}</span></div>
+      ${
+        manualConnections.length
+          ? `<div class="footer-row"><strong>Manual Connections</strong><span>${escapeHtml(manualConnections.map((connection) => `${connection.from} → ${connection.to}${connection.label ? ` · ${connection.label}` : ""}`).join(" | "))}</span></div>`
+          : ""
+      }
     </div>
   </section>`;
 }
@@ -343,7 +398,7 @@ function renderTemplate(sessionMap: SessionMap): string {
   ];
   const deviceCount = orderedTracks.reduce((sum, track) => sum + track.devices.length, 0);
   const sendCount = orderedTracks.reduce((sum, track) => sum + track.sends.length, 0);
-  const columns = orderedTracks.map(renderTrack).join("\n");
+  const columns = orderedTracks.map((track) => renderTrack(track, sessionMap)).join("\n");
 
   return `<!doctype html>
 <html lang="fr">
@@ -533,6 +588,11 @@ function renderTemplate(sessionMap: SessionMap): string {
       padding: 10px 12px;
       display: grid;
       gap: 10px;
+    }
+    .manual-routing {
+      border-color: rgba(245,166,35,0.18);
+      background: rgba(245,166,35,0.06);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .track-routing div,
     .footer-row {

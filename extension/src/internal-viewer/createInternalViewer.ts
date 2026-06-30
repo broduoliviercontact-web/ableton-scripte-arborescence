@@ -2,6 +2,7 @@ import { access, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import type { ExtensionContext } from "@ableton-extensions/sdk";
 import { resolveExportLocations } from "../exportJson.js";
+import { routingOverridesPath } from "../routingOverrides.js";
 import type { DeviceInfo, SessionMap, TrackInfo } from "../types.js";
 import {
   createInternalViewerHtml,
@@ -37,6 +38,10 @@ interface LinkTarget {
   quickOpen?: boolean;
 }
 
+interface InternalViewerOptions {
+  sessionMapOverride?: SessionMap | null;
+}
+
 function formatTrackKind(kind: TrackInfo["kind"]): string {
   switch (kind) {
     case "audio":
@@ -65,6 +70,10 @@ function formatRoutingLabel(track: TrackInfo["input"] | TrackInfo["output"]): st
   const channel = formatRoutingPart(track.channel);
   if (!type && !channel) return ROUTING_NOT_EXPOSED;
   return [type, channel].filter(Boolean).join(" · ");
+}
+
+function formatManualRouting(value: string | null | undefined): string {
+  return value && value.trim().length > 0 ? value.trim() : "—";
 }
 
 function formatSendSummary(track: TrackInfo): string {
@@ -152,6 +161,15 @@ async function readLatestSessionMap(
   }
 }
 
+function latestSessionMapFromOverride(
+  sessionMapOverride: SessionMap | null | undefined,
+): LatestSessionMapState | null {
+  if (!sessionMapOverride) return null;
+  console.log("[Ableton Session Mapper] Read latest export metadata started");
+  console.log("[Ableton Session Mapper] Read latest export metadata completed (fresh export)");
+  return { sessionMap: sessionMapOverride, status: "ok" };
+}
+
 async function buildLinkTargets(exportDirectory: string, jsonPath: string, htmlPath: string, sessionGridPath: string, diagramsPath: string): Promise<LinkTarget[]> {
   const specs: Array<Omit<LinkTarget, "exists">> = [
     {
@@ -184,6 +202,41 @@ async function buildLinkTargets(exportDirectory: string, jsonPath: string, htmlP
       path: jsonPath,
       openLabel: "session-map.json",
       group: "Core Outputs",
+    },
+    {
+      key: "routing-overrides",
+      label: "Open routing-overrides.json",
+      path: routingOverridesPath(exportDirectory),
+      openLabel: "routing-overrides.json",
+      group: "Routing / Diagnostics",
+    },
+    {
+      key: "capability-matrix-html",
+      label: "Open SDK Capability Matrix",
+      path: join(exportDirectory, "sdk-capability-matrix.html"),
+      openLabel: "SDK Capability Matrix",
+      group: "Routing / Diagnostics",
+    },
+    {
+      key: "capability-matrix-json",
+      label: "Open SDK Capability Matrix JSON",
+      path: join(exportDirectory, "sdk-capability-matrix.json"),
+      openLabel: "SDK Capability Matrix JSON",
+      group: "Routing / Diagnostics",
+    },
+    {
+      key: "sdk-diagnostic",
+      label: "Open sdk-diagnostic.json",
+      path: join(exportDirectory, "sdk-diagnostic.json"),
+      openLabel: "sdk-diagnostic.json",
+      group: "Routing / Diagnostics",
+    },
+    {
+      key: "rack-diagnostic",
+      label: "Open rack-diagnostic.json",
+      path: join(exportDirectory, "rack-diagnostic.json"),
+      openLabel: "rack-diagnostic.json",
+      group: "Routing / Diagnostics",
     },
     {
       key: "flow-html",
@@ -267,29 +320,40 @@ async function buildLinkTargets(exportDirectory: string, jsonPath: string, htmlP
 
 function buildOutputsModel(sessionMap: SessionMap | null): {
   outputs: InternalViewerOutputRow[];
+  connections: InternalViewerModel["connections"];
   hasMissingRoutingData: boolean;
 } {
   console.log("[Ableton Session Mapper] Internal Viewer outputs model started");
 
   if (!sessionMap) {
     console.log("[Ableton Session Mapper] Internal Viewer outputs model completed");
-    return { outputs: [], hasMissingRoutingData: false };
+    return { outputs: [], connections: [], hasMissingRoutingData: false };
   }
 
   const outputs = orderedTracks(sessionMap).map(({ track, sectionType }) => ({
     index: track.index,
     name: track.name,
     kind: formatTrackKind(track.kind),
-    input: formatRoutingLabel(track.input),
-    output: formatRoutingLabel(track.output),
+    midiFrom: formatManualRouting(track.routing?.midiFrom),
+    midiTo: formatManualRouting(track.routing?.midiTo),
+    audioFrom: track.routing?.source === "manual" ? formatManualRouting(track.routing?.audioFrom) : formatRoutingLabel(track.input),
+    audioTo: track.routing?.source === "manual" ? formatManualRouting(track.routing?.audioTo) : formatRoutingLabel(track.output),
+    monitor: formatManualRouting(track.routing?.monitor),
+    source: track.routing?.source === "manual" ? "MANUAL" : track.routing?.source === "sdk" ? "SDK" : "NONE",
     sends: formatSendSummary(track),
     sectionType,
+  }));
+  const connections = (sessionMap.manualRouting?.connections ?? []).map((connection) => ({
+    from: connection.from,
+    to: connection.to,
+    type: connection.type,
+    label: connection.label,
   }));
 
   const hasMissingRoutingData =
     outputs.length > 0 &&
     outputs.every(
-      (row) => row.input === ROUTING_NOT_EXPOSED && row.output === ROUTING_NOT_EXPOSED,
+      (row) => row.audioFrom === ROUTING_NOT_EXPOSED && row.audioTo === ROUTING_NOT_EXPOSED && row.source !== "MANUAL",
     );
 
   if (hasMissingRoutingData) {
@@ -298,7 +362,7 @@ function buildOutputsModel(sessionMap: SessionMap | null): {
 
   console.log("[Ableton Session Mapper] Internal Viewer outputs built");
   console.log("[Ableton Session Mapper] Internal Viewer outputs model completed");
-  return { outputs, hasMissingRoutingData };
+  return { outputs, connections, hasMissingRoutingData };
 }
 
 function buildDevicesModel(sessionMap: SessionMap | null): InternalViewerDeviceTrack[] {
@@ -386,6 +450,7 @@ function buildSessionPreviewColumns(sessionMap: SessionMap | null): InternalView
 function buildModel(
   latest: LatestSessionMapState,
   links: LinkTarget[],
+  exportDirectory: string,
 ): InternalViewerModel {
   const sessionMap = latest.sessionMap;
   const ordered = sessionMap ? orderedTracks(sessionMap).map((entry) => entry.track) : [];
@@ -396,7 +461,7 @@ function buildModel(
   );
   const sends = ordered.reduce((sum, track) => sum + track.sends.length, 0);
 
-  const { outputs, hasMissingRoutingData } = buildOutputsModel(sessionMap);
+  const { outputs, connections, hasMissingRoutingData } = buildOutputsModel(sessionMap);
   const deviceTracks = buildDevicesModel(sessionMap);
   const sessionPreviewColumns = buildSessionPreviewColumns(sessionMap);
   const quickLinks: InternalViewerQuickLink[] = links
@@ -416,7 +481,7 @@ function buildModel(
 
   if (latest.status === "missing") {
     statusMessage =
-      "No export generated yet. Run Export Session Map first, then reopen this experimental viewer.";
+      "No export generated yet. Run Export Session Map first, then reopen this integrated viewer.";
     warningMessage = "No export generated yet.";
   } else if (latest.status === "invalid") {
     statusMessage =
@@ -444,6 +509,19 @@ function buildModel(
     quickLinks,
     sessionPreviewColumns,
     outputs,
+    connections,
+    manualRoutingStatus: sessionMap?.manualRouting?.status ?? "missing",
+    manualRoutingWarnings: sessionMap?.manualRouting?.warnings ?? [],
+    routingOverridesPath: sessionMap?.manualRouting?.sourcePath ?? routingOverridesPath(exportDirectory),
+    routingOverridesExists: links.some((link) => link.key === "routing-overrides" && link.exists),
+    sidechains: (sessionMap?.manualRouting?.sidechains ?? []).map((sidechain) => ({
+      targetTrack: sidechain.targetTrack,
+      targetDevice: sidechain.targetDevice,
+      sourceTrack: sidechain.sourceTrack,
+      enabled:
+        sidechain.enabled === true ? "enabled" : sidechain.enabled === false ? "disabled" : "unknown",
+      notes: sidechain.notes,
+    })),
     deviceTracks,
     files,
     hasExport: latest.status === "ok",
@@ -455,89 +533,80 @@ function buildModel(
 export async function showInternalViewerExperimental(
   context: ExtensionContext<"1.0.0">,
   openExternalPath: (path: string, label: string) => void,
+  options?: InternalViewerOptions,
 ): Promise<void> {
   const locations = await resolveExportLocations(context);
+  let overrideState = latestSessionMapFromOverride(options?.sessionMapOverride);
 
   while (true) {
+    const links = await buildLinkTargets(
+      locations.exportDirectory,
+      locations.sessionMapJsonPath,
+      locations.sessionMapHtmlPath,
+      locations.sessionGridHtmlPath,
+      locations.sessionMapDiagramsPath,
+    );
+    const latest = overrideState ?? await readLatestSessionMap(locations.sessionMapJsonPath);
+    overrideState = null;
+    const model = buildModel(latest, links, locations.exportDirectory);
+    console.log("[Ableton Session Mapper] Build internal viewer model completed");
+
+    const html = createInternalViewerHtml(model);
+
+    console.log(
+      `[Ableton Session Mapper] Internal Viewer requested modal size: ${INTERNAL_VIEWER_WIDTH}x${INTERNAL_VIEWER_HEIGHT}`,
+    );
+    console.log(
+      `[Ableton Session Mapper] Internal Viewer modal size applied: ${INTERNAL_VIEWER_WIDTH}x${INTERNAL_VIEWER_HEIGHT}`,
+    );
+    console.log("[Ableton Session Mapper] Internal Viewer modal size may be limited by Live");
+    console.log("[Ableton Session Mapper] Show internal viewer modal started");
+
+    const resultPromise = context.ui.showModalDialog(
+      `data:text/html,${encodeURIComponent(html)}`,
+      INTERNAL_VIEWER_WIDTH,
+      INTERNAL_VIEWER_HEIGHT,
+    );
+
+    console.log("[Ableton Session Mapper] Internal Viewer modal shown");
+
+    const result = await resultPromise;
+    console.log("[Ableton Session Mapper] Show internal viewer modal completed");
+
+    let parsed: { action?: string; key?: string } | null = null;
     try {
-      const links = await buildLinkTargets(
-        locations.exportDirectory,
-        locations.sessionMapJsonPath,
-        locations.sessionMapHtmlPath,
-        locations.sessionGridHtmlPath,
-        locations.sessionMapDiagramsPath,
-      );
-      const latest = await readLatestSessionMap(locations.sessionMapJsonPath);
-      const model = buildModel(latest, links);
-      console.log("[Ableton Session Mapper] Build internal viewer model completed");
-
-      const html = createInternalViewerHtml(model);
-
-      console.log(
-        `[Ableton Session Mapper] Internal Viewer requested modal size: ${INTERNAL_VIEWER_WIDTH}x${INTERNAL_VIEWER_HEIGHT}`,
-      );
-      console.log(
-        `[Ableton Session Mapper] Internal Viewer modal size applied: ${INTERNAL_VIEWER_WIDTH}x${INTERNAL_VIEWER_HEIGHT}`,
-      );
-      console.log("[Ableton Session Mapper] Internal Viewer modal size may be limited by Live");
-      console.log("[Ableton Session Mapper] Show internal viewer modal started");
-
-      const resultPromise = context.ui.showModalDialog(
-        `data:text/html,${encodeURIComponent(html)}`,
-        INTERNAL_VIEWER_WIDTH,
-        INTERNAL_VIEWER_HEIGHT,
-      );
-
-      console.log("[Ableton Session Mapper] Internal Viewer modal shown");
-
-      const result = await resultPromise;
-      console.log("[Ableton Session Mapper] Show internal viewer modal completed");
-
-      let parsed: { action?: string; key?: string } | null = null;
-      try {
-        parsed = JSON.parse(result) as { action?: string; key?: string };
-      } catch (error) {
-        console.warn("[Ableton Session Mapper] Internal Viewer returned invalid JSON.", error);
-        return;
-      }
-
-      if (parsed?.action === "refresh") {
-        continue;
-      }
-
-      if (parsed?.action !== "open-link" || !parsed.key) {
-        return;
-      }
-
-      const target = links.find((link) => link.key === parsed?.key);
-      if (!target) {
-        console.warn(`[Ableton Session Mapper] Internal Viewer requested unknown target: ${parsed.key}`);
-        return;
-      }
-
-      console.log(`[Ableton Session Mapper] Open external view requested: ${target.openLabel}`);
-      if (!target.exists || !(await pathExists(target.path))) {
-        console.warn(`[Ableton Session Mapper] Open external view skipped missing file: ${target.path}`);
-        return;
-      }
-
-      try {
-        openExternalPath(target.path, target.openLabel);
-        console.log(`[Ableton Session Mapper] Open external view completed: ${target.path}`);
-      } catch (error) {
-        console.warn("[Ableton Session Mapper] Open external view failed.", error);
-      }
-      return;
+      parsed = JSON.parse(result) as { action?: string; key?: string };
     } catch (error) {
-      console.error(
-        `[Ableton Session Mapper] Open Internal Viewer failed: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-      );
-      if (error instanceof Error && error.stack) {
-        console.error(error.stack);
-      }
+      console.warn("[Ableton Session Mapper] Internal Viewer returned invalid JSON.", error);
       return;
     }
+
+    if (parsed?.action === "refresh") {
+      continue;
+    }
+
+    if (parsed?.action !== "open-link" || !parsed.key) {
+      return;
+    }
+
+    const target = links.find((link) => link.key === parsed?.key);
+    if (!target) {
+      console.warn(`[Ableton Session Mapper] Internal Viewer requested unknown target: ${parsed.key}`);
+      return;
+    }
+
+    console.log(`[Ableton Session Mapper] Open external view requested: ${target.openLabel}`);
+    if (!target.exists || !(await pathExists(target.path))) {
+      console.warn(`[Ableton Session Mapper] Open external view skipped missing file: ${target.path}`);
+      return;
+    }
+
+    try {
+      openExternalPath(target.path, target.openLabel);
+      console.log(`[Ableton Session Mapper] Open external view completed: ${target.path}`);
+    } catch (error) {
+      console.warn("[Ableton Session Mapper] Open external view failed.", error);
+    }
+    return;
   }
 }

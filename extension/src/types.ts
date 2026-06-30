@@ -11,6 +11,57 @@ export interface RoutingInfo {
   channel: string | null;
 }
 
+export type RoutingSource = "sdk" | "manual" | "none";
+
+export interface TrackRoutingInfo {
+  source: RoutingSource;
+  audioFrom: string | null;
+  audioTo: string | null;
+  midiFrom: string | null;
+  midiTo: string | null;
+  monitor: string | null;
+  group: string | null;
+  notes: string;
+}
+
+export interface ManualRoutingOverrideTrack {
+  kind: TrackKind | null;
+  midiFrom: string | null;
+  midiTo: string | null;
+  audioFrom: string | null;
+  audioTo: string | null;
+  monitor: string | null;
+  sends: Record<string, number | null>;
+  group: string | null;
+  notes: string;
+}
+
+export interface ManualRoutingSidechain {
+  targetTrack: string;
+  targetDevice: string;
+  sourceTrack: string;
+  enabled: boolean | null;
+  notes: string;
+}
+
+export interface ManualRoutingConnection {
+  from: string;
+  to: string;
+  type: "audio" | "midi" | "sidechain" | "unknown";
+  label: string;
+}
+
+export type ManualRoutingStatus = "missing" | "loaded" | "invalid";
+
+export interface ManualRoutingState {
+  status: ManualRoutingStatus;
+  sourcePath: string;
+  warnings: string[];
+  tracks: Record<string, ManualRoutingOverrideTrack>;
+  sidechains: ManualRoutingSidechain[];
+  connections: ManualRoutingConnection[];
+}
+
 export interface StructureSummaryItem {
   index: number;
   name: string;
@@ -102,12 +153,13 @@ export interface TrackInfo {
   groupTrackId: string | null;
   input: RoutingInfo;
   output: RoutingInfo;
+  routing?: TrackRoutingInfo;
   devices: DeviceInfo[];
   sends: SendInfo[];
 }
 
 export interface SessionMap {
-  version: "0.4.3";
+  version: "1.0.0";
   exportedAt: string;
   set: {
     name: string | null;
@@ -126,6 +178,7 @@ export interface SessionMap {
   tracks: TrackInfo[];
   returnTracks: TrackInfo[];
   masterTrack: TrackInfo | null;
+  manualRouting?: ManualRoutingState;
 }
 
 /**

@@ -23,9 +23,11 @@ import {
   renderCapabilityMatrixMarkdown,
   scanCapabilityMatrix,
 } from "./scanCapabilityMatrix.js";
+import { loadRoutingOverrides, mergeManualRouting } from "./routingOverrides.js";
 import { scanRackDiagnostic } from "./scanRackDiagnostic.js";
 import { scanSdkDiagnostic } from "./scanDiagnostic.js";
 import { scanLiveSet } from "./scanLiveSet.js";
+import type { SessionMap } from "./types.js";
 
 const EXPORT_SESSION_MAP_COMMAND_ID = "abletonSessionMapper.exportSessionMap";
 const OPEN_INTERNAL_VIEWER_COMMAND_ID = "abletonSessionMapper.openInternalViewerExperimental";
@@ -37,7 +39,9 @@ const ENABLE_DIAGNOSTIC_ACTIONS = process.env.ENABLE_DIAGNOSTIC_ACTIONS === "tru
 const ENABLE_CAPABILITY_MATRIX = process.env.ENABLE_CAPABILITY_MATRIX === "true";
 const ENABLE_OPEN_HTML = process.env.ENABLE_OPEN_HTML !== "false";
 const GENERATE_DIAGRAMS_ON_EXPORT = process.env.GENERATE_DIAGRAMS_ON_EXPORT === "true";
-const ENABLE_INTERNAL_VIEWER = process.env.ENABLE_INTERNAL_VIEWER === "true";
+const ENABLE_INTERNAL_VIEWER_DEV_ACTION = process.env.ENABLE_INTERNAL_VIEWER_DEV_ACTION === "true";
+const OPEN_INTERNAL_MODAL_ON_EXPORT = process.env.OPEN_INTERNAL_MODAL_ON_EXPORT !== "false";
+const FALLBACK_TO_EXTERNAL_LAUNCHER = process.env.FALLBACK_TO_EXTERNAL_LAUNCHER !== "false";
 const NORMAL_ACTION_LABEL = "Export Session Map";
 const INTERNAL_VIEWER_ACTION_LABEL = "Open Internal Viewer Experimental";
 const CONTEXT_MENU_SCOPES = [
@@ -143,11 +147,12 @@ async function exportSession(
   context: ExtensionContext<"1.0.0">,
   actionName: string,
   withHtml: boolean,
-): Promise<{ paths: ExportPaths | null; partial: boolean }> {
+): Promise<{ paths: ExportPaths | null; partial: boolean; sessionMap: SessionMap | null }> {
   let latestJsonPath: string | null = null;
   let archiveJsonPath: string | null = null;
   let latestHtmlPath: string | null = null;
   let archiveHtmlPath: string | null = null;
+  let sessionMapForViewer: SessionMap | null = null;
   let partial = false;
   const locations = await resolveExportLocations(context);
   console.log(`[Ableton Session Mapper] Resolved project root: ${locations.projectRoot}`);
@@ -160,8 +165,11 @@ async function exportSession(
         await update("Scanning Live Set…", 20);
         if (signal.aborted) return;
         console.log("[Ableton Session Mapper] Scan Live Set started");
-        const sessionMap = await scanLiveSet(context);
+        const scannedSessionMap = await scanLiveSet(context);
         console.log("[Ableton Session Mapper] Scan Live Set completed");
+        const routingOverrides = await loadRoutingOverrides(locations.exportDirectory);
+        const sessionMap = mergeManualRouting(scannedSessionMap, routingOverrides);
+        sessionMapForViewer = sessionMap;
         console.log(`[Ableton Session Mapper] Scan Live Set exportedAt: ${sessionMap.exportedAt}`);
         partial = sessionMap.scan.partial;
         const sessionExportPaths = await resolveSessionExportPaths(context, sessionMap);
@@ -234,10 +242,29 @@ async function exportSession(
   if (withHtml) {
     const locations = await resolveExportLocations(context);
     const launcherPath = locations.sessionMapDiagramsPath;
-    if (ENABLE_OPEN_HTML) {
-      openPathInBrowser(launcherPath, "Launcher");
+    if (OPEN_INTERNAL_MODAL_ON_EXPORT) {
+      console.log("[Ableton Session Mapper] Open integrated modal after export started");
+      try {
+        await showInternalViewerExperimental(context, openPathInBrowser, {
+          sessionMapOverride: sessionMapForViewer,
+        });
+        console.log("[Ableton Session Mapper] Open integrated modal after export completed");
+      } catch (error) {
+        const detail = formatError(error);
+        console.error(`[Ableton Session Mapper] Open integrated modal failed: ${detail.message}`);
+        if (detail.stack) console.error(detail.stack);
+        if (FALLBACK_TO_EXTERNAL_LAUNCHER) {
+          console.log("[Ableton Session Mapper] Fallback to external launcher started");
+          openPathInBrowser(launcherPath, "External Launcher");
+          console.log("[Ableton Session Mapper] Fallback to external launcher completed");
+        } else {
+          console.log(`[Ableton Session Mapper] External launcher available at: ${launcherPath}`);
+        }
+      }
+    } else if (ENABLE_OPEN_HTML) {
+      openPathInBrowser(launcherPath, "External Launcher");
     } else {
-      console.log(`[Ableton Session Mapper] Launcher available at: ${launcherPath}`);
+      console.log(`[Ableton Session Mapper] External launcher available at: ${launcherPath}`);
     }
   }
 
@@ -253,7 +280,7 @@ async function exportSession(
           : {}),
       }
     : null;
-  return { paths, partial };
+  return { paths, partial, sessionMap: sessionMapForViewer };
 }
 
 async function exportSdkDiagnosticOnly(
@@ -356,7 +383,7 @@ export function activate(activation: ActivationContext): void {
     });
   });
 
-  if (ENABLE_INTERNAL_VIEWER) {
+  if (ENABLE_DIAGNOSTIC_ACTIONS || ENABLE_INTERNAL_VIEWER_DEV_ACTION) {
     context.commands.registerCommand(OPEN_INTERNAL_VIEWER_COMMAND_ID, () => {
       void runSafeAction("Open Internal Viewer", async () => {
         console.log("[Ableton Session Mapper] Open Internal Viewer started");
@@ -407,7 +434,7 @@ export function activate(activation: ActivationContext): void {
   const actions = ENABLE_DIAGNOSTIC_ACTIONS
     ? ([
         [NORMAL_ACTION_LABEL, EXPORT_SESSION_MAP_COMMAND_ID],
-        ...(ENABLE_INTERNAL_VIEWER
+        ...((ENABLE_DIAGNOSTIC_ACTIONS || ENABLE_INTERNAL_VIEWER_DEV_ACTION)
           ? ([[INTERNAL_VIEWER_ACTION_LABEL, OPEN_INTERNAL_VIEWER_COMMAND_ID]] as const)
           : []),
         ["Export JSON", EXPORT_COMMAND_ID],
@@ -419,7 +446,7 @@ export function activate(activation: ActivationContext): void {
       ] as const)
     : ([
         [NORMAL_ACTION_LABEL, EXPORT_SESSION_MAP_COMMAND_ID],
-        ...(ENABLE_INTERNAL_VIEWER
+        ...((ENABLE_DIAGNOSTIC_ACTIONS || ENABLE_INTERNAL_VIEWER_DEV_ACTION)
           ? ([[INTERNAL_VIEWER_ACTION_LABEL, OPEN_INTERNAL_VIEWER_COMMAND_ID]] as const)
           : []),
         ...((ENABLE_CAPABILITY_MATRIX
@@ -441,7 +468,7 @@ export function activate(activation: ActivationContext): void {
     "[Ableton Session Mapper] Extension activated. Right-click a supported track, clip, clip slot, scene, or arrangement selection.",
   );
   console.log(
-    "[Ableton Session Mapper] No WebView Stable Mode enabled. Integrated WebView is disabled in v0.4.3.",
+    "[Ableton Session Mapper] Lightweight integrated modal enabled for Session Mapper. Heavy Mermaid/SVG rendering remains external.",
   );
   console.log(
     `[Ableton Session Mapper] Diagnostic actions ${ENABLE_DIAGNOSTIC_ACTIONS ? "enabled" : "disabled"}${ENABLE_DIAGNOSTIC_ACTIONS ? " via ENABLE_DIAGNOSTIC_ACTIONS=true" : ""}.`,
@@ -453,9 +480,15 @@ export function activate(activation: ActivationContext): void {
     `[Ableton Session Mapper] External HTML auto-open ${ENABLE_OPEN_HTML ? "enabled" : "disabled"}${ENABLE_OPEN_HTML ? " (set ENABLE_OPEN_HTML=false to disable)" : " via ENABLE_OPEN_HTML=false"}.`,
   );
   console.log(
+    `[Ableton Session Mapper] Integrated modal on export ${OPEN_INTERNAL_MODAL_ON_EXPORT ? "enabled" : "disabled"}${OPEN_INTERNAL_MODAL_ON_EXPORT ? " (set OPEN_INTERNAL_MODAL_ON_EXPORT=false to use the external launcher by default)" : " via OPEN_INTERNAL_MODAL_ON_EXPORT=false"}.`,
+  );
+  console.log(
+    `[Ableton Session Mapper] Fallback to external launcher ${FALLBACK_TO_EXTERNAL_LAUNCHER ? "enabled" : "disabled"}${FALLBACK_TO_EXTERNAL_LAUNCHER ? " (recommended)" : " via FALLBACK_TO_EXTERNAL_LAUNCHER=false"}.`,
+  );
+  console.log(
     `[Ableton Session Mapper] Mermaid diagram generation on export ${GENERATE_DIAGRAMS_ON_EXPORT ? "enabled" : "disabled"}${GENERATE_DIAGRAMS_ON_EXPORT ? " via GENERATE_DIAGRAMS_ON_EXPORT=true" : " by default"}.`,
   );
   console.log(
-    `[Ableton Session Mapper] Internal Viewer Experimental ${ENABLE_INTERNAL_VIEWER ? "enabled" : "disabled"}${ENABLE_INTERNAL_VIEWER ? " via ENABLE_INTERNAL_VIEWER=true" : ""}.`,
+    `[Ableton Session Mapper] Internal Viewer dev action ${(ENABLE_DIAGNOSTIC_ACTIONS || ENABLE_INTERNAL_VIEWER_DEV_ACTION) ? "enabled" : "disabled"}${ENABLE_INTERNAL_VIEWER_DEV_ACTION ? " via ENABLE_INTERNAL_VIEWER_DEV_ACTION=true" : ""}.`,
   );
 }

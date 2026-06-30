@@ -1,10 +1,87 @@
 {
-  "Vocal Main": {
-    "input": "Ext. In 1",
-    "output": "Master"
+  "version": "1.0.0",
+  "generatedAt": "2026-06-30T00:00:00.000Z",
+  "source": "manual-routing-overrides",
+  "notes": "Manual routing information because the SDK does not expose routing I/O in the current scan.",
+  "tracks": {
+    "1-MIDI": {
+      "kind": "midi",
+      "midiFrom": "All Ins",
+      "midiTo": "2-Dexed",
+      "audioFrom": null,
+      "audioTo": null,
+      "monitor": "Auto",
+      "sends": {
+        "A-Reverb": 0,
+        "B-Delay": 0
+      },
+      "group": null,
+      "notes": ""
+    },
+    "2-Dexed": {
+      "kind": "midi",
+      "midiFrom": "1-MIDI",
+      "midiTo": null,
+      "audioFrom": null,
+      "audioTo": "Main",
+      "monitor": "Auto",
+      "sends": {
+        "A-Reverb": 0,
+        "B-Delay": 0
+      },
+      "group": null,
+      "notes": ""
+    },
+    "A-Reverb": {
+      "kind": "return",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": "Sends",
+      "audioTo": "Main",
+      "monitor": null,
+      "sends": {},
+      "group": null,
+      "notes": ""
+    },
+    "Main": {
+      "kind": "master",
+      "midiFrom": null,
+      "midiTo": null,
+      "audioFrom": "Tracks + Returns",
+      "audioTo": "External Out 1/2",
+      "monitor": null,
+      "sends": {},
+      "group": null,
+      "notes": ""
+    }
   },
-  "Rose Bass": {
-    "input": "MIDI From All Ins",
-    "output": "Master"
-  }
+  "sidechains": [
+    {
+      "targetTrack": "Bass",
+      "targetDevice": "Compressor",
+      "sourceTrack": "Kick",
+      "enabled": true,
+      "notes": ""
+    }
+  ],
+  "connections": [
+    {
+      "from": "1-MIDI",
+      "to": "2-Dexed",
+      "type": "midi",
+      "label": "MIDI To"
+    },
+    {
+      "from": "2-Dexed",
+      "to": "Main",
+      "type": "audio",
+      "label": "Audio To"
+    },
+    {
+      "from": "A-Reverb",
+      "to": "Main",
+      "type": "audio",
+      "label": "Return To"
+    }
+  ]
 }

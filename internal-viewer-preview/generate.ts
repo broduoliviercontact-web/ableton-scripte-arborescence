@@ -2,7 +2,7 @@ import { writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createInternalViewerHtml, type InternalViewerModel } from "../extension/src/internal-viewer/template.js";
 
-const views = ["session", "kanban", "metro", "outputs", "devices", "files", "overview"] as const;
+const views = ["session", "kanban", "metro", "outputs", "routing", "devices", "files", "overview"] as const;
 
 const columns: InternalViewerModel["sessionPreviewColumns"] = [
   { index: 0, name: "DRUMS", kind: "group", sectionType: "track", deviceCount: 2, sendCount: 2, rackCount: 1, deviceCards: [
@@ -52,8 +52,12 @@ const outputs: InternalViewerModel["outputs"] = columns.map((column) => ({
   name: column.name,
   kind: column.kind,
   sectionType: column.sectionType,
-  input: column.sectionType === "master" ? "—" : column.kind === "audio" ? "Ext. In · 1/2" : column.kind === "midi" ? "All Ins · All Channels" : "—",
-  output: column.sectionType === "master" ? "Ext. Out · 1/2" : column.sectionType === "return" ? "Master" : column.name === "Kick — Analog" || column.name === "Percussion" ? "DRUMS" : "Master",
+  midiFrom: column.kind === "midi" ? "All Ins · All Channels" : "—",
+  midiTo: column.kind === "midi" ? "Track In" : "—",
+  audioFrom: column.sectionType === "master" ? "Tracks + Returns" : column.kind === "audio" ? "Ext. In · 1/2" : "—",
+  audioTo: column.sectionType === "master" ? "Ext. Out · 1/2" : column.sectionType === "return" ? "Master" : column.name === "Kick — Analog" || column.name === "Percussion" ? "DRUMS" : "Master",
+  monitor: column.kind === "audio" ? "In" : "Auto",
+  source: column.sectionType === "return" || column.sectionType === "master" ? "MANUAL" : "SDK",
   sends: column.sendCount ? "A: 0.186, B: 0.094" : "—",
 }));
 
@@ -97,6 +101,23 @@ const model: InternalViewerModel = {
   ],
   sessionPreviewColumns: columns,
   outputs,
+  connections: [
+    { from: "Kick — Analog", to: "DRUMS", type: "audio", label: "Bus" },
+    { from: "Percussion", to: "DRUMS", type: "audio", label: "Bus" },
+  ],
+  manualRoutingStatus: "loaded",
+  manualRoutingWarnings: [],
+  routingOverridesPath: "/Users/jeanclaude/Documents/ableton scripte arborescence/exports/routing-overrides.json",
+  routingOverridesExists: true,
+  sidechains: [
+    {
+      targetTrack: "Bass Sequence",
+      targetDevice: "Glue Compressor",
+      sourceTrack: "Kick — Analog",
+      enabled: "enabled",
+      notes: "Preview example",
+    },
+  ],
   deviceTracks,
   files,
   hasExport: true,

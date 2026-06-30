@@ -3,6 +3,41 @@ export interface RoutingInfo {
   channel: string | null;
 }
 
+export interface TrackRoutingInfo {
+  source: "sdk" | "manual" | "none";
+  audioFrom: string | null;
+  audioTo: string | null;
+  midiFrom: string | null;
+  midiTo: string | null;
+  monitor: string | null;
+  group: string | null;
+  notes: string;
+}
+
+export interface ManualRoutingConnection {
+  from: string;
+  to: string;
+  type: "audio" | "midi" | "sidechain" | "unknown";
+  label: string;
+}
+
+export interface ManualRoutingSidechain {
+  targetTrack: string;
+  targetDevice: string;
+  sourceTrack: string;
+  enabled: boolean | null;
+  notes: string;
+}
+
+export interface ManualRoutingState {
+  status: "missing" | "loaded" | "invalid";
+  sourcePath: string;
+  warnings: string[];
+  tracks: Record<string, unknown>;
+  sidechains: ManualRoutingSidechain[];
+  connections: ManualRoutingConnection[];
+}
+
 export interface DeviceParameterInfo {
   id: string;
   index: number;
@@ -71,6 +106,7 @@ export interface TrackInfo {
   groupTrackId: string | null;
   input: RoutingInfo;
   output: RoutingInfo;
+  routing?: TrackRoutingInfo;
   devices: DeviceInfo[];
   sends: SendInfo[];
 }
@@ -82,6 +118,7 @@ export interface SessionMap {
   tracks: TrackInfo[];
   returnTracks: TrackInfo[];
   masterTrack: TrackInfo | null;
+  manualRouting?: ManualRoutingState;
 }
 
 export interface DiagnosticProperty {
@@ -252,11 +289,31 @@ export function renderTemplate(
       ...(Array.isArray(session.returnTracks) ? session.returnTracks : []),
       ...(session.masterTrack ? [session.masterTrack] : []),
     ];
+    const manualRouting = session.manualRouting || {
+      status: "missing",
+      sourcePath: "exports/routing-overrides.json",
+      warnings: [],
+      tracks: {},
+      sidechains: [],
+      connections: [],
+    };
 
     const routingText = (routing) => {
       const parts = [routing?.type, routing?.channel].filter(Boolean);
       return parts.length ? parts.join(" / ") : "Routing I/O non disponible dans cette version du SDK";
     };
+    const manualValue = (value) => value && String(value).trim().length ? String(value).trim() : "—";
+    const trackRoutingSource = (track) => track?.routing?.source === "manual" ? "MANUAL" : track?.routing?.source === "sdk" ? "SDK" : "NONE";
+    const effectiveManualRouting = (track) => ({
+      midiFrom: manualValue(track?.routing?.midiFrom),
+      midiTo: manualValue(track?.routing?.midiTo),
+      audioFrom: manualValue(track?.routing?.audioFrom),
+      audioTo: manualValue(track?.routing?.audioTo),
+      monitor: manualValue(track?.routing?.monitor),
+      group: manualValue(track?.routing?.group),
+      notes: manualValue(track?.routing?.notes),
+      source: trackRoutingSource(track),
+    });
 
     const formatValue = (value, digits = 3) => typeof value === "number" ? value.toFixed(digits) : "—";
     const asArray = (value) => Array.isArray(value) ? value : [];
@@ -391,22 +448,57 @@ export function renderTemplate(
       ).join("") + '</div>';
     };
 
-    const trackCard = (track, ordinal, displayIndex) =>
-      '<article class="track-card kind-' + escapeHtml(track.kind) + '" style="--delay:' + Math.min(ordinal * 35, 420) + 'ms">' +
+    const manualConnectionsList = (track) => {
+      const items = asArray(manualRouting.connections).filter((connection) =>
+        connection?.from === track.name || connection?.to === track.name
+      );
+      if (!items.length) return "";
+      return '<div class="track-detail"><span class="detail-label">Manual Connections · ' + items.length + '</span>' +
+        '<div class="send-list">' + items.map((connection) =>
+          '<span class="send-chip"><b>' + escapeHtml(connection.type || "link") + '</b><em>' +
+          escapeHtml((connection.from || "?") + " → " + (connection.to || "?") + (connection.label ? " · " + connection.label : "")) +
+          '</em></span>'
+        ).join("") + '</div></div>';
+    };
+
+    const trackCard = (track, ordinal, displayIndex) => {
+        const manualRoutingValues = effectiveManualRouting(track);
+        const manualBadge = manualRoutingValues.source === "MANUAL"
+          ? '<span class="kind-tag manual-tag">MANUAL</span>'
+          : "";
+        const manualRoutingBlock = manualRoutingValues.source === "MANUAL"
+          ? '<div class="routing-grid manual-routing-grid">' +
+              '<div><span>MIDI From</span><strong>' + escapeHtml(manualRoutingValues.midiFrom) + '</strong></div>' +
+              '<div><span>MIDI To</span><strong>' + escapeHtml(manualRoutingValues.midiTo) + '</strong></div>' +
+              '<div><span>Audio From</span><strong>' + escapeHtml(manualRoutingValues.audioFrom) + '</strong></div>' +
+              '<div><span>Audio To</span><strong>' + escapeHtml(manualRoutingValues.audioTo) + '</strong></div>' +
+              '<div><span>Monitor</span><strong>' + escapeHtml(manualRoutingValues.monitor) + '</strong></div>' +
+              '<div><span>Source</span><strong>' + escapeHtml(manualRoutingValues.source) + '</strong></div>' +
+            '</div>'
+          : "";
+        const notesBlock = manualRoutingValues.source === "MANUAL" && manualRoutingValues.notes !== "—"
+          ? '<div class="track-detail"><span class="detail-label">Manual Routing Notes</span><div class="empty-state compact">' + escapeHtml(manualRoutingValues.notes) + '</div></div>'
+          : "";
+
+        return '<article class="track-card kind-' + escapeHtml(track.kind) + '" style="--delay:' + Math.min(ordinal * 35, 420) + 'ms">' +
         '<div class="track-rail"><span>' + escapeHtml(displayIndex) + '</span></div>' +
         '<div class="track-body">' +
           '<header class="track-header">' +
-            '<div><span class="kind-tag">' + escapeHtml(track.kind) + '</span><h3>' + escapeHtml(track.name) + '</h3></div>' +
+            '<div><span class="kind-tag">' + escapeHtml(track.kind) + '</span>' + manualBadge + '<h3>' + escapeHtml(track.name) + '</h3></div>' +
             '<div class="track-state" aria-label="État de la piste">' + stateLeds(track) + '</div>' +
           '</header>' +
           '<div class="routing-grid">' +
             '<div><span>IN</span><strong>' + escapeHtml(routingText(track.input)) + '</strong></div>' +
             '<div><span>OUT</span><strong>' + escapeHtml(routingText(track.output)) + '</strong></div>' +
           '</div>' +
+          manualRoutingBlock +
           '<div class="track-detail"><span class="detail-label">Device chain · ' + countDevicesDeep(track.devices) + '</span>' + deviceChain(track.devices) + '</div>' +
           '<div class="track-detail sends-row"><span class="detail-label">Sends · ' + asArray(track.sends).length + '</span>' + sendsList(track.sends) + '</div>' +
+          manualConnectionsList(track) +
+          notesBlock +
         '</div>' +
       '</article>';
+      };
 
     const sessionOrderTracks = [
       ...session.tracks.map((track) => ({ ...track, sectionType: "track" })),
@@ -454,11 +546,26 @@ export function renderTemplate(
     document.getElementById("session-sections").innerHTML =
       '<section class="track-section">' +
         '<div class="section-heading"><span>SET</span><h2>Ordre du Set</h2><i></i><b>' + sessionOrderTracks.length + '</b></div>' +
+        (manualRouting.status !== "missing"
+          ? '<div class="diagnostic-empty"><strong>Manual routing: ' + escapeHtml(manualRouting.status.toUpperCase()) + '</strong><span>' +
+            (manualRouting.warnings?.length
+              ? escapeHtml(manualRouting.warnings.join(" · "))
+              : 'routing-overrides.json loaded') +
+            '</span></div>'
+          : '') +
         '<div class="track-stack">' + (sessionOrderTracks.length
           ? renderSessionOrder()
           : '<div class="empty-section">No tracks in this section</div>') +
         '</div>' +
-      '</section>';
+        (asArray(manualRouting.connections).length
+          ? '<div class="track-detail"><span class="detail-label">Manual Connections · ' + manualRouting.connections.length + '</span>' +
+            '<div class="send-list">' + manualRouting.connections.map((connection) =>
+              '<span class="send-chip"><b>' + escapeHtml(connection.type || "link") + '</b><em>' +
+              escapeHtml((connection.from || "?") + " → " + (connection.to || "?") + (connection.label ? " · " + connection.label : "")) +
+              '</em></span>'
+            ).join("") + '</div></div>'
+          : '') +
+        '</section>';
 
     const preferredMode = (() => {
       try {

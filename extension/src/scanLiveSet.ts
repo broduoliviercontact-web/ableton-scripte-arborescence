@@ -35,7 +35,7 @@ export async function scanLiveSet(
   console.log("[Ableton Session Mapper] Scan Live Set completed");
 
   return {
-    version: "0.4.3",
+    version: "1.0.0",
     exportedAt: new Date().toISOString(),
     set: {
       // The current SDK exposes no Live Set name/path.

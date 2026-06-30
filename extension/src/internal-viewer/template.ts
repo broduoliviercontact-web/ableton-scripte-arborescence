@@ -8,10 +8,29 @@ export interface InternalViewerOutputRow {
   index: number;
   name: string;
   kind: string;
-  input: string;
-  output: string;
+  midiFrom: string;
+  midiTo: string;
+  audioFrom: string;
+  audioTo: string;
+  monitor: string;
+  source: string;
   sends: string;
   sectionType: "track" | "return" | "master";
+}
+
+export interface InternalViewerConnectionRow {
+  from: string;
+  to: string;
+  type: string;
+  label: string;
+}
+
+export interface InternalViewerSidechainRow {
+  targetTrack: string;
+  targetDevice: string;
+  sourceTrack: string;
+  enabled: string;
+  notes: string;
 }
 
 export interface InternalViewerDeviceTrack {
@@ -66,6 +85,12 @@ export interface InternalViewerModel {
   quickLinks: InternalViewerQuickLink[];
   sessionPreviewColumns: InternalViewerSessionPreviewColumn[];
   outputs: InternalViewerOutputRow[];
+  connections: InternalViewerConnectionRow[];
+  manualRoutingStatus: string;
+  manualRoutingWarnings: string[];
+  routingOverridesPath: string;
+  routingOverridesExists: boolean;
+  sidechains: InternalViewerSidechainRow[];
   deviceTracks: InternalViewerDeviceTrack[];
   files: InternalViewerFileEntry[];
   hasExport: boolean;
@@ -142,13 +167,21 @@ function renderOverview(model: InternalViewerModel): string {
         <span class="label">Status</span>
         <strong>${escapeHtml(model.hasExport ? "Ready" : "Waiting for export")}</strong>
       </article>
+      <article class="overview-card">
+        <span class="label">Routing overrides</span>
+        <strong>${escapeHtml(model.manualRoutingStatus.toUpperCase())}</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Warnings</span>
+        <strong>${escapeHtml(String(model.manualRoutingWarnings.length))}</strong>
+      </article>
     </div>
     <div class="notice">${escapeHtml(model.statusMessage)}</div>
     ${warningBlock}
     <div class="quick-open">
       <div class="section-header">
         <h3>Quick Open</h3>
-        <p>External files only — no heavy rendering inside Live</p>
+        <p>External launcher remains available for full diagrams</p>
       </div>
       <div class="button-grid">
         ${model.quickLinks.map((link) => renderQuickOpenButton(link)).join("")}
@@ -334,8 +367,9 @@ function renderOutputs(model: InternalViewerModel): string {
   }
 
   return `<div class="notice">
-      Routing I/O may be unavailable in the current SDK scan. Manual routing-overrides.json will be added later.
+      Routing I/O may be unavailable in the current SDK scan. Manual routing-overrides.json can fill the missing data.
     </div>
+    <div class="notice">Manual routing status: ${escapeHtml(model.manualRoutingStatus.toUpperCase())}${model.manualRoutingWarnings.length ? ` · ${escapeHtml(model.manualRoutingWarnings.join(" · "))}` : ""}</div>
     ${
       model.hasMissingRoutingData
         ? `<div class="notice warning">Routing I/O non disponible dans cette version du SDK.</div>`
@@ -348,8 +382,12 @@ function renderOutputs(model: InternalViewerModel): string {
             <th>#</th>
             <th>Track</th>
             <th>Kind</th>
-            <th>Input</th>
-            <th>Output</th>
+            <th>MIDI From</th>
+            <th>MIDI To</th>
+            <th>Audio From</th>
+            <th>Audio To</th>
+            <th>Monitor</th>
+            <th>Source</th>
             <th>Sends</th>
           </tr>
         </thead>
@@ -360,15 +398,136 @@ function renderOutputs(model: InternalViewerModel): string {
                 <td>${row.sectionType === "master" ? "★" : row.index + 1}</td>
                 <td>${escapeHtml(row.name)}</td>
                 <td><span class="kind-badge kind-${escapeHtml(row.sectionType)}">${escapeHtml(row.kind)}</span></td>
-                <td>${escapeHtml(row.input)}</td>
-                <td>${escapeHtml(row.output)}</td>
+                <td>${escapeHtml(row.midiFrom)}</td>
+                <td>${escapeHtml(row.midiTo)}</td>
+                <td>${escapeHtml(row.audioFrom)}</td>
+                <td>${escapeHtml(row.audioTo)}</td>
+                <td>${escapeHtml(row.monitor)}</td>
+                <td>${escapeHtml(row.source)}</td>
                 <td>${escapeHtml(row.sends)}</td>
               </tr>`,
             )
             .join("")}
         </tbody>
       </table>
+    </div>
+    ${
+      model.connections.length
+        ? `<div class="file-group">
+            <div class="section-header">
+              <h3>Manual Connections</h3>
+              <p>${model.connections.length} links</p>
+            </div>
+            <div class="file-group-list">
+              ${model.connections
+                .map(
+                  (connection) => `<div class="file-row">
+                    <div class="file-meta">
+                      <strong>${escapeHtml(connection.from)} → ${escapeHtml(connection.to)}</strong>
+                      <span>${escapeHtml(connection.type)}${connection.label ? ` · ${escapeHtml(connection.label)}` : ""}</span>
+                    </div>
+                  </div>`,
+                )
+                .join("")}
+            </div>
+          </div>`
+        : ""
+    }`;
+}
+
+function renderRouting(model: InternalViewerModel): string {
+  if (!model.hasExport) {
+    return `<div class="empty-state">
+      <strong>No export generated yet.</strong>
+      <span>Run Export Session Map first, then reopen this viewer.</span>
     </div>`;
+  }
+
+  const status = model.manualRoutingStatus.toUpperCase();
+  const warningRows = model.manualRoutingWarnings.length
+    ? `<div class="file-group">
+        <div class="section-header">
+          <h3>Warnings</h3>
+          <p>${model.manualRoutingWarnings.length}</p>
+        </div>
+        <div class="chip-group">${model.manualRoutingWarnings
+          .map((warning) => `<span class="chip chip-warning">${escapeHtml(warning)}</span>`)
+          .join("")}</div>
+      </div>`
+    : "";
+
+  const connectionsBlock = model.connections.length
+    ? `<section class="file-group">
+        <div class="section-header">
+          <h3>Manual Connections</h3>
+          <p>${model.connections.length} links</p>
+        </div>
+        <div class="file-group-list">
+          ${model.connections
+            .map(
+              (connection) => `<div class="file-row">
+                <div class="file-meta">
+                  <strong>${escapeHtml(connection.from)} → ${escapeHtml(connection.to)}</strong>
+                  <span>${escapeHtml(connection.type)}${connection.label ? ` · ${escapeHtml(connection.label)}` : ""} · source MANUAL</span>
+                </div>
+              </div>`,
+            )
+            .join("")}
+        </div>
+      </section>`
+    : `<div class="notice">No manual connections listed.</div>`;
+
+  const sidechainsBlock = model.sidechains.length
+    ? `<section class="file-group">
+        <div class="section-header">
+          <h3>Sidechains</h3>
+          <p>${model.sidechains.length}</p>
+        </div>
+        <div class="file-group-list">
+          ${model.sidechains
+            .map(
+              (sidechain) => `<div class="file-row">
+                <div class="file-meta">
+                  <strong>${escapeHtml(sidechain.sourceTrack)} → ${escapeHtml(sidechain.targetTrack)}</strong>
+                  <span>${escapeHtml(sidechain.targetDevice || "Unknown device")} · ${escapeHtml(sidechain.enabled)}${sidechain.notes ? ` · ${escapeHtml(sidechain.notes)}` : ""}</span>
+                </div>
+              </div>`,
+            )
+            .join("")}
+        </div>
+      </section>`
+    : `<div class="notice">No sidechains declared in routing-overrides.json.</div>`;
+
+  let statusNotice = "Routing overrides loaded.";
+  if (model.manualRoutingStatus === "missing") {
+    statusNotice = "No routing-overrides.json found. Run npm run create:routing-overrides.";
+  } else if (model.manualRoutingStatus === "invalid") {
+    statusNotice = "routing-overrides.json is invalid. Check warnings below.";
+  }
+
+  return `<div class="overview-grid">
+      <article class="overview-card">
+        <span class="label">Routing status</span>
+        <strong>${escapeHtml(status)}</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Overrides file</span>
+        <strong>${escapeHtml(model.routingOverridesExists ? "Found" : "Missing")}</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Warnings</span>
+        <strong>${escapeHtml(String(model.manualRoutingWarnings.length))}</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Manual connections</span>
+        <strong>${escapeHtml(String(model.connections.length))}</strong>
+      </article>
+    </div>
+    <div class="notice">${escapeHtml(statusNotice)}</div>
+    <div class="notice">Path: ${escapeHtml(model.routingOverridesPath)}</div>
+    ${warningRows}
+    ${connectionsBlock}
+    ${sidechainsBlock}`;
 }
 
 function renderDevices(model: InternalViewerModel): string {
@@ -622,6 +781,7 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     #internal-tab-kanban:checked ~ .tab-bar label[for="internal-tab-kanban"],
     #internal-tab-metro:checked ~ .tab-bar label[for="internal-tab-metro"],
     #internal-tab-outputs:checked ~ .tab-bar label[for="internal-tab-outputs"],
+    #internal-tab-routing:checked ~ .tab-bar label[for="internal-tab-routing"],
     #internal-tab-devices:checked ~ .tab-bar label[for="internal-tab-devices"],
     #internal-tab-files:checked ~ .tab-bar label[for="internal-tab-files"],
     #internal-tab-overview:checked ~ .tab-bar label[for="internal-tab-overview"] {
@@ -643,6 +803,7 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     #internal-tab-kanban:checked ~ .panel-shell .panel-kanban,
     #internal-tab-metro:checked ~ .panel-shell .panel-metro,
     #internal-tab-outputs:checked ~ .panel-shell .panel-outputs,
+    #internal-tab-routing:checked ~ .panel-shell .panel-routing,
     #internal-tab-devices:checked ~ .panel-shell .panel-devices,
     #internal-tab-files:checked ~ .panel-shell .panel-files,
     #internal-tab-overview:checked ~ .panel-shell .panel-overview {
@@ -650,7 +811,7 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     }
     .overview-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 10px;
     }
     .overview-card, .device-card, .notice, .empty-state, .file-group {
@@ -1061,6 +1222,11 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       background: rgba(245,166,35,0.12);
       border-color: rgba(245,166,35,0.22);
     }
+    .chip-warning {
+      background: rgba(255,178,107,0.1);
+      border-color: rgba(255,178,107,0.22);
+      color: #ffd0a6;
+    }
     .rack-summary {
       margin-top: 10px;
     }
@@ -1183,9 +1349,9 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
   <div class="shell">
     <section class="hero">
       <div>
-        <p class="eyebrow">Experimental Internal Viewer</p>
+        <p class="eyebrow">Integrated Viewer · beta</p>
         <h1>Session Mapper</h1>
-        <p class="subline">Compact internal hub for the latest export metadata. External launcher remains the recommended workflow.</p>
+        <p class="subline">Lightweight internal hub for the latest Live Set export. External launcher remains available for full diagrams.</p>
       </div>
       <div class="hero-meta">
         <div>Set: ${escapeHtml(model.setName ?? "Untitled Set")}</div>
@@ -1206,6 +1372,7 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-kanban">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-metro">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-outputs">
+    <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-routing">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-devices">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-files">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-overview">
@@ -1215,6 +1382,7 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       <label class="tab-label" for="internal-tab-kanban">Kanban</label>
       <label class="tab-label" for="internal-tab-metro">Git / Metro</label>
       <label class="tab-label" for="internal-tab-outputs">Outputs</label>
+      <label class="tab-label" for="internal-tab-routing">Routing</label>
       <label class="tab-label" for="internal-tab-devices">Devices</label>
       <label class="tab-label" for="internal-tab-files">Files</label>
       <label class="tab-label" for="internal-tab-overview">Overview</label>
@@ -1236,6 +1404,9 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       <div class="panel panel-outputs">
         ${renderOutputs(model)}
       </div>
+      <div class="panel panel-routing">
+        ${renderRouting(model)}
+      </div>
       <div class="panel panel-devices">
         ${renderDevices(model)}
       </div>
@@ -1245,7 +1416,7 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     </section>
 
     <section class="footer">
-      <small>Recommended mode remains the external launcher. This internal viewer stays intentionally lightweight: no Mermaid, no embedded SVG, no heavy report rendering inside Live.</small>
+      <small>This integrated viewer stays intentionally lightweight: no Mermaid runtime, no embedded SVG, no heavy report rendering inside Live. Use the external launcher for full diagrams.</small>
       <div class="footer-actions">
         <button id="refresh-viewer" class="cancel-button" type="button">Refresh Metadata</button>
         <button id="cancel-viewer" class="cancel-button" type="button">Cancel</button>

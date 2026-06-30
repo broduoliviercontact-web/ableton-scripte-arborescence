@@ -158,6 +158,7 @@ async function buildCards(rootDirectory: string): Promise<string> {
     "sdk-capability-matrix.html",
     "sdk-capability-matrix.json",
     "sdk-capability-matrix.md",
+    "routing-overrides.json",
   ];
 
   const existence = new Map<string, boolean>();
@@ -226,6 +227,7 @@ async function buildCards(rootDirectory: string): Promise<string> {
       accentClass: "accent-raw",
       actions: [
         { label: "Open JSON", fileName: "session-map.json", exists: existence.get("session-map.json") === true },
+        { label: "Open routing-overrides.json", fileName: "routing-overrides.json", exists: existence.get("routing-overrides.json") === true },
         { label: "Open exports folder", fileName: `file://${exportsDirectory}`, exists: true },
       ],
       missingHint: "npm run export:diagram:all",

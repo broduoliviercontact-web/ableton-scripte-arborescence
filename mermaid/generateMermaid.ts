@@ -40,8 +40,25 @@ interface TrackInfo {
   index: number;
   name: string;
   kind: TrackKind;
+  routing?: {
+    source: "sdk" | "manual" | "none";
+    audioFrom: string | null;
+    audioTo: string | null;
+    midiFrom: string | null;
+    midiTo: string | null;
+    monitor: string | null;
+    group: string | null;
+    notes: string;
+  };
   devices: DeviceInfo[];
   sends: SendInfo[];
+}
+
+interface ManualRoutingConnection {
+  from: string;
+  to: string;
+  type: "audio" | "midi" | "sidechain" | "unknown";
+  label: string;
 }
 
 interface SessionMap {
@@ -54,6 +71,11 @@ interface SessionMap {
   tracks: TrackInfo[];
   returnTracks: TrackInfo[];
   masterTrack: TrackInfo | null;
+  manualRouting?: {
+    status: "missing" | "loaded" | "invalid";
+    warnings: string[];
+    connections: ManualRoutingConnection[];
+  };
 }
 
 interface MermaidPaths {
@@ -345,6 +367,7 @@ function structureItemLabel(
 function flowDiagram(sessionMap: SessionMap): string {
   const lines: string[] = ["flowchart TD"];
   const classMap = new Map<string, string[]>();
+  const trackNodeByName = new Map<string, string>();
 
   const addClass = (nodeId: string, className: string) => {
     const current = classMap.get(className) ?? [];
@@ -399,6 +422,7 @@ function flowDiagram(sessionMap: SessionMap): string {
     );
     pushEdge(lines, parentId, trackId);
     addClass(trackId, className);
+    trackNodeByName.set(track.name, trackId);
 
     track.devices.forEach((device, deviceIndex) => {
       const deviceId = `${trackId}_device_${deviceIndex}`;
@@ -471,6 +495,13 @@ function flowDiagram(sessionMap: SessionMap): string {
   if (sessionMap.masterTrack) {
     renderTrack(sessionMap.masterTrack, "master_0", "section_master", "master");
   }
+
+  (sessionMap.manualRouting?.connections ?? []).forEach((connection) => {
+    const fromId = trackNodeByName.get(connection.from);
+    const toId = trackNodeByName.get(connection.to);
+    if (!fromId || !toId) return;
+    lines.push(`  ${fromId} -. "${escapeQuotedText(connection.label || connection.type || "manual")}" .-> ${toId}`);
+  });
 
   lines.push("");
   lines.push("classDef set fill:#111,stroke:#f5a623,color:#fff");

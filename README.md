@@ -15,6 +15,7 @@ internal-viewer-preview/index.html?view=session
 internal-viewer-preview/index.html?view=kanban
 internal-viewer-preview/index.html?view=metro
 internal-viewer-preview/index.html?view=outputs
+internal-viewer-preview/index.html?view=routing
 internal-viewer-preview/index.html?view=devices
 internal-viewer-preview/index.html?view=files
 internal-viewer-preview/index.html?view=overview
@@ -59,12 +60,14 @@ est déplacé, adaptez les deux dépendances `file:` avant `npm install`.
 Le clic droit sert uniquement de point d'entrée : l'export couvre toujours le
 Set complet. Un exemple est fourni dans `exports/session-map.example.json`.
 
-## État actuel des vues (v0.7.5)
+## État actuel des vues (v1.1)
 
-Le projet fournit aujourd'hui six vues externes complémentaires :
+Le projet fournit maintenant :
 
-- **Visual Launcher** : page d'accueil qui centralise toutes les sorties
-  disponibles et indique quoi générer si un fichier manque.
+- **Integrated Viewer · beta** dans Ableton : viewer principal léger, ouvert
+  automatiquement après **Export Session Map**.
+- **Visual Launcher** externe : page d'accueil qui centralise toutes les
+  sorties générées et sert de fallback.
 - **HTML Report** : rapport détaillé piste par piste, avec devices, sends,
   racks et résumés de structure.
 - **Session Grid** : vue externe plus proche d'une Session View Ableton,
@@ -86,30 +89,37 @@ Puis dans Ableton Live :
 
 1. clic droit sur un contexte supporté ;
 2. choisir **Export Session Map** ;
-3. le launcher s'ouvre dans le navigateur ;
-4. choisir une visualisation :
-   - Session Grid
-   - HTML Report
-   - Flow
-   - Git / Metro
+3. le Set est exporté en JSON, les vues HTML légères sont régénérées ;
+4. la modale **Session Mapper** s'ouvre directement dans Live ;
+5. utiliser les tabs :
+   - Session
    - Kanban
-   - Raw Data
+   - Git / Metro
+   - Outputs
+   - Routing
+   - Devices
+   - Files
+   - Overview
+6. si besoin, cliquer **Open External Launcher** depuis la modale.
 
-### No WebView Stable Mode (v0.4.2)
+### Integrated Ableton Modal UX (v1.1)
 
-La WebView intégrée est désactivée car même une WebView minimale peut faire
-planter Ableton Live Beta. Utilisez la preview HTML externe à la place.
+La modale intégrée est maintenant l'UX principale, mais elle reste volontairement
+légère :
+
+- pas de Mermaid.js embarqué ;
+- pas de SVG/PNG lourds dans Live ;
+- pas de rendu diagramme complet dans la modale ;
+- les previews internes sont en HTML/CSS simple ;
+- le launcher externe reste disponible en fallback ou en ouverture manuelle.
 
 En usage normal, le menu **Extensions** n'affiche qu'une seule entrée :
 
 - **Export Session Map** : scanne le Live Set complet en mode `ultra-safe`,
   écrit `exports/session-map.json`, génère le report HTML, le Session Grid,
   l'index visuel `exports/session-map-diagrams.html`, crée les fichiers latest +
-  archivés, puis ouvre ce launcher dans le navigateur système.
-
-L'interface reste volontairement externe : la WebView intégrée du SDK est
-désactivée car elle s'est révélée instable dans Live Beta. Le viewer HTML
-continue donc à s'ouvrir dans le navigateur, jamais dans une WebView Ableton.
+  archivés, puis ouvre la modale intégrée. Si la modale échoue, l'extension
+  ouvre automatiquement le launcher externe.
 
 Depuis la racine du projet :
 
@@ -118,6 +128,7 @@ npm run build
 npm start
 npm run preview
 npm run generate:session-grid
+npm run create:routing-overrides
 npm run generate:diagrams-index
 npm run generate:mermaid
 npm run render:mermaid
@@ -158,17 +169,29 @@ npm run open:diagram:git
 npm run open:diagram:kanban
 ```
 
-L'ouverture automatique externe est activée par défaut dans l'extension. Pour
-la désactiver explicitement :
+La modale intégrée est activée par défaut. Pour revenir au launcher externe
+comme UX principale :
+
+```bash
+OPEN_INTERNAL_MODAL_ON_EXPORT=false npm start
+```
+
+Le fallback externe reste recommandé :
+
+```bash
+FALLBACK_TO_EXTERNAL_LAUNCHER=true npm start
+```
+
+L'ouverture automatique externe seule peut aussi être désactivée explicitement :
 
 ```bash
 ENABLE_OPEN_HTML=false npm start
 ```
 
-Quand l'ouverture automatique est active, l'action **Export Session Map** tente
-d'ouvrir le launcher `exports/session-map-diagrams.html` dans le navigateur
-système après la génération des fichiers HTML. Si l'ouverture échoue, l'export
-reste considéré comme réussi et le chemin du launcher est laissé dans les logs.
+Quand `OPEN_INTERNAL_MODAL_ON_EXPORT=true`, l'action **Export Session Map**
+ouvre d'abord la modale intégrée. Si cette modale échoue et que
+`FALLBACK_TO_EXTERNAL_LAUNCHER=true`, l'extension ouvre
+`exports/session-map-diagrams.html` dans le navigateur système.
 
 Par défaut, l'action Live ne lance pas les rendus Mermaid lourds. Pour les
 activer explicitement pendant l'export depuis Ableton :
@@ -393,8 +416,8 @@ Workflow recommandé :
 
 ## Known limitations
 
-- La **WebView** intégrée est désactivée car elle s'est montrée instable dans
-  Live Beta.
+- La modale intégrée reste une **vue légère** : pas de Mermaid runtime, pas de
+  rendu SVG/PNG lourd, pas de diagrammes complets dans Live.
 - L'export principal fonctionne en mode **ultra-safe** pour garantir que
   l'action Live se termine toujours proprement.
 - Les **devices internes des racks** ne sont pas encore scannés en profondeur
@@ -405,45 +428,44 @@ Workflow recommandé :
 - **Mermaid Git / Metro** est une visualisation artistique et lisible du Set,
   pas une topologie audio exacte.
 
-## Experimental Internal Viewer
+## Integrated Viewer and dev action
 
-Un viewer interne expérimental plus grand est disponible uniquement en mode
-expérimental. Il reste volontairement léger et n'essaie pas de rendre les
-diagrammes Mermaid dans Live.
+La modale intégrée s'ouvre maintenant automatiquement depuis l'action normale
+**Export Session Map**.
 
-Par défaut :
-
-- il est **désactivé** ;
-- le mode recommandé reste le **launcher externe** ;
-- l'action normale **Export Session Map** reste inchangée.
-
-Activation :
+Une action dev supplémentaire peut rester visible si besoin :
 
 ```bash
-ENABLE_INTERNAL_VIEWER=true npm start
+ENABLE_INTERNAL_VIEWER_DEV_ACTION=true npm start
 ```
 
-Quand cette variable vaut `true`, une action dev supplémentaire apparaît dans
-Live :
+ou :
+
+```bash
+ENABLE_DIAGNOSTIC_ACTIONS=true npm start
+```
+
+Dans ce cas, Live affiche aussi :
 
 - **Open Internal Viewer Experimental**
 
-Cette fenêtre interne reste volontairement ultra-safe :
+Cette fenêtre interne reste volontairement légère :
 
 - modale demandée en **1400 x 950** ;
 - fallback scrollable si Live / le SDK limite la taille réelle ;
-- onglets **Session / Kanban / Git-Metro / Outputs / Devices / Files / Overview** ;
+- onglets **Session / Kanban / Git-Metro / Outputs / Routing / Devices / Files / Overview** ;
 - navigation par **tabs CSS-only** sans dépendre du JS pour changer de vue ;
 - preview interne légère type Session View, basée uniquement sur le JSON exporté ;
 - preview **Kanban** interne en HTML/CSS ;
 - preview **Git / Metro** interne en HTML/CSS ;
 - métriques simples + date d'export + mode `ultra-safe` ;
 - table légère des outputs basée sur `session-map.json` ;
+- onglet **Routing** alimenté par `routing-overrides.json` si disponible ;
 - liste compacte des devices par piste ;
 - vérification des fichiers générés avant d'afficher les boutons Open ;
 - aucun Mermaid lourd rendu dans la fenêtre ;
 - aucun gros SVG/PNG injecté ;
-- aucun remplacement du launcher externe.
+- le launcher externe reste disponible.
 
 Notes importantes :
 
@@ -455,9 +477,9 @@ Notes importantes :
 
 Important :
 
-- ce mode peut rester **instable selon la Live Beta / le SDK** ;
-- il n'est jamais appelé par l'action stable **Export Session Map** ;
-- s'il pose problème, gardez-le désactivé et utilisez le launcher externe.
+- si la modale intégrée échoue, le fallback navigateur prend le relais si
+  `FALLBACK_TO_EXTERNAL_LAUNCHER=true` ;
+- le mode recommandé pour les gros diagrammes reste le **launcher externe**.
 
 Troubleshooting :
 
@@ -513,6 +535,51 @@ Important :
 - les routings I/O peuvent rester **unavailable** selon la version Live Beta / SDK ;
 - le résultat dépend du **Set actuellement ouvert**.
 
+## v1.0 Manual routing overrides
+
+La matrice SDK confirme que le SDK bêta n'expose pas encore proprement les
+routings I/O, certaines infos de monitor, ni les sidechains. La v1.0 ajoute
+donc une surcouche optionnelle :
+
+- **SDK data + routing-overrides.json = visualisation complète**
+
+Le scan principal reste inchangé et l'action stable **Export Session Map** ne
+dépend jamais de ce fichier.
+
+Workflow :
+
+```bash
+npm run create:routing-overrides
+```
+
+Puis éditer :
+
+- `exports/routing-overrides.json`
+
+Ensuite relancer :
+
+- **Export Session Map** dans Live
+
+Le JSON exporté ajoute :
+
+- `manualRouting.status`
+- `manualRouting.warnings`
+- `manualRouting.connections`
+- `track.routing.source`
+
+Quand un override est présent, les viewers affichent :
+
+- les champs `MIDI From / MIDI To / Audio From / Audio To / Monitor`
+- un badge **MANUAL**
+- les éventuelles **Manual Connections**
+
+Comportement de sécurité :
+
+- si `routing-overrides.json` est absent, l'export continue normalement ;
+- si le JSON est invalide, warning uniquement ;
+- si une piste référencée est absente, warning uniquement ;
+- aucun routing n'est inventé automatiquement.
+
 ### Actions de diagnostic en mode développement
 
 Le code diagnostic est conservé, mais il est caché par défaut. Pour réactiver
@@ -566,8 +633,8 @@ Le JSON principal exporte désormais les racks détectés avec :
 - un sous-ensemble lisible de paramètres utiles, en priorité les macros ;
 - les valeurs de volume/pan de chain quand le SDK les expose.
 
-Le fichier `exports/routing-overrides.example.json` prépare une future surcouche
-manuelle pour enrichir les routings quand le SDK ne les fournit pas encore.
+Le fichier `exports/routing-overrides.example.json` montre maintenant le format
+de la surcouche manuelle utilisée pour compléter les routings absents du SDK.
 
 ## Robustesse
 
@@ -580,8 +647,8 @@ l'export. Seule l'absence du Set ou du dossier de stockage empêche l'écriture.
 
 - Le nom/chemin du Set et la couleur des pistes ne sont pas exposés : `null`.
 - La version actuelle du SDK ne semble pas exposer les routings I/O ni les
-  sidechains. Le projet les laisse à `null` et pourra supporter un fichier
-  `routing-overrides.json` plus tard.
+  sidechains. Le projet les laisse à `null` côté scan SDK brut et s'appuie
+  désormais sur `routing-overrides.json` pour les compléter manuellement.
 - Le viewer affiche donc `Routing I/O non disponible dans cette version du SDK`.
 - Les sidechains restent en TODO explicite dans le code jusqu'à exposition SDK.
 - Les racks et chains sont exportés dans un format lisible, pas comme un dump
