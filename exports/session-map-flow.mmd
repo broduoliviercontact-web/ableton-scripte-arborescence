@@ -1,0 +1,223 @@
+flowchart TD
+  set["Ableton Live Set<br/>167 BPM<br/>JSON 0.4.3"]
+  section_tracks["Tracks<br/>15 normal tracks"]
+  section_returns["Return Tracks<br/>2 return tracks"]
+  section_master["Master Track<br/>1 master track"]
+  set --> section_tracks
+  set --> section_returns
+  set --> section_master
+  track_0["Coffee Leaf<br/>MIDI Track<br/>devices: 3<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_0
+  track_0_device_0["Coffee Leaf<br/>Device"]
+  track_0 --> track_0_device_0
+  track_0_device_1["Utility<br/>Device"]
+  track_0 --> track_0_device_1
+  track_0_device_2["Happy Bees<br/>RackDevice<br/>chains: 1"]
+  track_0 --> track_0_device_2
+  track_0_device_2_chain_0["Chain 01<br/>devices: 8"]
+  track_0_device_2 --> track_0_device_2_chain_0
+  track_1["Strum<br/>MIDI Track<br/>devices: 3<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_1
+  track_1_device_0["Strum-o-Matic<br/>RackDevice<br/>chains: 1"]
+  track_1 --> track_1_device_0
+  track_1_device_0_chain_0["Chain 01<br/>devices: 10"]
+  track_1_device_0 --> track_1_device_0_chain_0
+  track_1_device_1["Auto Filter Legacy<br/>Device"]
+  track_1 --> track_1_device_1
+  track_1_device_2["Audio Effect Rack<br/>RackDevice<br/>chains: 1"]
+  track_1 --> track_1_device_2
+  track_1_device_2_chain_0["Chain 01<br/>devices: 3"]
+  track_1_device_2 --> track_1_device_2_chain_0
+  track_2["Drums<br/>MIDI Track<br/>devices: 2<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_2
+  track_2_device_0["Drum Rack<br/>DrumRack<br/>chains: 11 · pads: 11"]
+  track_2 --> track_2_device_0
+  track_2_device_0_chain_0["Chain 01<br/>note: 43 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_chain_0
+  track_2_device_0_chain_1["Chain 02<br/>note: 41 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_chain_1
+  track_2_device_0_chain_2["Chain 03<br/>note: 39 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_chain_2
+  track_2_device_0_chain_3["Chain 04<br/>note: 45 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_chain_3
+  track_2_device_0_chain_4["Chain 05<br/>note: 40 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_chain_4
+  track_2_device_0_chain_5["Chain 06<br/>note: 38 · devices: 2"]
+  track_2_device_0 --> track_2_device_0_chain_5
+  track_2_device_0_chain_6["Chain 07<br/>note: 46 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_chain_6
+  track_2_device_0_chain_7["Chain 08<br/>note: 36 · devices: 2"]
+  track_2_device_0 --> track_2_device_0_chain_7
+  track_2_device_0_chain_8["Chain 09<br/>note: 42 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_chain_8
+  track_2_device_0_chain_9["Chain 10<br/>note: 44 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_chain_9
+  track_2_device_0_chain_10["Chain 11<br/>note: 37 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_chain_10
+  track_2_device_0_pad_0["Chain 01<br/>note: 43 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_pad_0
+  track_2_device_0_pad_1["Chain 02<br/>note: 41 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_pad_1
+  track_2_device_0_pad_2["Chain 03<br/>note: 39 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_pad_2
+  track_2_device_0_pad_3["Chain 04<br/>note: 45 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_pad_3
+  track_2_device_0_pad_4["Chain 05<br/>note: 40 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_pad_4
+  track_2_device_0_pad_5["Chain 06<br/>note: 38 · devices: 2"]
+  track_2_device_0 --> track_2_device_0_pad_5
+  track_2_device_0_pad_6["Chain 07<br/>note: 46 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_pad_6
+  track_2_device_0_pad_7["Chain 08<br/>note: 36 · devices: 2"]
+  track_2_device_0 --> track_2_device_0_pad_7
+  track_2_device_0_pad_8["Chain 09<br/>note: 42 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_pad_8
+  track_2_device_0_pad_9["Chain 10<br/>note: 44 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_pad_9
+  track_2_device_0_pad_10["Chain 11<br/>note: 37 · devices: 1"]
+  track_2_device_0 --> track_2_device_0_pad_10
+  track_2_device_1["Utility<br/>Device"]
+  track_2 --> track_2_device_1
+  track_3["The Beat Of History<br/>MIDI Track<br/>devices: 1<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_3
+  track_3_device_0["The Beat Of History<br/>RackDevice<br/>chains: 1"]
+  track_3 --> track_3_device_0
+  track_3_device_0_chain_0["Chain 01<br/>devices: 4"]
+  track_3_device_0 --> track_3_device_0_chain_0
+  track_4["Mello<br/>MIDI Track<br/>devices: 2<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_4
+  track_4_device_0["Mello<br/>Device"]
+  track_4 --> track_4_device_0
+  track_4_device_1["Angry Bees<br/>RackDevice<br/>chains: 1"]
+  track_4 --> track_4_device_1
+  track_4_device_1_chain_0["Chain 01<br/>devices: 3"]
+  track_4_device_1 --> track_4_device_1_chain_0
+  track_5["Rose Bass<br/>MIDI Track<br/>devices: 3<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_5
+  track_5_device_0["Rose Bass<br/>RackDevice<br/>chains: 1"]
+  track_5 --> track_5_device_0
+  track_5_device_0_chain_0["Chain 01<br/>devices: 5"]
+  track_5_device_0 --> track_5_device_0_chain_0
+  track_5_device_1["Reese Talk<br/>RackDevice<br/>chains: 1"]
+  track_5 --> track_5_device_1
+  track_5_device_1_chain_0["Chain 01<br/>devices: 1"]
+  track_5_device_1 --> track_5_device_1_chain_0
+  track_5_device_2["Utility<br/>Device"]
+  track_5 --> track_5_device_2
+  track_6["Sub Sub Bass<br/>MIDI Track<br/>devices: 1<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_6
+  track_6_device_0["Sub Sub Bass<br/>RackDevice<br/>chains: 1"]
+  track_6 --> track_6_device_0
+  track_6_device_0_chain_0["Chain 01<br/>devices: 7"]
+  track_6_device_0 --> track_6_device_0_chain_0
+  track_7["Guit Layter<br/>MIDI Track<br/>devices: 3<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_7
+  track_7_device_0["Guit Layter<br/>RackDevice<br/>chains: 1"]
+  track_7 --> track_7_device_0
+  track_7_device_0_chain_0["Chain 01<br/>devices: 2"]
+  track_7_device_0 --> track_7_device_0_chain_0
+  track_7_device_1["Robot Glitter<br/>RackDevice<br/>chains: 1"]
+  track_7 --> track_7_device_1
+  track_7_device_1_chain_0["Chain 01<br/>devices: 3"]
+  track_7_device_1 --> track_7_device_1_chain_0
+  track_7_device_2["Compressor<br/>Device"]
+  track_7 --> track_7_device_2
+  track_8["Transform Seed<br/>MIDI Track<br/>devices: 1<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_8
+  track_8_device_0["Metallic High Short<br/>Simpler"]
+  track_8 --> track_8_device_0
+  track_9["Vacuum<br/>MIDI Track<br/>devices: 2<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_9
+  track_9_device_0["Vacuum Flute<br/>RackDevice<br/>chains: 1"]
+  track_9 --> track_9_device_0
+  track_9_device_0_chain_0["Chain 01<br/>devices: 2"]
+  track_9_device_0 --> track_9_device_0_chain_0
+  track_9_device_1["Audio Effect Rack<br/>RackDevice<br/>chains: 1"]
+  track_9 --> track_9_device_1
+  track_9_device_1_chain_0["Chain 01<br/>devices: 2"]
+  track_9_device_1 --> track_9_device_1_chain_0
+  track_10["Vocal Main<br/>Audio Track<br/>devices: 4<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_10
+  track_10_device_0["S Suppresor<br/>RackDevice<br/>chains: 1"]
+  track_10 --> track_10_device_0
+  track_10_device_0_chain_0["Chain 01<br/>devices: 1"]
+  track_10_device_0 --> track_10_device_0_chain_0
+  track_10_device_1["Articulator<br/>RackDevice<br/>chains: 2"]
+  track_10 --> track_10_device_1
+  track_10_device_1_chain_0["Chain 01<br/>devices: 1"]
+  track_10_device_1 --> track_10_device_1_chain_0
+  track_10_device_1_chain_1["Chain 02<br/>devices: 0"]
+  track_10_device_1 --> track_10_device_1_chain_1
+  track_10_device_2["Reverb<br/>Device"]
+  track_10 --> track_10_device_2
+  track_10_device_3["Fadeaway<br/>RackDevice<br/>chains: 1"]
+  track_10 --> track_10_device_3
+  track_10_device_3_chain_0["Chain 01<br/>devices: 3"]
+  track_10_device_3 --> track_10_device_3_chain_0
+  track_11["Vocal Harmony<br/>Audio Track<br/>devices: 4<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_11
+  track_11_device_0["S Suppresor<br/>RackDevice<br/>chains: 1"]
+  track_11 --> track_11_device_0
+  track_11_device_0_chain_0["Chain 01<br/>devices: 1"]
+  track_11_device_0 --> track_11_device_0_chain_0
+  track_11_device_1["Articulator<br/>RackDevice<br/>chains: 2"]
+  track_11 --> track_11_device_1
+  track_11_device_1_chain_0["Chain 01<br/>devices: 1"]
+  track_11_device_1 --> track_11_device_1_chain_0
+  track_11_device_1_chain_1["Chain 02<br/>devices: 0"]
+  track_11_device_1 --> track_11_device_1_chain_1
+  track_11_device_2["Reverb<br/>Device"]
+  track_11 --> track_11_device_2
+  track_11_device_3["Fadeaway<br/>RackDevice<br/>chains: 1"]
+  track_11 --> track_11_device_3
+  track_11_device_3_chain_0["Chain 01<br/>devices: 3"]
+  track_11_device_3 --> track_11_device_3_chain_0
+  track_12["Vocal Hum<br/>Audio Track<br/>devices: 1<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_12
+  track_12_device_0["Reverb<br/>Device"]
+  track_12 --> track_12_device_0
+  track_13["Vocal Adlib<br/>Audio Track<br/>devices: 1<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_13
+  track_13_device_0["Adlib Delay<br/>RackDevice<br/>chains: 1"]
+  track_13 --> track_13_device_0
+  track_13_device_0_chain_0["Chain 01<br/>devices: 3"]
+  track_13_device_0 --> track_13_device_0_chain_0
+  track_14["Rainstorm<br/>MIDI Track<br/>devices: 1<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_14
+  track_14_device_0["Rainstorm<br/>RackDevice<br/>chains: 1"]
+  track_14 --> track_14_device_0
+  track_14_device_0_chain_0["Chain 01<br/>devices: 20"]
+  track_14_device_0 --> track_14_device_0_chain_0
+  return_0["A-Reverb<br/>Return Track<br/>devices: 1<br/>sends: A-Reverb, B-Delay"]
+  section_returns --> return_0
+  return_0_device_0["Verb Expand<br/>RackDevice<br/>chains: 1"]
+  return_0 --> return_0_device_0
+  return_0_device_0_chain_0["Chain 01<br/>devices: 2"]
+  return_0_device_0 --> return_0_device_0_chain_0
+  return_1["B-Delay<br/>Return Track<br/>devices: 1<br/>sends: A-Reverb, B-Delay"]
+  section_returns --> return_1
+  return_1_device_0["Delay<br/>Device"]
+  return_1 --> return_1_device_0
+  master_0["Main<br/>Master Track<br/>devices: 1"]
+  section_master --> master_0
+  master_0_device_0["Patience Master<br/>RackDevice<br/>chains: 1"]
+  master_0 --> master_0_device_0
+  master_0_device_0_chain_0["Chain 01<br/>devices: 3"]
+  master_0_device_0 --> master_0_device_0_chain_0
+
+classDef set fill:#111,stroke:#f5a623,color:#fff
+classDef track fill:#1b1b1b,stroke:#666,color:#fff
+classDef return fill:#1b1b1b,stroke:#4aa3ff,color:#fff
+classDef master fill:#1b1b1b,stroke:#ff4a4a,color:#fff
+classDef device fill:#242424,stroke:#999,color:#fff
+classDef rack fill:#2b2114,stroke:#f5a623,color:#fff
+classDef chain fill:#141f2b,stroke:#4aa3ff,color:#fff
+
+class set set;
+class section_tracks,track_0,track_1,track_2,track_3,track_4,track_5,track_6,track_7,track_8,track_9,track_10,track_11,track_12,track_13,track_14 track;
+class section_returns,return_0,return_1 return;
+class section_master,master_0 master;
+class track_0_device_0,track_0_device_1,track_1_device_1,track_2_device_1,track_4_device_0,track_5_device_2,track_7_device_2,track_8_device_0,track_10_device_2,track_11_device_2,track_12_device_0,return_1_device_0 device;
+class track_0_device_2,track_1_device_0,track_1_device_2,track_2_device_0,track_3_device_0,track_4_device_1,track_5_device_0,track_5_device_1,track_6_device_0,track_7_device_0,track_7_device_1,track_9_device_0,track_9_device_1,track_10_device_0,track_10_device_1,track_10_device_3,track_11_device_0,track_11_device_1,track_11_device_3,track_13_device_0,track_14_device_0,return_0_device_0,master_0_device_0 rack;
+class track_0_device_2_chain_0,track_1_device_0_chain_0,track_1_device_2_chain_0,track_2_device_0_chain_0,track_2_device_0_chain_1,track_2_device_0_chain_2,track_2_device_0_chain_3,track_2_device_0_chain_4,track_2_device_0_chain_5,track_2_device_0_chain_6,track_2_device_0_chain_7,track_2_device_0_chain_8,track_2_device_0_chain_9,track_2_device_0_chain_10,track_2_device_0_pad_0,track_2_device_0_pad_1,track_2_device_0_pad_2,track_2_device_0_pad_3,track_2_device_0_pad_4,track_2_device_0_pad_5,track_2_device_0_pad_6,track_2_device_0_pad_7,track_2_device_0_pad_8,track_2_device_0_pad_9,track_2_device_0_pad_10,track_3_device_0_chain_0,track_4_device_1_chain_0,track_5_device_0_chain_0,track_5_device_1_chain_0,track_6_device_0_chain_0,track_7_device_0_chain_0,track_7_device_1_chain_0,track_9_device_0_chain_0,track_9_device_1_chain_0,track_10_device_0_chain_0,track_10_device_1_chain_0,track_10_device_1_chain_1,track_10_device_3_chain_0,track_11_device_0_chain_0,track_11_device_1_chain_0,track_11_device_1_chain_1,track_11_device_3_chain_0,track_13_device_0_chain_0,track_14_device_0_chain_0,return_0_device_0_chain_0,master_0_device_0_chain_0 chain;
+

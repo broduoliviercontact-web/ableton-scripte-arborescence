@@ -1,0 +1,75 @@
+flowchart TD
+  set["Ableton Live Set&lt;br/&gt;120 BPM&lt;br/&gt;JSON 0.4.3"]
+  section_tracks["Tracks&lt;br/&gt;9 normal tracks"]
+  section_returns["Return Tracks&lt;br/&gt;2 return tracks"]
+  section_master["Master Track&lt;br/&gt;1 master track"]
+  set --> section_tracks
+  set --> section_returns
+  set --> section_master
+  track_0["1-MIDI&lt;br/&gt;MIDI Track&lt;br/&gt;devices: 3&lt;br/&gt;sends: A-Reverb | Cabinet Mic Mixer, B-Delay"]
+  section_tracks --> track_0
+  track_0_device_0["Producer_Pal&lt;br/&gt;Device"]
+  track_0 --> track_0_device_0
+  track_0_device_1["Adlib Delay&lt;br/&gt;RackDevice&lt;br/&gt;chains: 1"]
+  track_0 --> track_0_device_1
+  track_0_device_1_chain_0["Chain 01&lt;br/&gt;devices: 3"]
+  track_0_device_1 --> track_0_device_1_chain_0
+  track_0_device_2["Basic Stereo Chorus Jazz Amp&lt;br/&gt;RackDevice&lt;br/&gt;chains: 1"]
+  track_0 --> track_0_device_2
+  track_0_device_2_chain_0["Chain 01&lt;br/&gt;devices: 8"]
+  track_0_device_2 --> track_0_device_2_chain_0
+  track_1["2-Audio&lt;br/&gt;Audio Track&lt;br/&gt;devices: 0&lt;br/&gt;sends: A-Reverb | Cabinet Mic Mixer, B-Delay"]
+  section_tracks --> track_1
+  track_2["3-Audio&lt;br/&gt;Audio Track&lt;br/&gt;devices: 0&lt;br/&gt;sends: A-Reverb | Cabinet Mic Mixer, B-Delay"]
+  section_tracks --> track_2
+  track_3["4-MIDI&lt;br/&gt;MIDI Track&lt;br/&gt;devices: 0&lt;br/&gt;sends: A-Reverb | Cabinet Mic Mixer, B-Delay"]
+  section_tracks --> track_3
+  track_4["5-MIDI&lt;br/&gt;MIDI Track&lt;br/&gt;devices: 0&lt;br/&gt;sends: A-Reverb | Cabinet Mic Mixer, B-Delay"]
+  section_tracks --> track_4
+  track_5["6-MIDI&lt;br/&gt;MIDI Track&lt;br/&gt;devices: 0&lt;br/&gt;sends: A-Reverb | Cabinet Mic Mixer, B-Delay"]
+  section_tracks --> track_5
+  track_6["7-Cage Kit&lt;br/&gt;MIDI Track&lt;br/&gt;devices: 1&lt;br/&gt;sends: A-Reverb | Cabinet Mic Mixer, B-Delay"]
+  section_tracks --> track_6
+  track_6_device_0["Cage Kit&lt;br/&gt;RackDevice&lt;br/&gt;chains: 1"]
+  track_6 --> track_6_device_0
+  track_6_device_0_chain_0["Chain 01&lt;br/&gt;devices: 2"]
+  track_6_device_0 --> track_6_device_0_chain_0
+  track_7["8-Audio&lt;br/&gt;Audio Track&lt;br/&gt;devices: 0&lt;br/&gt;sends: A-Reverb | Cabinet Mic Mixer, B-Delay"]
+  section_tracks --> track_7
+  track_8["9-Audio&lt;br/&gt;Audio Track&lt;br/&gt;devices: 1&lt;br/&gt;sends: A-Reverb | Cabinet Mic Mixer, B-Delay"]
+  section_tracks --> track_8
+  track_8_device_0["Basic Stereo Chorus Jazz Amp&lt;br/&gt;RackDevice&lt;br/&gt;chains: 1"]
+  track_8 --> track_8_device_0
+  track_8_device_0_chain_0["Chain 01&lt;br/&gt;devices: 8"]
+  track_8_device_0 --> track_8_device_0_chain_0
+  return_0["A-Reverb | Cabinet Mic Mixer&lt;br/&gt;Return Track&lt;br/&gt;devices: 2&lt;br/&gt;sends: A-Reverb | Cabinet Mic …"]
+  section_returns --> return_0
+  return_0_device_0["Reverb&lt;br/&gt;Device"]
+  return_0 --> return_0_device_0
+  return_0_device_1["Cabinet Mic Mixer&lt;br/&gt;RackDevice&lt;br/&gt;chains: 1"]
+  return_0 --> return_0_device_1
+  return_0_device_1_chain_0["Chain 01&lt;br/&gt;devices: 2"]
+  return_0_device_1 --> return_0_device_1_chain_0
+  return_1["B-Delay&lt;br/&gt;Return Track&lt;br/&gt;devices: 1&lt;br/&gt;sends: A-Reverb | Cabinet Mic Mixer, B-Delay"]
+  section_returns --> return_1
+  return_1_device_0["Delay&lt;br/&gt;Device"]
+  return_1 --> return_1_device_0
+  master_0["Main&lt;br/&gt;Master Track&lt;br/&gt;devices: 0"]
+  section_master --> master_0
+
+classDef set fill:#111,stroke:#f5a623,color:#fff
+classDef track fill:#1b1b1b,stroke:#666,color:#fff
+classDef return fill:#1b1b1b,stroke:#4aa3ff,color:#fff
+classDef master fill:#1b1b1b,stroke:#ff4a4a,color:#fff
+classDef device fill:#242424,stroke:#999,color:#fff
+classDef rack fill:#2b2114,stroke:#f5a623,color:#fff
+classDef chain fill:#141f2b,stroke:#4aa3ff,color:#fff
+
+class set set;
+class section_tracks,track_0,track_1,track_2,track_3,track_4,track_5,track_6,track_7,track_8 track;
+class section_returns,return_0,return_1 return;
+class section_master,master_0 master;
+class track_0_device_0,return_0_device_0,return_1_device_0 device;
+class track_0_device_1,track_0_device_2,track_6_device_0,track_8_device_0,return_0_device_1 rack;
+class track_0_device_1_chain_0,track_0_device_2_chain_0,track_6_device_0_chain_0,track_8_device_0_chain_0,return_0_device_1_chain_0 chain;
+

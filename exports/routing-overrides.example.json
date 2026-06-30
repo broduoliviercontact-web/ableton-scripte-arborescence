@@ -1,0 +1,10 @@
+{
+  "Vocal Main": {
+    "input": "Ext. In 1",
+    "output": "Master"
+  },
+  "Rose Bass": {
+    "input": "MIDI From All Ins",
+    "output": "Master"
+  }
+}

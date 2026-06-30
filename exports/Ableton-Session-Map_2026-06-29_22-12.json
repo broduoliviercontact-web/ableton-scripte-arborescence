@@ -1,0 +1,1467 @@
+{
+  "version": "0.4.3",
+  "exportedAt": "2026-06-29T20:12:18.171Z",
+  "set": {
+    "name": null,
+    "tempo": 120
+  },
+  "scan": {
+    "mode": "ultra-safe",
+    "maxDeviceDepth": 0,
+    "scanInternalChainDevices": false,
+    "scanNestedRacks": false,
+    "partial": false,
+    "warnings": [],
+    "totalScannedDevices": 8,
+    "maxTotalScannedDevices": 500
+  },
+  "tracks": [
+    {
+      "id": "3833410309523590897653389452809155857350779",
+      "index": 0,
+      "name": "1-MIDI",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "4181859453250631884239885050819286505881723",
+          "index": 0,
+          "name": "Producer_Pal",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "4878757740704713857412876246839547802943611",
+              "index": 1,
+              "name": "live.button",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "5227206884431754843999371844849678451474555",
+              "index": 2,
+              "name": "live.text[2]",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "5575656028158795830585867442859809100005499",
+              "index": 3,
+              "name": "live.text[2]",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        },
+        {
+          "id": "1064164154670909313080359494197636719337013371",
+          "index": 1,
+          "name": "Adlib Delay",
+          "type": "RackDevice",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "1067648646108179722946224450177738025822322811",
+              "index": 9,
+              "name": "Macro 9",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1067997095251906763932810945775748156470853755",
+              "index": 10,
+              "name": "Macro 10",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1068345544395633804919397441373758287119384699",
+              "index": 11,
+              "name": "Macro 11",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1068693993539360845905983936971768417767915643",
+              "index": 12,
+              "name": "Macro 12",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1069042442683087886892570432569778548416446587",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1069390891826814927879156928167788679064977531",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1069739340970541968865743423765798809713508475",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1070087790114269009852329919363808940362039419",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1064861052958363395053532485393656980634075259",
+              "index": 1,
+              "name": "Delay Time",
+              "value": 49.578487396240234,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1065209502102090436040118980991667111282606203",
+              "index": 2,
+              "name": "Delay Input",
+              "value": 63.5,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1065557951245817477026705476589677241931137147",
+              "index": 3,
+              "name": "Delay Output",
+              "value": 63.5,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1065906400389544518013291972187687372579668091",
+              "index": 4,
+              "name": "Delay Dry/Wet",
+              "value": 59.46825408935547,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 1,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 3
+              }
+            ]
+          },
+          "padsSummary": null
+        },
+        {
+          "id": "1106326501061881272457325461556862527809257595",
+          "index": 2,
+          "name": "Basic Stereo Chorus Jazz Amp",
+          "type": "RackDevice",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "1111204789074059846269536399929004356888690811",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1111553238217786887256122895527014487537221755",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1111901687361513928242709391125024618185752699",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1112250136505240969229295886723034748834283643",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1107023399349335354430498452752882789106319483",
+              "index": 1,
+              "name": "Amp Gain",
+              "value": 58,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1107371848493062395417084948350892919754850427",
+              "index": 2,
+              "name": "Bass",
+              "value": 84,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1107720297636789436403671443948903050403381371",
+              "index": 3,
+              "name": "Mid",
+              "value": 87,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1108068746780516477390257939546913181051912315",
+              "index": 4,
+              "name": "Treble",
+              "value": 91,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1108417195924243518376844435144923311700443259",
+              "index": 5,
+              "name": "Presence",
+              "value": 66,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1108765645067970559363430930742933442348974203",
+              "index": 6,
+              "name": "Amp Volume",
+              "value": 104,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1109114094211697600350017426340943572997505147",
+              "index": 7,
+              "name": "Chorus Amount",
+              "value": 58,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1109462543355424641336603921938953703646036091",
+              "index": 8,
+              "name": "Chorus Rate",
+              "value": 80,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 1,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 8
+              }
+            ]
+          },
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "8711698321702164709864327824950984936783995",
+          "index": 0,
+          "name": "A-Reverb | Cabinet Mic Mixer",
+          "value": 0
+        },
+        {
+          "id": "9060147465429205696450823422961115585314939",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "79446874498291484986922934221007506588565627",
+      "index": 1,
+      "name": "2-Audio",
+      "kind": "audio",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [],
+      "sends": [
+        {
+          "id": "82582916791834853866201394603098682425344123",
+          "index": 0,
+          "name": "A-Reverb | Cabinet Mic Mixer",
+          "value": 0
+        },
+        {
+          "id": "82931365935561894852787890201108813073875067",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "90597247097556796557690793357331687341555835",
+      "index": 2,
+      "name": "3-Audio",
+      "kind": "audio",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [],
+      "sends": [
+        {
+          "id": "93733289391100165436969253739422863178334331",
+          "index": 0,
+          "name": "A-Reverb | Cabinet Mic Mixer",
+          "value": 0
+        },
+        {
+          "id": "94081738534827206423555749337432993826865275",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "103141416271730272074804634885696390688669819",
+      "index": 3,
+      "name": "4-MIDI",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [],
+      "sends": [
+        {
+          "id": "106277458565273640954083095267787566525448315",
+          "index": 0,
+          "name": "A-Reverb | Cabinet Mic Mixer",
+          "value": 0
+        },
+        {
+          "id": "106625907709000681940669590865797697173979259",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "123003017464171608310234883972273837654933627",
+      "index": 4,
+      "name": "5-MIDI",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [],
+      "sends": [
+        {
+          "id": "126139059757714977189513344354365013491712123",
+          "index": 0,
+          "name": "A-Reverb | Cabinet Mic Mixer",
+          "value": 0
+        },
+        {
+          "id": "126487508901442018176099839952375144140243067",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "144258415231521108492011115450891807215321211",
+      "index": 5,
+      "name": "6-MIDI",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [],
+      "sends": [
+        {
+          "id": "147394457525064477371289575832982983052099707",
+          "index": 0,
+          "name": "A-Reverb | Cabinet Mic Mixer",
+          "value": 0
+        },
+        {
+          "id": "147742906668791518357876071430993113700630651",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "166907609573778772620133329321550299369832571",
+      "index": 6,
+      "name": "7-Cage Kit",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": true,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "774951365377465294213568147849228281056329851",
+          "index": 0,
+          "name": "Cage Kit",
+          "type": "RackDevice",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "777042060239827540133087121437289064947515515",
+              "index": 5,
+              "name": "Macro 5",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "777390509383554581119673617035299195596046459",
+              "index": 6,
+              "name": "Macro 6",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "777738958527281622106260112633309326244577403",
+              "index": 7,
+              "name": "Macro 7",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "778087407671008663092846608231319456893108347",
+              "index": 8,
+              "name": "Macro 8",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "778435856814735704079433103829329587541639291",
+              "index": 9,
+              "name": "Macro 9",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "778784305958462745066019599427339718190170235",
+              "index": 10,
+              "name": "Macro 10",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "779132755102189786052606095025349848838701179",
+              "index": 11,
+              "name": "Macro 11",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "779481204245916827039192590623359979487232123",
+              "index": 12,
+              "name": "Macro 12",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "779829653389643868025779086221370110135763067",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "780178102533370909012365581819380240784294011",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "780526551677097949998952077417390371432824955",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "780875000820824990985538573015400502081355899",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 1,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 2
+              }
+            ]
+          },
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "170043651867322141499411789703641475206611067",
+          "index": 0,
+          "name": "A-Reverb | Cabinet Mic Mixer",
+          "value": 0
+        },
+        {
+          "id": "170392101011049182485998285301651605855142011",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "67251154467845050456395588290652933889982587",
+      "index": 7,
+      "name": "8-Audio",
+      "kind": "audio",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [],
+      "sends": [
+        {
+          "id": "70387196761388419335674048672744109726761083",
+          "index": 0,
+          "name": "A-Reverb | Cabinet Mic Mixer",
+          "value": 0
+        },
+        {
+          "id": "70735645905115460322260544270754240375292027",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "1176713228094743551747797572354908918812508283",
+      "index": 8,
+      "name": "9-Audio",
+      "kind": "audio",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "1177061677238470592734384067952919049461039227",
+          "index": 0,
+          "name": "Basic Stereo Chorus Jazz Amp",
+          "type": "RackDevice",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "1181939965250649166546595006325060878540472443",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1182288414394376207533181501923071009189003387",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1182636863538103248519767997521081139837534331",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1182985312681830289506354493119091270486065275",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1177758575525924674707557059148939310758101115",
+              "index": 1,
+              "name": "Amp Gain",
+              "value": 58,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1178107024669651715694143554746949441406632059",
+              "index": 2,
+              "name": "Bass",
+              "value": 84,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1178455473813378756680730050344959572055163003",
+              "index": 3,
+              "name": "Mid",
+              "value": 87,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1178803922957105797667316545942969702703693947",
+              "index": 4,
+              "name": "Treble",
+              "value": 91,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1179152372100832838653903041540979833352224891",
+              "index": 5,
+              "name": "Presence",
+              "value": 66,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1179500821244559879640489537138989964000755835",
+              "index": 6,
+              "name": "Amp Volume",
+              "value": 104,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1179849270388286920627076032737000094649286779",
+              "index": 7,
+              "name": "Chorus Amount",
+              "value": 58,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1180197719532013961613662528335010225297817723",
+              "index": 8,
+              "name": "Chorus Rate",
+              "value": 80,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 1,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 8
+              }
+            ]
+          },
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "1243963912834062462158991222770864133978980475",
+          "index": 0,
+          "name": "A-Reverb | Cabinet Mic Mixer",
+          "value": 0
+        },
+        {
+          "id": "1244312361977789503145577718368874264627511419",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    }
+  ],
+  "returnTracks": [
+    {
+      "id": "24043460645691968119670134137396733472145531",
+      "index": 0,
+      "name": "A-Reverb | Cabinet Mic Mixer",
+      "kind": "return",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "24391909789419009106256629735406864120676475",
+          "index": 0,
+          "name": "Reverb",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "25088808076873091079429620931427125417738363",
+              "index": 1,
+              "name": "Predelay",
+              "value": 0.2589765787124634,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "25437257220600132066016116529437256066269307",
+              "index": 2,
+              "name": "In Lo Cut On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "25785706364327173052602612127447386714800251",
+              "index": 3,
+              "name": "In Hi Cut On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "26134155508054214039189107725457517363331195",
+              "index": 4,
+              "name": "Input Freq",
+              "value": 0.47729402780532837,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "26482604651781255025775603323467648011862139",
+              "index": 5,
+              "name": "Input Width",
+              "value": 0.6294117569923401,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "26831053795508296012362098921477778660393083",
+              "index": 6,
+              "name": "ER Spin On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "27179502939235336998948594519487909308924027",
+              "index": 7,
+              "name": "ER Spin Rate",
+              "value": 0.4296875298023224,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "27527952082962377985535090117498039957454971",
+              "index": 8,
+              "name": "ER Spin Amount",
+              "value": 0.12234228849411011,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "27876401226689418972121585715508170605985915",
+              "index": 9,
+              "name": "ER Shape",
+              "value": 0.5,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "28224850370416459958708081313518301254516859",
+              "index": 10,
+              "name": "Diff. Hi On",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "28573299514143500945294576911528431903047803",
+              "index": 11,
+              "name": "Diff. Hi Type",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "28921748657870541931881072509538562551578747",
+              "index": 12,
+              "name": "Diff. Hi Freq",
+              "value": 0.8102341890335083,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        },
+        {
+          "id": "1263825514026503798394421471857441580945244283",
+          "index": 1,
+          "name": "Cabinet Mic Mixer",
+          "type": "RackDevice",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "1266613107176320126287113436641522626133491835",
+              "index": 7,
+              "name": "Macro 7",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1266961556320047167273699932239532756782022779",
+              "index": 8,
+              "name": "Macro 8",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1267310005463774208260286427837542887430553723",
+              "index": 9,
+              "name": "Macro 9",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1267658454607501249246872923435553018079084667",
+              "index": 10,
+              "name": "Macro 10",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1268006903751228290233459419033563148727615611",
+              "index": 11,
+              "name": "Macro 11",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1268355352894955331220045914631573279376146555",
+              "index": 12,
+              "name": "Macro 12",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1268703802038682372206632410229583410024677499",
+              "index": 13,
+              "name": "Macro 13",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1269052251182409413193218905827593540673208443",
+              "index": 14,
+              "name": "Macro 14",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1269400700326136454179805401425603671321739387",
+              "index": 15,
+              "name": "Macro 15",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1269749149469863495166391897023613801970270331",
+              "index": 16,
+              "name": "Macro 16",
+              "value": 0,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": true
+            },
+            {
+              "id": "1264522412313957880367594463053461842242306171",
+              "index": 1,
+              "name": "On-Axis Volume",
+              "value": 92.06768798828125,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "1264870861457684921354180958651471972890837115",
+              "index": 2,
+              "name": "Off-Axis Volume",
+              "value": 76.19999694824219,
+              "min": 0,
+              "max": 127,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "summary",
+          "scanWarning": null,
+          "chainsSummary": {
+            "count": 1,
+            "items": [
+              {
+                "index": 0,
+                "name": "Chain 01",
+                "note": null,
+                "receivingNote": null,
+                "deviceCount": 2
+              }
+            ]
+          },
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "36239180676138402650197480067751306170728571",
+          "index": 0,
+          "name": "A-Reverb | Cabinet Mic Mixer",
+          "value": 0
+        },
+        {
+          "id": "36587629819865443636783975665761436819259515",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "40072121257135853502648931645862743304568955",
+      "index": 1,
+      "name": "B-Delay",
+      "kind": "return",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [
+        {
+          "id": "40420570400862894489235427243872873953099899",
+          "index": 0,
+          "name": "Delay",
+          "type": "Device",
+          "enabled": true,
+          "parameters": [
+            {
+              "id": "41117468688316976462408418439893135250161787",
+              "index": 1,
+              "name": "Smoothing",
+              "value": 0,
+              "min": 0,
+              "max": 2,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "41465917832044017448994914037903265898692731",
+              "index": 2,
+              "name": "Link",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "41814366975771058435581409635913396547223675",
+              "index": 3,
+              "name": "Ping Pong",
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "42162816119498099422167905233923527195754619",
+              "index": 4,
+              "name": "L Sync",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "42511265263225140408754400831933657844285563",
+              "index": 5,
+              "name": "R Sync",
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "42859714406952181395340896429943788492816507",
+              "index": 6,
+              "name": "L Time",
+              "value": 0.3350270390510559,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "43208163550679222381927392027953919141347451",
+              "index": 7,
+              "name": "R Time",
+              "value": 0.33752983808517456,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "43556612694406263368513887625964049789878395",
+              "index": 8,
+              "name": "L 16th",
+              "value": 2,
+              "min": 0,
+              "max": 7,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "43905061838133304355100383223974180438409339",
+              "index": 9,
+              "name": "R 16th",
+              "value": 2,
+              "min": 0,
+              "max": 7,
+              "isQuantized": true,
+              "isMacro": false
+            },
+            {
+              "id": "44253510981860345341686878821984311086940283",
+              "index": 10,
+              "name": "L Offset",
+              "value": 0.5,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "44601960125587386328273374419994441735471227",
+              "index": 11,
+              "name": "R Offset",
+              "value": 0.5,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            },
+            {
+              "id": "44950409269314427314859870018004572384002171",
+              "index": 12,
+              "name": "Feedback",
+              "value": 0.2210526317358017,
+              "min": 0,
+              "max": 1,
+              "isQuantized": false,
+              "isMacro": false
+            }
+          ],
+          "chains": [],
+          "pads": [],
+          "scanStatus": "complete",
+          "scanWarning": null,
+          "chainsSummary": null,
+          "padsSummary": null
+        }
+      ],
+      "sends": [
+        {
+          "id": "50177146425220042113657303988156532111966331",
+          "index": 0,
+          "name": "A-Reverb | Cabinet Mic Mixer",
+          "value": 0
+        },
+        {
+          "id": "50525595568947083100243799586166662760497275",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    }
+  ],
+  "masterTrack": {
+    "id": "3514565731718671557388207445645589043216507",
+    "index": 0,
+    "name": "Main",
+    "kind": "master",
+    "color": null,
+    "isMuted": false,
+    "isSoloed": false,
+    "isArmed": false,
+    "groupTrackId": null,
+    "input": {
+      "type": null,
+      "channel": null
+    },
+    "output": {
+      "type": null,
+      "channel": null
+    },
+    "devices": [],
+    "sends": []
+  }
+}

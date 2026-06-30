@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>Ableton Session Mapper — Visual Launcher</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090d12;
+      --panel: rgba(18, 24, 32, 0.92);
+      --panel-2: rgba(14, 18, 24, 0.88);
+      --line: rgba(255,255,255,0.08);
+      --text: #f5f7fa;
+      --muted: #8e99aa;
+      --accent: #f5a623;
+      --accent-blue: #5aa4ff;
+      --accent-cyan: #46d7ff;
+      --accent-violet: #9181ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(245,166,35,0.14), transparent 30%),
+        radial-gradient(circle at top right, rgba(90,164,255,0.12), transparent 28%),
+        linear-gradient(180deg, #0d1219, #090d12 28%, #070a0e);
+      font-family: "Avenir Next", "SF Pro Display", "Segoe UI", sans-serif;
+    }
+    .shell {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 28px 20px 40px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+    .hero-main,
+    .hero-side,
+    .workflow,
+    .launcher-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 20px 48px rgba(0,0,0,0.26);
+    }
+    .hero-main {
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-main::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, rgba(245,166,35,0.14), transparent 34%),
+        linear-gradient(180deg, rgba(255,255,255,0.03), transparent 60%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+    .subtitle {
+      margin: 14px 0 0;
+      max-width: 38rem;
+      color: #d1d8e2;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+    .hero-side {
+      padding: 20px;
+      background: var(--panel-2);
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .meta-label {
+      margin: 0 0 5px;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .meta-value {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.45;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .metric {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+    }
+    .metric strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 28px;
+      line-height: 1;
+    }
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .workflow {
+      margin-bottom: 18px;
+      padding: 20px 22px;
+      background:
+        linear-gradient(90deg, rgba(245,166,35,0.12), rgba(255,255,255,0.02));
+    }
+    .workflow h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+    .workflow ol {
+      margin: 0;
+      padding-left: 18px;
+      color: #e2e8f0;
+      line-height: 1.8;
+    }
+    .workflow code,
+    .missing-state code {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #f8fafc;
+      font-family: "SFMono-Regular", "JetBrains Mono", monospace;
+      font-size: 12px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .launcher-card {
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .launcher-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.8;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent 36%);
+    }
+    .accent-grid { box-shadow: inset 0 0 0 1px rgba(145,129,255,0.14), 0 20px 48px rgba(0,0,0,0.26); }
+    .accent-report { box-shadow: inset 0 0 0 1px rgba(245,166,35,0.14), 0 20px 48px rgba(0,0,0,0.26); }
+    .accent-flow { box-shadow: inset 0 0 0 1px rgba(90,164,255,0.14), 0 20px 48px rgba(0,0,0,0.26); }
+    .accent-git { box-shadow: inset 0 0 0 1px rgba(70,215,255,0.14), 0 20px 48px rgba(0,0,0,0.26); }
+    .accent-kanban { box-shadow: inset 0 0 0 1px rgba(145,129,255,0.14), 0 20px 48px rgba(0,0,0,0.26); }
+    .accent-raw { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12), 0 20px 48px rgba(0,0,0,0.26); }
+    .card-head h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+    .card-head p {
+      margin: 0;
+      color: #c5ced9;
+      line-height: 1.55;
+      min-height: 48px;
+    }
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .action-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(245,166,35,0.24);
+      background: rgba(245,166,35,0.08);
+      color: #f5f7fa;
+      text-decoration: none;
+      font-size: 14px;
+      transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+    }
+    .action-link:hover {
+      transform: translateY(-1px);
+      background: rgba(245,166,35,0.15);
+      border-color: rgba(245,166,35,0.42);
+    }
+    .action-link.is-disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.08);
+    }
+    .card-status {
+      margin: 0;
+      font-size: 13px;
+      letter-spacing: 0.03em;
+    }
+    .card-status.ok { color: #97f0b2; }
+    .card-status.warn { color: #ffd389; }
+    .missing-state ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 13px;
+    }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .footer a {
+      color: #7f8da3;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      color: var(--accent);
+    }
+    @media (max-width: 960px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 640px) {
+      .shell {
+        padding-inline: 14px;
+      }
+      .metrics {
+        grid-template-columns: 1fr 1fr;
+      }
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-main">
+        <p class="eyebrow">Ableton Session Mapper / v0.7.4</p>
+        <h1>Ableton Session Mapper</h1>
+        <p class="subtitle">Choose a visualization. This launcher stays external to Ableton, keeps the stable export path, and gives you a clean entry point to Session Grid, Report, Flow, Git / Metro, Kanban, and raw data.</p>
+      </div>
+      <aside class="hero-side">
+        <div>
+          <p class="meta-label">Set name</p>
+          <p class="meta-value">Ableton Live Set</p>
+        </div>
+        <div>
+          <p class="meta-label">Exported at</p>
+          <p class="meta-value">30 juin 2026, 08:36</p>
+        </div>
+        <div>
+          <p class="meta-label">Tempo</p>
+          <p class="meta-value">167 BPM</p>
+        </div>
+        <div>
+          <p class="meta-label">Current JSON</p>
+          <p class="meta-value">Ableton-Session-Map_2026-06-30_08-36.json</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="metrics" aria-label="Session metrics">
+      <article class="metric">
+        <strong>15</strong>
+        <span>Tracks</span>
+      </article>
+<article class="metric">
+        <strong>2</strong>
+        <span>Returns</span>
+      </article>
+<article class="metric">
+        <strong>35</strong>
+        <span>Devices</span>
+      </article>
+<article class="metric">
+        <strong>23</strong>
+        <span>Racks</span>
+      </article>
+<article class="metric">
+        <strong>34</strong>
+        <span>Sends</span>
+      </article>
+    </section>
+
+    <section class="workflow">
+      <h2>Recommended workflow</h2>
+      <ol>
+        <li>Depuis Ableton : <strong>Export Session Map</strong></li>
+        <li>Pour générer les diagrammes : <strong>npm run export:diagram:all</strong></li>
+        <li>Pour rouvrir ce launcher : <strong>npm run open:diagrams</strong></li>
+      </ol>
+    </section>
+
+    <section class="cards" aria-label="Visualization launcher">
+      <section class="launcher-card accent-grid">
+    <div class="card-head">
+      <h2>Session Grid</h2>
+      <p>Vue proche de la Session View Ableton.</p>
+    </div>
+    <div class="card-actions">
+      <a class="action-link" href="session-map-session-grid.html">Open Session Grid</a>
+    </div>
+    <p class="card-status ok">Available now</p>
+  </section>
+<section class="launcher-card accent-report">
+    <div class="card-head">
+      <h2>HTML Report</h2>
+      <p>Rapport détaillé avec pistes, devices, sends et racks.</p>
+    </div>
+    <div class="card-actions">
+      <a class="action-link" href="session-map.html">Open Report</a>
+    </div>
+    <p class="card-status ok">Available now</p>
+  </section>
+<section class="launcher-card accent-flow">
+    <div class="card-head">
+      <h2>Flow</h2>
+      <p>Arborescence technique du Live Set.</p>
+    </div>
+    <div class="card-actions">
+      <a class="action-link" href="session-map-mermaid-flow.html">Open HTML</a><a class="action-link" href="session-map-flow.svg">Open SVG</a><a class="action-link" href="session-map-flow.png">Open PNG</a><a class="action-link" href="session-map-flow.mmd">Open .mmd</a>
+    </div>
+    <p class="card-status ok">Available now</p>
+  </section>
+<section class="launcher-card accent-git">
+    <div class="card-head">
+      <h2>Git / Metro</h2>
+      <p>Vue métro stylisée des pistes.</p>
+    </div>
+    <div class="card-actions">
+      <a class="action-link" href="session-map-mermaid-git.html">Open HTML</a><a class="action-link" href="session-map-git.svg">Open SVG</a><a class="action-link" href="session-map-git.png">Open PNG</a><a class="action-link" href="session-map-git.mmd">Open .mmd</a>
+    </div>
+    <p class="card-status ok">Available now</p>
+  </section>
+<section class="launcher-card accent-kanban">
+    <div class="card-head">
+      <h2>Kanban</h2>
+      <p>Pistes en colonnes, devices dessous.</p>
+    </div>
+    <div class="card-actions">
+      <a class="action-link" href="session-map-mermaid-kanban.html">Open HTML</a><a class="action-link" href="session-map-kanban.svg">Open SVG</a><a class="action-link" href="session-map-kanban.png">Open PNG</a><a class="action-link" href="session-map-kanban.mmd">Open .mmd</a>
+    </div>
+    <p class="card-status ok">Available now</p>
+  </section>
+<section class="launcher-card accent-raw">
+    <div class="card-head">
+      <h2>Raw Data</h2>
+      <p>Données exportées et accès rapide au dossier exports.</p>
+    </div>
+    <div class="card-actions">
+      <a class="action-link" href="session-map.json">Open JSON</a><a class="action-link" href="file:///Users/jeanclaude/Documents/ableton scripte arborescence/exports">Open exports folder</a>
+    </div>
+    <p class="card-status ok">Available now</p>
+  </section>
+    </section>
+
+    <footer class="footer">
+      <span>Exports folder: /Users/jeanclaude/Documents/ableton scripte arborescence/exports</span>
+      <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a>
+    </footer>
+  </div>
+</body>
+</html>

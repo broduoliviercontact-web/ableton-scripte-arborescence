@@ -1,0 +1,25 @@
+{
+  "theme": "dark",
+  "themeVariables": {
+    "background": "#0b0f17",
+    "primaryColor": "#1f2937",
+    "primaryTextColor": "#f8fafc",
+    "primaryBorderColor": "#f5a623",
+    "lineColor": "#94a3b8",
+    "secondaryColor": "#111827",
+    "tertiaryColor": "#020617",
+    "git0": "#f5a623",
+    "git1": "#4aa3ff",
+    "git2": "#ef4444",
+    "git3": "#10b981",
+    "git4": "#a855f7",
+    "git5": "#f97316",
+    "git6": "#14b8a6",
+    "git7": "#f43f5e"
+  },
+  "gitGraph": {
+    "showCommitLabel": true,
+    "mainBranchName": "main",
+    "rotateCommitLabel": false
+  }
+}

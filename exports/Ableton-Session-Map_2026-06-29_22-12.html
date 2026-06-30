@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>Ableton Session Mapper — Untitled Set</title>
+  <style>:root {
+  --ink: #090a0a;
+  --panel: #111313;
+  --panel-raised: #171919;
+  --line: #303333;
+  --line-soft: #222525;
+  --paper: #e8e5dc;
+  --muted: #918f87;
+  --orange: #ff764d;
+  --orange-hot: #ff9a63;
+  --green: #86bd68;
+  --rack: #f0c96c;
+  --drum: #f08a53;
+  --chain: #82b9ff;
+  --font-display: "Avenir Next Condensed", "DIN Condensed", sans-serif;
+  --font-mono: "SFMono-Regular", Menlo, Monaco, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--ink); color-scheme: dark; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--paper);
+  background:
+    radial-gradient(circle at 78% -10%, rgba(255, 118, 77, .09), transparent 34rem),
+    linear-gradient(180deg, rgba(255,255,255,.02), transparent 35rem),
+    var(--ink);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+}
+
+.ambient-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .19;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, #000, transparent 70%);
+}
+
+.masthead, main, footer { position: relative; z-index: 1; }
+
+.masthead {
+  min-height: 230px;
+  padding: 42px clamp(24px, 5vw, 80px) 35px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand-block { display: flex; align-items: center; gap: 25px; }
+
+.live-mark {
+  width: 64px;
+  height: 64px;
+  padding: 12px 10px;
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  border: 1px solid var(--orange);
+}
+
+.live-mark i { width: 7px; background: var(--orange); animation: rise .7s both; }
+.live-mark i:nth-child(1) { height: 48%; }
+.live-mark i:nth-child(2) { height: 100%; animation-delay: 80ms; }
+.live-mark i:nth-child(3) { height: 72%; animation-delay: 160ms; }
+.live-mark i:nth-child(4) { height: 30%; animation-delay: 240ms; }
+
+@keyframes rise { from { height: 0; opacity: 0; } }
+
+.eyebrow, .export-time {
+  margin: 0 0 9px;
+  color: var(--orange);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  max-width: 1000px;
+  font-family: var(--font-display);
+  font-size: clamp(46px, 7vw, 94px);
+  font-weight: 700;
+  letter-spacing: -.045em;
+  line-height: .86;
+  text-transform: uppercase;
+}
+
+.export-time { color: var(--muted); white-space: nowrap; }
+
+.viewer-actions {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: 48px;
+  padding: 8px clamp(24px, 5vw, 80px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(9, 10, 10, .92);
+  backdrop-filter: blur(16px);
+}
+
+.viewer-actions > span {
+  margin-right: auto;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: .18em;
+}
+
+.viewer-actions button {
+  min-height: 30px;
+  padding: 0 13px;
+  color: var(--ink);
+  border: 1px solid var(--orange);
+  background: var(--orange);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  cursor: pointer;
+  transition: background .18s, color .18s, border-color .18s;
+}
+
+.viewer-actions button:hover { background: var(--orange-hot); }
+.viewer-actions .close-action { color: var(--muted); border-color: var(--line); background: transparent; }
+.viewer-actions .close-action:hover { color: var(--paper); border-color: var(--muted); }
+.viewer-actions .debug-action { color: var(--orange); border-color: var(--orange); background: transparent; }
+.viewer-actions .debug-action:hover { color: var(--ink); background: var(--orange); }
+
+.view-mode-switch {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.02);
+}
+
+.view-mode-switch button {
+  min-width: 72px;
+  color: var(--muted);
+  border-color: transparent;
+  background: transparent;
+}
+
+.view-mode-switch button[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: var(--orange);
+  background: var(--orange);
+}
+
+main { padding: 0 clamp(24px, 5vw, 80px) 80px; }
+
+.telemetry {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-left: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.telemetry article {
+  min-height: 118px;
+  padding: 23px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--line);
+  background: rgba(17, 19, 19, .72);
+}
+
+.metric-value {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.metric-label, .detail-label {
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+.session-sections { margin-top: 70px; }
+.track-section + .track-section { margin-top: 68px; }
+
+.section-heading {
+  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 15px;
+}
+
+.section-heading > span {
+  padding: 5px 7px;
+  color: var(--ink);
+  background: var(--orange);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 25px;
+  letter-spacing: .025em;
+  text-transform: uppercase;
+}
+
+.section-heading i { height: 1px; background: var(--line); }
+.section-heading b { color: var(--muted); font-size: 11px; }
+.track-stack { display: grid; gap: 10px; }
+
+.track-divider {
+  margin: 14px 0 2px;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.track-divider span {
+  padding: 4px 7px;
+  color: var(--orange);
+  border: 1px solid rgba(255, 118, 77, .35);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.track-divider strong {
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.track-divider i {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 118, 77, .3), var(--line));
+}
+
+.track-card {
+  --kind-accent: var(--orange);
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: rgba(17, 19, 19, .94);
+  animation: card-in .45s cubic-bezier(.2,.8,.2,1) both;
+  animation-delay: var(--delay);
+  transition: border-color .2s, transform .2s;
+}
+
+.track-card:hover { border-color: #595d5c; transform: translateX(3px); }
+.kind-midi { --kind-accent: #b7d86f; }
+.kind-audio { --kind-accent: #68b8c8; }
+.kind-return { --kind-accent: #c99ae8; }
+.kind-master { --kind-accent: var(--orange); }
+.kind-group { --kind-accent: #e9cf68; }
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+.track-rail {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border-right: 1px solid var(--line);
+  background: var(--panel-raised);
+}
+
+.track-rail span {
+  width: 100%;
+  padding: 13px 0;
+  color: var(--kind-accent);
+  border-top: 3px solid var(--kind-accent);
+  font-size: 10px;
+  text-align: center;
+}
+
+.track-body { min-width: 0; padding: 17px 20px 20px; }
+.track-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.track-header > div:first-child { display: flex; align-items: baseline; gap: 13px; min-width: 0; }
+
+.track-header h3 {
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 27px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kind-tag {
+  color: var(--kind-accent);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.track-state { display: flex; gap: 5px; }
+.state-led {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  color: #626564;
+  border: 1px solid var(--line);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.state-led.is-active { color: var(--ink); border-color: var(--orange); background: var(--orange); }
+
+.routing-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line-soft);
+}
+
+.routing-grid div { min-width: 0; padding: 9px 12px; display: flex; gap: 12px; }
+.routing-grid div + div { border-left: 1px solid var(--line-soft); }
+.routing-grid span { color: var(--kind-accent); font-size: 9px; font-weight: 800; }
+.routing-grid strong { color: var(--muted); font-size: 10px; font-weight: 400; }
+.track-detail { margin-top: 18px; }
+.detail-label { display: block; margin-bottom: 8px; }
+
+.device-chain {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  padding-bottom: 7px;
+  scrollbar-color: var(--orange) var(--line-soft);
+  scrollbar-width: thin;
+}
+
+.device-chain.depth-1,
+.device-chain.depth-2,
+.device-chain.depth-3 {
+  padding-bottom: 0;
+}
+
+.device-node {
+  flex: 0 0 auto;
+  min-width: 220px;
+  border: 1px solid #3d4140;
+  background: var(--panel-raised);
+}
+
+.device-node-head {
+  padding: 12px 13px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 12px;
+  align-items: start;
+}
+
+.device-index {
+  min-width: 28px;
+  color: var(--orange);
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.device-heading { min-width: 0; }
+.device-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px; }
+
+.node-badge {
+  padding: 3px 6px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid currentColor;
+  font-size: 8px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.tone-default { color: var(--muted); }
+.tone-device { color: var(--paper); }
+.tone-rack { color: var(--rack); }
+.tone-drum { color: var(--drum); }
+.tone-chain { color: var(--chain); }
+.tone-macro { color: var(--orange); }
+
+.device-flag {
+  padding: 3px 6px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 8px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.device-flag.is-on { color: var(--green); border-color: rgba(134, 189, 104, .5); }
+.device-flag.is-off { color: #d07864; border-color: rgba(208, 120, 100, .5); }
+
+.device-name {
+  display: block;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.device-type {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.device-parameters {
+  padding: 0 13px 13px;
+  border-top: 1px solid rgba(255,255,255,.04);
+}
+
+.device-parameters .detail-label {
+  margin: 10px 0 8px;
+}
+
+.parameter-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.parameter-chip {
+  min-width: 112px;
+  padding: 8px 9px;
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line-soft);
+  background: rgba(255,255,255,.02);
+}
+
+.parameter-chip strong {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.parameter-chip em {
+  color: var(--orange);
+  font-style: normal;
+  font-size: 9px;
+}
+
+.rack-node {
+  min-width: min(700px, 82vw);
+  border-color: rgba(240, 201, 108, .35);
+  background:
+    linear-gradient(180deg, rgba(240, 201, 108, .06), transparent 5rem),
+    var(--panel-raised);
+}
+
+.rack-node > summary {
+  list-style: none;
+  padding-right: 13px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.rack-node > summary::-webkit-details-marker { display: none; }
+
+.rack-meta {
+  color: var(--rack);
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.rack-body {
+  padding: 0 13px 13px;
+  border-top: 1px solid rgba(255,255,255,.05);
+}
+
+.rack-chain-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.chain-card {
+  padding: 12px;
+  border: 1px solid rgba(130, 185, 255, .22);
+  background: rgba(9, 16, 24, .45);
+}
+
+.chain-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.chain-header h4 {
+  margin: 6px 0 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.chain-kind {
+  color: var(--muted);
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.chain-state {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chain-state span {
+  padding: 4px 7px;
+  border: 1px solid rgba(130, 185, 255, .18);
+  color: var(--chain);
+  font-size: 8px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.nested-device-chain {
+  margin-top: 12px;
+}
+
+.nested-device-chain .device-node {
+  min-width: 200px;
+  background: #121616;
+}
+
+.chain-link {
+  flex: 0 0 20px;
+  align-self: center;
+  height: 1px;
+  background: var(--orange);
+}
+
+.chain-link::after {
+  content: "";
+  float: right;
+  margin-top: -3px;
+  border: 3px solid transparent;
+  border-left-color: var(--orange);
+}
+
+.sends-row {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+}
+
+.sends-row .detail-label { padding-top: 7px; }
+.send-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.send-chip { padding: 6px 8px; display: inline-flex; gap: 12px; border: 1px solid var(--line); background: #0d0f0f; font-size: 9px; }
+.send-chip b { font-weight: 500; }
+.send-chip em { color: var(--orange); font-style: normal; }
+.empty-state, .empty-section { margin: 0; color: #62645f; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
+.empty-state { padding: 10px 0; }
+.empty-state.compact { padding: 7px 0; }
+.empty-section { padding: 25px; border: 1px dashed var(--line); text-align: center; }
+
+body.mode-compact .rack-body,
+body.mode-compact .device-parameters,
+body.mode-compact .chain-state,
+body.mode-compact .nested-device-chain .device-parameters {
+  display: none;
+}
+
+body.mode-compact .rack-node[open] > summary {
+  border-bottom: 0;
+}
+
+.diagnostic-section { margin-top: 84px; scroll-margin-top: 70px; }
+.diagnostic-empty { padding: 28px; display: flex; flex-direction: column; gap: 8px; border: 1px dashed var(--line); color: var(--muted); font-size: 11px; }
+.diagnostic-empty strong { color: var(--paper); font-family: var(--font-display); font-size: 20px; }
+.diagnostic-summary { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border: 1px solid var(--line); }
+.diagnostic-summary article { min-height: 86px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--line); background: var(--panel); }
+.diagnostic-summary article:last-child { border-right: 0; }
+.diagnostic-summary b { color: var(--orange); font-family: var(--font-display); font-size: 30px; }
+.diagnostic-summary span { color: var(--muted); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; }
+.diagnostic-tracks { margin-top: 20px; display: grid; gap: 12px; }
+.diagnostic-track { padding: 18px; border: 1px solid var(--line); background: rgba(13,15,15,.94); }
+.diagnostic-track > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.diagnostic-track > header div { display: flex; align-items: baseline; gap: 10px; }
+.diagnostic-track > header span { color: var(--orange); font-size: 8px; text-transform: uppercase; }
+.diagnostic-track > header h3 { margin: 0; font-family: var(--font-display); font-size: 24px; }
+.diagnostic-track > header code { color: var(--muted); font-size: 9px; }
+.diagnostic-id { margin: 8px 0 14px; color: #62645f; font-size: 8px; word-break: break-all; }
+.diagnostic-object { margin-top: 8px; border: 1px solid var(--line-soft); background: #0b0d0d; }
+.diagnostic-object summary { padding: 10px 12px; display: grid; grid-template-columns: 120px 130px 1fr; gap: 10px; color: var(--muted); cursor: pointer; font-size: 9px; }
+.diagnostic-object summary b { color: var(--paper); }
+.diagnostic-object summary em { overflow: hidden; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
+.diagnostic-object-body { padding: 12px; border-top: 1px solid var(--line-soft); }
+.available-list { display: flex; flex-wrap: wrap; gap: 4px; }
+.available-list > span { width: 100%; margin-bottom: 4px; color: var(--muted); font-size: 8px; letter-spacing: .1em; text-transform: uppercase; }
+.available-list code { padding: 3px 5px; color: #9b9e98; border: 1px solid var(--line-soft); font-size: 8px; }
+.property-table { margin-top: 12px; display: grid; gap: 3px; }
+.diagnostic-property { min-height: 30px; padding: 6px 8px; display: grid; grid-template-columns: 62px 210px minmax(0, 1fr); align-items: start; gap: 8px; border-left: 2px solid var(--line); background: #101212; }
+.diagnostic-property.status-available { border-left-color: var(--green); }
+.diagnostic-property.status-error { border-left-color: #e46455; }
+.property-status { color: var(--muted); font-size: 7px; text-transform: uppercase; }
+.status-available .property-status { color: var(--green); }
+.status-error .property-status { color: #e46455; }
+.diagnostic-property code { color: var(--paper); font-size: 8px; }
+.diagnostic-property pre { margin: 0; overflow: auto; color: #898c86; font-family: var(--font-mono); font-size: 8px; white-space: pre-wrap; word-break: break-word; }
+.diagnostic-nested { margin-left: 14px; padding-left: 10px; border-left: 1px solid #282b2a; }
+.chain-diagnostic { margin-left: 14px; }
+
+footer {
+  margin: 0 clamp(24px, 5vw, 80px);
+  padding: 22px 0 35px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #5f625e;
+  border-top: 1px solid var(--line);
+  font-size: 8px;
+  letter-spacing: .16em;
+}
+
+.footer-line { height: 1px; flex: 1; background: var(--line-soft); }
+footer a { color: #777a74; text-decoration: none; transition: color .2s; }
+footer a:hover { color: var(--orange); }
+
+@media (max-width: 980px) {
+  .viewer-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .viewer-actions > span {
+    width: 100%;
+    margin-right: 0;
+    text-align: center;
+  }
+
+  .rack-node {
+    min-width: min(560px, 82vw);
+  }
+}
+
+@media (max-width: 720px) {
+  .masthead { min-height: 190px; align-items: flex-start; flex-direction: column; }
+  .live-mark { width: 48px; height: 48px; }
+  .export-time { align-self: flex-end; }
+  .viewer-actions { padding-inline: 10px; }
+  .telemetry { grid-template-columns: 1fr 1fr; }
+  .telemetry article { min-height: 95px; }
+  .metric-value { font-size: 40px; }
+  .routing-grid { grid-template-columns: 1fr; }
+  .routing-grid div + div { border-left: 0; border-top: 1px solid var(--line-soft); }
+  .sends-row { grid-template-columns: 1fr; }
+  .track-card { grid-template-columns: 34px minmax(0, 1fr); }
+  .track-body { padding: 14px; }
+  .track-header > div:first-child { display: block; }
+  .kind-tag { display: block; margin-bottom: 5px; }
+  .device-node,
+  .rack-node {
+    min-width: 82vw;
+  }
+  .diagnostic-summary { grid-template-columns: repeat(2, 1fr); }
+  .diagnostic-summary article { border-bottom: 1px solid var(--line); }
+  .diagnostic-object summary { grid-template-columns: 1fr; }
+  .diagnostic-property { grid-template-columns: 60px 1fr; }
+  .diagnostic-property pre { grid-column: 1 / -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+}
+</style>
+</head>
+<body class="mode-detailed">
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <header class="masthead">
+    <div class="brand-block">
+      <span class="live-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <div>
+        <p class="eyebrow">Ableton Session Mapper / JSON 0.4.3</p>
+        <h1 id="project-name">Session Map</h1>
+      </div>
+    </div>
+    <p class="export-time" id="export-time"></p>
+  </header>
+
+  <nav class="viewer-actions" aria-label="Actions du viewer">
+    <span>LIVE SET REPORT</span>
+    <div class="view-mode-switch" role="group" aria-label="Mode d'affichage">
+      <button type="button" data-mode="compact" onclick="setViewMode('compact')">Compact</button>
+      <button type="button" data-mode="detailed" onclick="setViewMode('detailed')">Detailed</button>
+    </div>
+    <button type="button" onclick="requestViewerAction('refresh')">↻ Refresh</button>
+    <button type="button" onclick="requestViewerAction('export-html')">⇩ Export HTML</button>
+    <button class="debug-action" type="button" onclick="requestViewerAction('debug-sdk-data')">⌁ Debug SDK Data</button>
+    <button class="close-action" type="button" onclick="requestViewerAction('close')">Close</button>
+  </nav>
+
+  <main>
+    <section class="telemetry" aria-label="Résumé de la session">
+      <article><span class="metric-value" id="tempo">—</span><span class="metric-label">BPM</span></article>
+      <article><span class="metric-value" id="track-count">0</span><span class="metric-label">Tracks</span></article>
+      <article><span class="metric-value" id="device-count">0</span><span class="metric-label">Devices</span></article>
+      <article><span class="metric-value" id="send-count">0</span><span class="metric-label">Sends</span></article>
+    </section>
+
+    <div id="session-sections" class="session-sections"></div>
+    <section id="sdk-diagnostic" class="diagnostic-section" aria-labelledby="diagnostic-title"></section>
+  </main>
+
+  <footer>
+    <span>STATIC LOCAL REPORT</span>
+    <span class="footer-line"></span>
+    <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a>
+  </footer>
+
+  <script>
+    const session = {"version":"0.4.3","exportedAt":"2026-06-29T20:12:18.171Z","set":{"name":null,"tempo":120},"scan":{"mode":"ultra-safe","maxDeviceDepth":0,"scanInternalChainDevices":false,"scanNestedRacks":false,"partial":false,"warnings":[],"totalScannedDevices":8,"maxTotalScannedDevices":500},"tracks":[{"id":"3833410309523590897653389452809155857350779","index":0,"name":"1-MIDI","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"4181859453250631884239885050819286505881723","index":0,"name":"Producer_Pal","type":"Device","enabled":true,"parameters":[{"id":"4878757740704713857412876246839547802943611","index":1,"name":"live.button","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"5227206884431754843999371844849678451474555","index":2,"name":"live.text[2]","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"5575656028158795830585867442859809100005499","index":3,"name":"live.text[2]","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null},{"id":"1064164154670909313080359494197636719337013371","index":1,"name":"Adlib Delay","type":"RackDevice","enabled":true,"parameters":[{"id":"1067648646108179722946224450177738025822322811","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1067997095251906763932810945775748156470853755","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1068345544395633804919397441373758287119384699","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1068693993539360845905983936971768417767915643","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1069042442683087886892570432569778548416446587","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1069390891826814927879156928167788679064977531","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1069739340970541968865743423765798809713508475","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1070087790114269009852329919363808940362039419","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1064861052958363395053532485393656980634075259","index":1,"name":"Delay Time","value":49.578487396240234,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1065209502102090436040118980991667111282606203","index":2,"name":"Delay Input","value":63.5,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1065557951245817477026705476589677241931137147","index":3,"name":"Delay Output","value":63.5,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1065906400389544518013291972187687372579668091","index":4,"name":"Delay Dry/Wet","value":59.46825408935547,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":3}]},"padsSummary":null},{"id":"1106326501061881272457325461556862527809257595","index":2,"name":"Basic Stereo Chorus Jazz Amp","type":"RackDevice","enabled":true,"parameters":[{"id":"1111204789074059846269536399929004356888690811","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1111553238217786887256122895527014487537221755","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1111901687361513928242709391125024618185752699","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1112250136505240969229295886723034748834283643","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1107023399349335354430498452752882789106319483","index":1,"name":"Amp Gain","value":58,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1107371848493062395417084948350892919754850427","index":2,"name":"Bass","value":84,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1107720297636789436403671443948903050403381371","index":3,"name":"Mid","value":87,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1108068746780516477390257939546913181051912315","index":4,"name":"Treble","value":91,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1108417195924243518376844435144923311700443259","index":5,"name":"Presence","value":66,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1108765645067970559363430930742933442348974203","index":6,"name":"Amp Volume","value":104,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1109114094211697600350017426340943572997505147","index":7,"name":"Chorus Amount","value":58,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1109462543355424641336603921938953703646036091","index":8,"name":"Chorus Rate","value":80,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":8}]},"padsSummary":null}],"sends":[{"id":"8711698321702164709864327824950984936783995","index":0,"name":"A-Reverb | Cabinet Mic Mixer","value":0},{"id":"9060147465429205696450823422961115585314939","index":1,"name":"B-Delay","value":0}]},{"id":"79446874498291484986922934221007506588565627","index":1,"name":"2-Audio","kind":"audio","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[],"sends":[{"id":"82582916791834853866201394603098682425344123","index":0,"name":"A-Reverb | Cabinet Mic Mixer","value":0},{"id":"82931365935561894852787890201108813073875067","index":1,"name":"B-Delay","value":0}]},{"id":"90597247097556796557690793357331687341555835","index":2,"name":"3-Audio","kind":"audio","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[],"sends":[{"id":"93733289391100165436969253739422863178334331","index":0,"name":"A-Reverb | Cabinet Mic Mixer","value":0},{"id":"94081738534827206423555749337432993826865275","index":1,"name":"B-Delay","value":0}]},{"id":"103141416271730272074804634885696390688669819","index":3,"name":"4-MIDI","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[],"sends":[{"id":"106277458565273640954083095267787566525448315","index":0,"name":"A-Reverb | Cabinet Mic Mixer","value":0},{"id":"106625907709000681940669590865797697173979259","index":1,"name":"B-Delay","value":0}]},{"id":"123003017464171608310234883972273837654933627","index":4,"name":"5-MIDI","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[],"sends":[{"id":"126139059757714977189513344354365013491712123","index":0,"name":"A-Reverb | Cabinet Mic Mixer","value":0},{"id":"126487508901442018176099839952375144140243067","index":1,"name":"B-Delay","value":0}]},{"id":"144258415231521108492011115450891807215321211","index":5,"name":"6-MIDI","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[],"sends":[{"id":"147394457525064477371289575832982983052099707","index":0,"name":"A-Reverb | Cabinet Mic Mixer","value":0},{"id":"147742906668791518357876071430993113700630651","index":1,"name":"B-Delay","value":0}]},{"id":"166907609573778772620133329321550299369832571","index":6,"name":"7-Cage Kit","kind":"midi","color":null,"isMuted":false,"isSoloed":false,"isArmed":true,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"774951365377465294213568147849228281056329851","index":0,"name":"Cage Kit","type":"RackDevice","enabled":true,"parameters":[{"id":"777042060239827540133087121437289064947515515","index":5,"name":"Macro 5","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"777390509383554581119673617035299195596046459","index":6,"name":"Macro 6","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"777738958527281622106260112633309326244577403","index":7,"name":"Macro 7","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"778087407671008663092846608231319456893108347","index":8,"name":"Macro 8","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"778435856814735704079433103829329587541639291","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"778784305958462745066019599427339718190170235","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"779132755102189786052606095025349848838701179","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"779481204245916827039192590623359979487232123","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"779829653389643868025779086221370110135763067","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"780178102533370909012365581819380240784294011","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"780526551677097949998952077417390371432824955","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"780875000820824990985538573015400502081355899","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":2}]},"padsSummary":null}],"sends":[{"id":"170043651867322141499411789703641475206611067","index":0,"name":"A-Reverb | Cabinet Mic Mixer","value":0},{"id":"170392101011049182485998285301651605855142011","index":1,"name":"B-Delay","value":0}]},{"id":"67251154467845050456395588290652933889982587","index":7,"name":"8-Audio","kind":"audio","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[],"sends":[{"id":"70387196761388419335674048672744109726761083","index":0,"name":"A-Reverb | Cabinet Mic Mixer","value":0},{"id":"70735645905115460322260544270754240375292027","index":1,"name":"B-Delay","value":0}]},{"id":"1176713228094743551747797572354908918812508283","index":8,"name":"9-Audio","kind":"audio","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"1177061677238470592734384067952919049461039227","index":0,"name":"Basic Stereo Chorus Jazz Amp","type":"RackDevice","enabled":true,"parameters":[{"id":"1181939965250649166546595006325060878540472443","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1182288414394376207533181501923071009189003387","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1182636863538103248519767997521081139837534331","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1182985312681830289506354493119091270486065275","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1177758575525924674707557059148939310758101115","index":1,"name":"Amp Gain","value":58,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1178107024669651715694143554746949441406632059","index":2,"name":"Bass","value":84,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1178455473813378756680730050344959572055163003","index":3,"name":"Mid","value":87,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1178803922957105797667316545942969702703693947","index":4,"name":"Treble","value":91,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1179152372100832838653903041540979833352224891","index":5,"name":"Presence","value":66,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1179500821244559879640489537138989964000755835","index":6,"name":"Amp Volume","value":104,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1179849270388286920627076032737000094649286779","index":7,"name":"Chorus Amount","value":58,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1180197719532013961613662528335010225297817723","index":8,"name":"Chorus Rate","value":80,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":8}]},"padsSummary":null}],"sends":[{"id":"1243963912834062462158991222770864133978980475","index":0,"name":"A-Reverb | Cabinet Mic Mixer","value":0},{"id":"1244312361977789503145577718368874264627511419","index":1,"name":"B-Delay","value":0}]}],"returnTracks":[{"id":"24043460645691968119670134137396733472145531","index":0,"name":"A-Reverb | Cabinet Mic Mixer","kind":"return","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"24391909789419009106256629735406864120676475","index":0,"name":"Reverb","type":"Device","enabled":true,"parameters":[{"id":"25088808076873091079429620931427125417738363","index":1,"name":"Predelay","value":0.2589765787124634,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"25437257220600132066016116529437256066269307","index":2,"name":"In Lo Cut On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"25785706364327173052602612127447386714800251","index":3,"name":"In Hi Cut On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"26134155508054214039189107725457517363331195","index":4,"name":"Input Freq","value":0.47729402780532837,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"26482604651781255025775603323467648011862139","index":5,"name":"Input Width","value":0.6294117569923401,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"26831053795508296012362098921477778660393083","index":6,"name":"ER Spin On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"27179502939235336998948594519487909308924027","index":7,"name":"ER Spin Rate","value":0.4296875298023224,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"27527952082962377985535090117498039957454971","index":8,"name":"ER Spin Amount","value":0.12234228849411011,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"27876401226689418972121585715508170605985915","index":9,"name":"ER Shape","value":0.5,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"28224850370416459958708081313518301254516859","index":10,"name":"Diff. Hi On","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"28573299514143500945294576911528431903047803","index":11,"name":"Diff. Hi Type","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"28921748657870541931881072509538562551578747","index":12,"name":"Diff. Hi Freq","value":0.8102341890335083,"min":0,"max":1,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null},{"id":"1263825514026503798394421471857441580945244283","index":1,"name":"Cabinet Mic Mixer","type":"RackDevice","enabled":true,"parameters":[{"id":"1266613107176320126287113436641522626133491835","index":7,"name":"Macro 7","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1266961556320047167273699932239532756782022779","index":8,"name":"Macro 8","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1267310005463774208260286427837542887430553723","index":9,"name":"Macro 9","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1267658454607501249246872923435553018079084667","index":10,"name":"Macro 10","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1268006903751228290233459419033563148727615611","index":11,"name":"Macro 11","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1268355352894955331220045914631573279376146555","index":12,"name":"Macro 12","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1268703802038682372206632410229583410024677499","index":13,"name":"Macro 13","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1269052251182409413193218905827593540673208443","index":14,"name":"Macro 14","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1269400700326136454179805401425603671321739387","index":15,"name":"Macro 15","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1269749149469863495166391897023613801970270331","index":16,"name":"Macro 16","value":0,"min":0,"max":127,"isQuantized":false,"isMacro":true},{"id":"1264522412313957880367594463053461842242306171","index":1,"name":"On-Axis Volume","value":92.06768798828125,"min":0,"max":127,"isQuantized":false,"isMacro":false},{"id":"1264870861457684921354180958651471972890837115","index":2,"name":"Off-Axis Volume","value":76.19999694824219,"min":0,"max":127,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"summary","scanWarning":null,"chainsSummary":{"count":1,"items":[{"index":0,"name":"Chain 01","note":null,"receivingNote":null,"deviceCount":2}]},"padsSummary":null}],"sends":[{"id":"36239180676138402650197480067751306170728571","index":0,"name":"A-Reverb | Cabinet Mic Mixer","value":0},{"id":"36587629819865443636783975665761436819259515","index":1,"name":"B-Delay","value":0}]},{"id":"40072121257135853502648931645862743304568955","index":1,"name":"B-Delay","kind":"return","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[{"id":"40420570400862894489235427243872873953099899","index":0,"name":"Delay","type":"Device","enabled":true,"parameters":[{"id":"41117468688316976462408418439893135250161787","index":1,"name":"Smoothing","value":0,"min":0,"max":2,"isQuantized":true,"isMacro":false},{"id":"41465917832044017448994914037903265898692731","index":2,"name":"Link","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"41814366975771058435581409635913396547223675","index":3,"name":"Ping Pong","value":0,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"42162816119498099422167905233923527195754619","index":4,"name":"L Sync","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"42511265263225140408754400831933657844285563","index":5,"name":"R Sync","value":1,"min":0,"max":1,"isQuantized":true,"isMacro":false},{"id":"42859714406952181395340896429943788492816507","index":6,"name":"L Time","value":0.3350270390510559,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"43208163550679222381927392027953919141347451","index":7,"name":"R Time","value":0.33752983808517456,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"43556612694406263368513887625964049789878395","index":8,"name":"L 16th","value":2,"min":0,"max":7,"isQuantized":true,"isMacro":false},{"id":"43905061838133304355100383223974180438409339","index":9,"name":"R 16th","value":2,"min":0,"max":7,"isQuantized":true,"isMacro":false},{"id":"44253510981860345341686878821984311086940283","index":10,"name":"L Offset","value":0.5,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"44601960125587386328273374419994441735471227","index":11,"name":"R Offset","value":0.5,"min":0,"max":1,"isQuantized":false,"isMacro":false},{"id":"44950409269314427314859870018004572384002171","index":12,"name":"Feedback","value":0.2210526317358017,"min":0,"max":1,"isQuantized":false,"isMacro":false}],"chains":[],"pads":[],"scanStatus":"complete","scanWarning":null,"chainsSummary":null,"padsSummary":null}],"sends":[{"id":"50177146425220042113657303988156532111966331","index":0,"name":"A-Reverb | Cabinet Mic Mixer","value":0},{"id":"50525595568947083100243799586166662760497275","index":1,"name":"B-Delay","value":0}]}],"masterTrack":{"id":"3514565731718671557388207445645589043216507","index":0,"name":"Main","kind":"master","color":null,"isMuted":false,"isSoloed":false,"isArmed":false,"groupTrackId":null,"input":{"type":null,"channel":null},"output":{"type":null,"channel":null},"devices":[],"sends":[]}};
+    const sdkDiagnostic = null;
+
+    function requestViewerAction(action) {
+      const message = {
+        method: "close_and_send",
+        params: [JSON.stringify({ action })],
+      };
+      if (window.webkit?.messageHandlers?.live) {
+        window.webkit.messageHandlers.live.postMessage(message);
+        return;
+      }
+      if (window.chrome?.webview) {
+        window.chrome.webview.postMessage(message);
+        return;
+      }
+      if (action === "refresh") window.location.reload();
+      if (action === "debug-sdk-data") {
+        document.getElementById("sdk-diagnostic")?.scrollIntoView({ behavior: "smooth" });
+      }
+      if (action === "export-html") {
+        const blob = new Blob([document.documentElement.outerHTML], { type: "text/html" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "session-map.html";
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
+      if (action === "close") window.close();
+    }
+
+    function setViewMode(mode) {
+      const normalizedMode = mode === "compact" ? "compact" : "detailed";
+      document.body.classList.toggle("mode-compact", normalizedMode === "compact");
+      document.body.classList.toggle("mode-detailed", normalizedMode === "detailed");
+      document.querySelectorAll("[data-mode]").forEach((button) => {
+        const isActive = button.getAttribute("data-mode") === normalizedMode;
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+      try {
+        localStorage.setItem("ableton-session-mapper:view-mode", normalizedMode);
+      } catch {}
+    }
+
+    const escapeHtml = (value) => String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+    const allTracks = [
+      ...(Array.isArray(session.tracks) ? session.tracks : []),
+      ...(Array.isArray(session.returnTracks) ? session.returnTracks : []),
+      ...(session.masterTrack ? [session.masterTrack] : []),
+    ];
+
+    const routingText = (routing) => {
+      const parts = [routing?.type, routing?.channel].filter(Boolean);
+      return parts.length ? parts.join(" / ") : "Routing I/O non disponible dans cette version du SDK";
+    };
+
+    const formatValue = (value, digits = 3) => typeof value === "number" ? value.toFixed(digits) : "—";
+    const asArray = (value) => Array.isArray(value) ? value : [];
+
+    const countDevicesDeep = (devices) => asArray(devices).reduce((sum, device) => {
+      const chains = asArray(device?.chains);
+      const pads = asArray(device?.pads);
+      const nestedDevices = chains.reduce((nestedSum, chain) => nestedSum + countDevicesDeep(chain?.devices), 0) +
+        pads.reduce((nestedSum, pad) => nestedSum + countDevicesDeep(pad?.devices), 0);
+      return sum + 1 + nestedDevices;
+    }, 0);
+
+    const countTrackDevices = (tracks) => asArray(tracks).reduce(
+      (sum, track) => sum + countDevicesDeep(track?.devices),
+      0,
+    );
+
+    const badge = (label, tone = "default") =>
+      '<span class="node-badge tone-' + tone + '">' + escapeHtml(label) + '</span>';
+
+    const stateLeds = (track) => [
+      ["M", track.isMuted, "Muted"],
+      ["S", track.isSoloed, "Solo"],
+      ["A", track.isArmed, "Armed"],
+    ].map(([letter, active, label]) =>
+      '<span class="state-led ' + (active ? "is-active" : "") + '" title="' + label + '">' + letter + '</span>'
+    ).join("");
+
+    const parameterStrip = (parameters) => {
+      const items = asArray(parameters);
+      if (!items.length) return '<p class="empty-state compact">No readable macros</p>';
+      return '<div class="parameter-strip">' + items.map((parameter) =>
+        '<div class="parameter-chip">' +
+          badge(parameter.isMacro ? "Macro" : "Param", parameter.isMacro ? "macro" : "device") +
+          '<strong>' + escapeHtml(parameter.name) + '</strong>' +
+          '<em>' + escapeHtml(formatValue(parameter.value)) + '</em>' +
+        '</div>'
+      ).join("") + '</div>';
+    };
+
+    const chainState = (chain) => {
+      const parts = [
+        chain?.volume !== null && chain?.volume !== undefined ? "Vol " + formatValue(chain.volume) : null,
+        chain?.pan !== null && chain?.pan !== undefined ? "Pan " + formatValue(chain.pan) : null,
+        chain?.note ? "Note " + chain.note : null,
+        chain?.isMuted === true ? "Muted" : null,
+        chain?.isSoloed === true ? "Solo" : null,
+        chain?.isActive === false ? "Inactive" : null,
+      ].filter(Boolean);
+      return parts.length ? '<div class="chain-state">' + parts.map((part) => '<span>' + escapeHtml(part) + '</span>').join("") + '</div>' : "";
+    };
+
+    const renderStructureCards = (items, label, depth) => {
+      const list = asArray(items);
+      if (!list.length) return '<p class="empty-state compact">Internal rack structure not exposed by current SDK</p>';
+      return '<div class="rack-chain-list">' + list.map((item) =>
+        '<article class="chain-card">' +
+          '<header class="chain-header">' +
+            '<div><div class="device-badges">' + badge(label === "Pads" ? "Pad" : "Chain", label === "Pads" ? "drum" : "chain") + '</div><h4>' + escapeHtml(item?.name || (label === "Pads" ? "Unnamed pad" : "Unnamed chain")) + '</h4></div>' +
+            '<span class="chain-kind">' + escapeHtml(item?.type || (label === "Pads" ? "Pad" : "Chain")) + '</span>' +
+          '</header>' +
+          chainState(item) +
+          '<div class="nested-device-chain">' + deviceChain(item?.devices, depth + 1) + '</div>' +
+        '</article>'
+      ).join("") + '</div>';
+    };
+
+    const renderDeviceNode = (device, depth = 0) => {
+      const chains = asArray(device?.chains);
+      const pads = asArray(device?.pads);
+      const parameters = asArray(device?.parameters);
+      const isRack = chains.length > 0 || pads.length > 0 || /rack/i.test(String(device?.type || ""));
+      const isDrumRack = /drum/i.test(String(device?.type || "")) || /drum/i.test(String(device?.name || ""));
+      const structureItems = isDrumRack && pads.length ? pads : chains;
+      const structureLabel = isDrumRack && pads.length ? "Pads" : "Chains";
+      const enabledLabel = device?.enabled === null || device?.enabled === undefined
+        ? ""
+        : '<span class="device-flag ' + (device.enabled ? "is-on" : "is-off") + '">' + (device.enabled ? "On" : "Off") + '</span>';
+
+      if (!isRack) {
+        return '<div class="device-node">' +
+          '<div class="device-node-head">' +
+            '<span class="device-index">' + String((device?.index ?? 0) + 1).padStart(2, "0") + '</span>' +
+            '<div class="device-heading">' +
+              '<div class="device-badges">' + badge("Device", "device") + enabledLabel + '</div>' +
+              '<span class="device-name">' + escapeHtml(device?.name || "Unnamed device") + '</span>' +
+              '<span class="device-type">' + escapeHtml(device?.type || "Device") + '</span>' +
+            '</div>' +
+          '</div>' +
+          (parameters.length
+            ? '<div class="device-parameters"><span class="detail-label">Parameters</span>' + parameterStrip(parameters) + '</div>'
+            : "") +
+        '</div>';
+      }
+
+      return '<details class="device-node rack-node" ' + (depth < 1 ? "open" : "") + '>' +
+        '<summary>' +
+          '<div class="device-node-head">' +
+            '<span class="device-index">' + String((device?.index ?? 0) + 1).padStart(2, "0") + '</span>' +
+            '<div class="device-heading">' +
+              '<div class="device-badges">' +
+                badge(isDrumRack ? "Drum Rack" : "Rack", isDrumRack ? "drum" : "rack") +
+                badge("Device", "device") +
+                enabledLabel +
+              '</div>' +
+              '<span class="device-name">' + escapeHtml(device?.name || "Unnamed rack") + '</span>' +
+              '<span class="device-type">' + escapeHtml(device?.type || "RackDevice") + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<span class="rack-meta">' + escapeHtml(String(structureItems.length)) + ' ' + escapeHtml(structureLabel.toLowerCase()) + '</span>' +
+        '</summary>' +
+        '<div class="rack-body">' +
+          '<div class="device-parameters"><span class="detail-label">Macros</span>' + parameterStrip(parameters) + '</div>' +
+          '<div class="rack-structure"><span class="detail-label">' + structureLabel + '</span>' + renderStructureCards(structureItems, structureLabel, depth) + '</div>' +
+        '</div>' +
+      '</details>';
+    };
+
+    const deviceChain = (devices, depth = 0) => {
+      const items = asArray(devices);
+      if (!items.length) return '<p class="empty-state">No devices</p>';
+      return '<div class="device-chain depth-' + depth + '">' + items.map((device, index) =>
+        renderDeviceNode({ ...device, index: device?.index ?? index }, depth)
+      ).join('<span class="chain-link" aria-hidden="true"></span>') + '</div>';
+    };
+
+    const sendsList = (sends) => {
+      const items = asArray(sends);
+      if (!items.length) return '<p class="empty-state compact">No sends</p>';
+      return '<div class="send-list">' + items.map((send) =>
+        '<span class="send-chip"><b>' + escapeHtml(send.name) + '</b><em>' + escapeHtml(formatValue(send.value)) + '</em></span>'
+      ).join("") + '</div>';
+    };
+
+    const trackCard = (track, ordinal, displayIndex) =>
+      '<article class="track-card kind-' + escapeHtml(track.kind) + '" style="--delay:' + Math.min(ordinal * 35, 420) + 'ms">' +
+        '<div class="track-rail"><span>' + escapeHtml(displayIndex) + '</span></div>' +
+        '<div class="track-body">' +
+          '<header class="track-header">' +
+            '<div><span class="kind-tag">' + escapeHtml(track.kind) + '</span><h3>' + escapeHtml(track.name) + '</h3></div>' +
+            '<div class="track-state" aria-label="État de la piste">' + stateLeds(track) + '</div>' +
+          '</header>' +
+          '<div class="routing-grid">' +
+            '<div><span>IN</span><strong>' + escapeHtml(routingText(track.input)) + '</strong></div>' +
+            '<div><span>OUT</span><strong>' + escapeHtml(routingText(track.output)) + '</strong></div>' +
+          '</div>' +
+          '<div class="track-detail"><span class="detail-label">Device chain · ' + countDevicesDeep(track.devices) + '</span>' + deviceChain(track.devices) + '</div>' +
+          '<div class="track-detail sends-row"><span class="detail-label">Sends · ' + asArray(track.sends).length + '</span>' + sendsList(track.sends) + '</div>' +
+        '</div>' +
+      '</article>';
+
+    const sessionOrderTracks = [
+      ...session.tracks.map((track) => ({ ...track, sectionType: "track" })),
+      ...session.returnTracks.map((track) => ({ ...track, sectionType: "return" })),
+      ...(session.masterTrack ? [{ ...session.masterTrack, sectionType: "master" }] : []),
+    ];
+
+    const renderSessionOrder = () => {
+      let displayCounter = 0;
+      let hasInsertedReturnsDivider = false;
+      let hasInsertedMasterDivider = false;
+
+      return sessionOrderTracks.map((track, ordinal) => {
+        const fragments = [];
+
+        if (track.sectionType === "return" && !hasInsertedReturnsDivider) {
+          hasInsertedReturnsDivider = true;
+          fragments.push(
+            '<div class="track-divider"><span>RTN</span><strong>Returns</strong><i></i></div>',
+          );
+        }
+
+        if (track.sectionType === "master" && !hasInsertedMasterDivider) {
+          hasInsertedMasterDivider = true;
+          fragments.push(
+            '<div class="track-divider"><span>MST</span><strong>Master</strong><i></i></div>',
+          );
+        }
+
+        displayCounter += 1;
+        fragments.push(
+          trackCard(track, ordinal, String(displayCounter).padStart(2, "0")),
+        );
+        return fragments.join("");
+      }).join("");
+    };
+
+    document.getElementById("project-name").textContent = session.set?.name || "Untitled Live Set";
+    document.getElementById("tempo").textContent = session.set?.tempo ?? "—";
+    document.getElementById("track-count").textContent = String(session.tracks.length);
+    document.getElementById("device-count").textContent = String(countTrackDevices(allTracks));
+    document.getElementById("send-count").textContent = String(allTracks.reduce((sum, track) => sum + asArray(track?.sends).length, 0));
+    document.getElementById("export-time").textContent = "EXPORTED " + new Date(session.exportedAt).toLocaleString("fr-FR");
+
+    document.getElementById("session-sections").innerHTML =
+      '<section class="track-section">' +
+        '<div class="section-heading"><span>SET</span><h2>Ordre du Set</h2><i></i><b>' + sessionOrderTracks.length + '</b></div>' +
+        '<div class="track-stack">' + (sessionOrderTracks.length
+          ? renderSessionOrder()
+          : '<div class="empty-section">No tracks in this section</div>') +
+        '</div>' +
+      '</section>';
+
+    const preferredMode = (() => {
+      try {
+        return localStorage.getItem("ableton-session-mapper:view-mode") || "detailed";
+      } catch {
+        return "detailed";
+      }
+    })();
+    setViewMode(preferredMode);
+
+    const formatDiagnosticValue = (value) => {
+      if (value === undefined) return "—";
+      if (typeof value === "string") return escapeHtml(value);
+      return escapeHtml(JSON.stringify(value, null, 2));
+    };
+
+    const propertyRows = (properties) => properties.map((property) =>
+      '<div class="diagnostic-property status-' + property.status + '">' +
+        '<span class="property-status">' + property.status + '</span>' +
+        '<code>' + escapeHtml(property.property) + '</code>' +
+        '<pre>' + (property.status === "error" ? escapeHtml(property.error || "Unknown error") : formatDiagnosticValue(property.value)) + '</pre>' +
+      '</div>'
+    ).join("");
+
+    const objectDiagnostic = (object, label) => {
+      if (!object) return "";
+      return '<details class="diagnostic-object">' +
+        '<summary><span>' + escapeHtml(label) + '</span><b>' + escapeHtml(object.objectType) + '</b><em>' + escapeHtml(object.name || object.id || "anonymous") + '</em></summary>' +
+        '<div class="diagnostic-object-body">' +
+          '<div class="available-list"><span>Prototype surface</span>' + (object.availableProperties || []).map((name) => '<code>' + escapeHtml(name) + '</code>').join("") + '</div>' +
+          '<div class="property-table">' + propertyRows(object.properties || []) + '</div>' +
+        '</div>' +
+      '</details>';
+    };
+
+    const deviceDiagnostic = (device) =>
+      '<div class="diagnostic-nested">' + objectDiagnostic(device, device.isRack ? "Rack" : "Device") +
+      (device.chains || []).map((chain) =>
+        '<div class="chain-diagnostic">' + objectDiagnostic(chain, "Chain") +
+        (chain.devices || []).map(deviceDiagnostic).join("") +
+        objectDiagnostic(chain.mixer, "Chain mixer") + '</div>'
+      ).join("") + '</div>';
+
+    const diagnosticRoot = document.getElementById("sdk-diagnostic");
+    if (!sdkDiagnostic) {
+      diagnosticRoot.innerHTML =
+        '<div class="section-heading"><span>SDK</span><h2 id="diagnostic-title">Data Diagnostic</h2><i></i><b>NOT RUN</b></div>' +
+        '<div class="diagnostic-empty"><strong>No SDK diagnostic loaded.</strong><span>Use “Export SDK Diagnostic JSON” in Live, then regenerate the HTML.</span></div>';
+    } else {
+      const metrics = [
+        [sdkDiagnostic.summary.tracksInspected, "Tracks inspected"],
+        [sdkDiagnostic.summary.routingsFound, "Routings found"],
+        [sdkDiagnostic.summary.devicesInspected, "Devices inspected"],
+        [sdkDiagnostic.summary.racksDetected, "Racks detected"],
+        [sdkDiagnostic.summary.chainsDetected, "Chains detected"],
+        [sdkDiagnostic.summary.propertyErrors, "Property errors"],
+      ];
+      diagnosticRoot.innerHTML =
+        '<div class="section-heading"><span>SDK</span><h2 id="diagnostic-title">Data Diagnostic</h2><i></i><b>v' + escapeHtml(sdkDiagnostic.version) + '</b></div>' +
+        '<div class="diagnostic-summary">' + metrics.map(([value, label]) => '<article><b>' + value + '</b><span>' + label + '</span></article>').join("") + '</div>' +
+        objectDiagnostic(sdkDiagnostic.song, "Song") +
+        '<div class="diagnostic-tracks">' + sdkDiagnostic.tracks.map((track) =>
+          '<article class="diagnostic-track">' +
+            '<header><div><span>' + escapeHtml(track.role) + '</span><h3>' + escapeHtml(track.name || "Unnamed track") + '</h3></div><code>' + escapeHtml(track.detectedType) + '</code></header>' +
+            '<p class="diagnostic-id">ID ' + escapeHtml(track.id || "unavailable") + '</p>' +
+            objectDiagnostic(track, "Track properties") +
+            objectDiagnostic(track.mixer, "Mixer device") +
+            (track.devices || []).map(deviceDiagnostic).join("") +
+          '</article>'
+        ).join("") + '</div>';
+    }
+  </script>
+</body>
+</html>
