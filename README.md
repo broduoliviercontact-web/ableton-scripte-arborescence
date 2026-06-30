@@ -15,21 +15,12 @@ internal-viewer-preview/index.html?view=session
 internal-viewer-preview/index.html?view=kanban
 internal-viewer-preview/index.html?view=metro
 internal-viewer-preview/index.html?view=outputs
-internal-viewer-preview/index.html?view=routing
 internal-viewer-preview/index.html?view=devices
 internal-viewer-preview/index.html?view=files
 internal-viewer-preview/index.html?view=overview
 ```
 
 `npm run generate:internal-viewer-preview` régénère uniquement la page statique sans l’ouvrir. Cette preview réutilise le template de la modale et n’intervient pas dans le comportement de l’extension.
-
-Des variantes de preview du badge routing sont aussi générées :
-
-- `internal-viewer-preview/index.html`
-- `internal-viewer-preview/index-missing.html`
-- `internal-viewer-preview/index-stale.html`
-- `internal-viewer-preview/index-mismatch.html`
-- `internal-viewer-preview/index-invalid.html`
 
 Extension TypeScript pour Ableton Live Extensions SDK. Elle analyse le Set
 courant et écrit une représentation JSON des pistes normales, groupes, retours,
@@ -104,7 +95,6 @@ Puis dans Ableton Live :
    - Kanban
    - Git / Metro
    - Outputs
-   - Routing
    - Devices
    - Files
    - Overview
@@ -120,8 +110,10 @@ légère :
 - pas de rendu diagramme complet dans la modale ;
 - les previews internes sont en HTML/CSS simple ;
 - le launcher externe reste disponible en fallback ou en ouverture manuelle.
-- un badge global **Routing health** apparaît directement dans le header.
-- ce badge **Routing health** ouvre directement l'onglet **Routing** dans la modale.
+- la modale intégrée ne montre plus de health routing ni de warnings stale ;
+- elle se concentre sur les données réellement fiables exposées par le SDK.
+- la v1.2 aligne davantage son langage visuel sur une logique DAW / Live-like,
+  sans utiliser de logo ou branding officiel Ableton.
 
 En usage normal, le menu **Extensions** n'affiche qu'une seule entrée :
 
@@ -438,6 +430,9 @@ Workflow recommandé :
 - Les **routings I/O** et les **sidechains** ne sont pas encore exposés de
   façon exploitable par cette version du SDK, ou pas encore mappés par le
   projet.
+- La modale intégrée masque volontairement la couche de **routing health** pour
+  éviter de brouiller l’UX tant que le SDK ne fournit pas ces données de façon
+  fiable.
 - **Mermaid Git / Metro** est une visualisation artistique et lisible du Set,
   pas une topologie audio exacte.
 
@@ -466,14 +461,13 @@ Cette fenêtre interne reste volontairement légère :
 
 - modale demandée en **1400 x 950** ;
 - fallback scrollable si Live / le SDK limite la taille réelle ;
-- onglets **Session / Kanban / Git-Metro / Outputs / Routing / Devices / Files / Overview** ;
+- onglets **Session / Kanban / Git-Metro / Outputs / Devices / Files / Overview** ;
 - navigation par **tabs CSS-only** sans dépendre du JS pour changer de vue ;
 - preview interne légère type Session View, basée uniquement sur le JSON exporté ;
 - preview **Kanban** interne en HTML/CSS ;
 - preview **Git / Metro** interne en HTML/CSS ;
 - métriques simples + date d'export + mode `ultra-safe` ;
 - table légère des outputs basée sur `session-map.json` ;
-- onglet **Routing** alimenté par `routing-overrides.json` si disponible ;
 - liste compacte des devices par piste ;
 - vérification des fichiers générés avant d'afficher les boutons Open ;
 - aucun Mermaid lourd rendu dans la fenêtre ;
@@ -483,6 +477,8 @@ Cette fenêtre interne reste volontairement légère :
 Notes importantes :
 
 - les routings I/O peuvent apparaître comme **Non exposé par le SDK** ;
+- la modale intégrée n’affiche plus de badge, warning ou suggestion de refresh
+  liés à `routing-overrides.json` ;
 - le message de fallback reste affiché si aucun export n'existe encore ;
 - les vues internes ne chargent **ni Mermaid.js ni SVG/PNG lourds** ;
 - la preview interne n'est **pas** un rendu Mermaid complet ;
@@ -598,7 +594,7 @@ Le JSON exporté ajoute :
 - `manualRouting.connections`
 - `track.routing.source`
 
-Quand un override est présent, les viewers affichent :
+Quand un override est présent, les viewers externes et le JSON peuvent afficher :
 
 - les champs `MIDI From / MIDI To / Audio From / Audio To / Monitor`
 - un badge **MANUAL**
@@ -617,8 +613,8 @@ Comportement de sécurité :
 ### Refreshing routing overrides when changing Live Set
 
 Quand vous passez d'un Set à un autre, l'ancien `routing-overrides.json` peut
-encore référencer des pistes qui n'existent plus. Dans ce cas, la modale
-Integrated Viewer affiche correctement des warnings de type :
+encore référencer des pistes qui n'existent plus. Dans ce cas, les outils
+externes ou le JSON peuvent signaler des warnings de type :
 
 - `Manual routing override references missing track: ...`
 
@@ -633,7 +629,7 @@ Workflow recommandé :
 
 3. Éditer `exports/routing-overrides.json`
 4. Relancer **Export Session Map**
-5. Vérifier les onglets **Outputs** et **Routing** dans la modale
+5. Relancer **Export Session Map** puis vérifier le JSON ou les viewers externes si besoin
 
 Comportement :
 
@@ -654,7 +650,8 @@ En cas de collision, un suffixe numérique est ajouté.
 ### Detecting stale routing overrides
 
 Le projet détecte maintenant automatiquement si `routing-overrides.json` semble
-obsolète pour le Set courant.
+obsolète pour le Set courant. Cette information reste disponible dans le JSON et
+dans les outils externes, mais n’est plus affichée dans la modale intégrée.
 
 Les viewers peuvent afficher :
 
@@ -673,7 +670,7 @@ La détection combine :
 Workflow recommandé :
 
 1. Dans Live : **Export Session Map**
-2. Si la modale ou le launcher indique `stale` ou `mismatch` :
+2. Si le JSON ou un viewer externe indique `stale` ou `mismatch` :
 
    ```bash
    npm run refresh:routing-overrides

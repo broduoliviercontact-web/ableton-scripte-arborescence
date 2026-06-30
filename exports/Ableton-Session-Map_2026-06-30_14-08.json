@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "exportedAt": "2026-06-30T13:27:11.165Z",
+  "exportedAt": "2026-06-30T12:08:16.335Z",
   "set": {
     "name": null,
     "tempo": 133.5
@@ -2596,18 +2596,16 @@
   },
   "manualRouting": {
     "status": "loaded",
-    "stale": true,
+    "stale": false,
     "setMatch": true,
     "sourcePath": "/Users/jeanclaude/Documents/ableton scripte arborescence/exports/routing-overrides.json",
     "sourceModifiedAt": "2026-06-30T12:08:07.267Z",
-    "sessionMapModifiedAt": "2026-06-30T13:18:32.895Z",
+    "sessionMapModifiedAt": "2026-06-30T12:04:04.033Z",
     "currentTrackCount": 9,
     "overrideTrackCount": 9,
     "missingFromCurrent": [],
     "missingFromOverrides": [],
-    "warnings": [
-      "routing-overrides.json is older than session-map.json. Run npm run refresh:routing-overrides."
-    ],
+    "warnings": [],
     "tracks": {
       "1 Drift": {
         "kind": "audio",

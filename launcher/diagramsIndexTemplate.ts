@@ -25,12 +25,6 @@ interface SessionMap {
   tracks: TrackInfo[];
   returnTracks: TrackInfo[];
   masterTrack: TrackInfo | null;
-  manualRouting?: {
-    status: "missing" | "loaded" | "invalid";
-    stale: boolean;
-    setMatch: boolean;
-    warnings: string[];
-  };
 }
 
 interface FileAction {
@@ -164,7 +158,6 @@ async function buildCards(rootDirectory: string): Promise<string> {
     "sdk-capability-matrix.html",
     "sdk-capability-matrix.json",
     "sdk-capability-matrix.md",
-    "routing-overrides.json",
   ];
 
   const existence = new Map<string, boolean>();
@@ -233,7 +226,6 @@ async function buildCards(rootDirectory: string): Promise<string> {
       accentClass: "accent-raw",
       actions: [
         { label: "Open JSON", fileName: "session-map.json", exists: existence.get("session-map.json") === true },
-        { label: "Open routing-overrides.json", fileName: "routing-overrides.json", exists: existence.get("routing-overrides.json") === true },
         { label: "Open exports folder", fileName: `file://${exportsDirectory}`, exists: true },
       ],
       missingHint: "npm run export:diagram:all",
@@ -264,64 +256,6 @@ function buildMetricsHtml(sessionMap: SessionMap): string {
     )
     .join("\n");
 }
-
-function getRoutingHealth(sessionMap: SessionMap): {
-  label: string;
-  message: string;
-  badgeClass: string;
-  needsRefresh: boolean;
-} {
-  const routing = sessionMap.manualRouting;
-
-  if (!routing || routing.status === "missing") {
-    return {
-      label: "Routing missing",
-      message: "No routing-overrides.json found.",
-      badgeClass: "badge-neutral",
-      needsRefresh: false,
-    };
-  }
-
-  if (routing.status === "invalid") {
-    return {
-      label: "Routing invalid",
-      message: "routing-overrides.json is invalid.",
-      badgeClass: "badge-danger",
-      needsRefresh: true,
-    };
-  }
-
-  if (routing.stale || !routing.setMatch) {
-    return {
-      label: "Routing needs refresh",
-      message: routing.warnings.length
-        ? routing.warnings.join(" · ")
-        : "routing-overrides.json may not match the current Live Set.",
-      badgeClass: "badge-warning",
-      needsRefresh: true,
-    };
-  }
-
-  return {
-    label: "Routing OK",
-    message: "Manual routing matches this Set.",
-    badgeClass: "badge-success",
-    needsRefresh: false,
-  };
-}
-
-function buildRoutingHealthNotice(sessionMap: SessionMap): string {
-  const health = getRoutingHealth(sessionMap);
-  if (!health.needsRefresh) return "";
-
-  return `<section class="workflow" style="margin-top:0;background:linear-gradient(90deg, rgba(255,177,107,0.16), rgba(255,255,255,0.02));">
-    <h2>Routing overrides need refresh</h2>
-    <p style="margin:0;color:#e2e8f0;line-height:1.7;"><span class="routing-badge ${escapeHtml(health.badgeClass)}">${escapeHtml(health.label)}</span></p>
-    <p style="margin:10px 0 0;color:#cfd7e2;line-height:1.7;">${escapeHtml(health.message)}</p>
-    <code>npm run refresh:routing-overrides</code>
-  </section>`;
-}
-
 export async function buildDiagramsIndexHtml(
   options: GenerateDiagramsIndexOptions,
 ): Promise<string> {
@@ -329,8 +263,6 @@ export async function buildDiagramsIndexHtml(
   const sessionMap = JSON.parse(json) as SessionMap;
   const cards = await buildCards(options.rootDirectory);
   const metrics = buildMetricsHtml(sessionMap);
-  const routingHealthNotice = buildRoutingHealthNotice(sessionMap);
-  const routingHealth = getRoutingHealth(sessionMap);
   const outputDirectory = dirname(options.outputPath);
   const exportsDirectory = resolve(options.rootDirectory, "exports");
   const relativeJsonPath = relative(outputDirectory, options.jsonPath) || basename(options.jsonPath);
@@ -465,38 +397,6 @@ export async function buildDiagramsIndexHtml(
     .metric span {
       color: var(--muted);
       font-size: 13px;
-    }
-    .routing-badge {
-      display: inline-flex;
-      align-items: center;
-      min-height: 28px;
-      padding: 0 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.12);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-    .badge-success {
-      color: #b8efc4;
-      border-color: rgba(125, 210, 143, 0.32);
-      background: rgba(72, 120, 80, 0.22);
-    }
-    .badge-warning {
-      color: #ffd89f;
-      border-color: rgba(245,166,35,0.3);
-      background: rgba(113, 80, 21, 0.25);
-    }
-    .badge-danger {
-      color: #ffb3aa;
-      border-color: rgba(255, 107, 107, 0.28);
-      background: rgba(102, 38, 38, 0.26);
-    }
-    .badge-neutral {
-      color: #d7d2c9;
-      border-color: rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
     }
     .workflow {
       margin-bottom: 18px;
@@ -671,11 +571,6 @@ export async function buildDiagramsIndexHtml(
           <p class="meta-label">Current JSON</p>
           <p class="meta-value">${escapeHtml(relativeJsonPath)}</p>
         </div>
-        <div>
-          <p class="meta-label">Routing health</p>
-          <p class="meta-value"><span class="routing-badge ${escapeHtml(routingHealth.badgeClass)}">${escapeHtml(routingHealth.label)}</span></p>
-          <p class="meta-value" style="margin-top:8px;color:#c5ced9;font-size:13px;">${escapeHtml(routingHealth.message)}</p>
-        </div>
       </aside>
     </section>
 
@@ -691,9 +586,6 @@ export async function buildDiagramsIndexHtml(
         <li>Pour rouvrir ce launcher : <strong>npm run open:diagrams</strong></li>
       </ol>
     </section>
-
-    ${routingHealthNotice}
-
     <section class="cards" aria-label="Visualization launcher">
       ${cards}
     </section>

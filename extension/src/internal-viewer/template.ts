@@ -132,93 +132,15 @@ function truncateLabel(value: string, max = 18): string {
   return value.length <= max ? value : `${value.slice(0, max - 1)}…`;
 }
 
-type RoutingHealthVariant = "success" | "warning" | "danger" | "neutral";
-
-function getRoutingHealth(model: InternalViewerModel): {
-  label: string;
-  variant: RoutingHealthVariant;
-  message: string;
-  isOk: boolean;
-} {
-  if (model.manualRoutingStatus === "missing") {
-    return {
-      label: "Routing missing",
-      variant: "neutral",
-      message: "No routing-overrides.json found.",
-      isOk: false,
-    };
-  }
-
-  if (model.manualRoutingStatus === "invalid") {
-    return {
-      label: "Routing invalid",
-      variant: "danger",
-      message: "routing-overrides.json is invalid.",
-      isOk: false,
-    };
-  }
-
-  if (model.manualRoutingStatus === "loaded" && model.manualRoutingStale) {
-    return {
-      label: "Routing stale",
-      variant: "warning",
-      message: "Run npm run refresh:routing-overrides.",
-      isOk: false,
-    };
-  }
-
-  if (model.manualRoutingStatus === "loaded" && !model.manualRoutingSetMatch) {
-    return {
-      label: "Routing mismatch",
-      variant: "warning",
-      message: "Overrides do not match current tracks.",
-      isOk: false,
-    };
-  }
-
-  if (model.manualRoutingStatus === "loaded" && !model.manualRoutingStale && model.manualRoutingSetMatch) {
-    return {
-      label: "Routing OK",
-      variant: "success",
-      message: "Manual routing matches this Set.",
-      isOk: true,
-    };
-  }
-
-  return {
-    label: "Routing unknown",
-    variant: "neutral",
-    message: "Routing health could not be determined.",
-    isOk: false,
-  };
-}
-
-function renderRoutingHealthBadge(model: InternalViewerModel): string {
-  const health = getRoutingHealth(model);
-  return `<div class="routing-health">
-    <label
-      for="internal-tab-routing"
-      class="routing-health-badge tone-${escapeHtml(health.variant)}"
-      title="Open Routing tab"
-      aria-label="Open Routing tab"
-    >${escapeHtml(health.label)}</label>
-    <small>${escapeHtml(health.message)}</small>
-  </div>`;
-}
-
-function renderRoutingHealthHint(model: InternalViewerModel): string {
-  const health = getRoutingHealth(model);
-  if (health.isOk) return "";
-  return `<div class="notice warning">${escapeHtml(health.label)} · see Routing tab. ${escapeHtml(health.message)}</div>`;
-}
-
 function renderQuickOpenButton(link: InternalViewerQuickLink): string {
   const disabledAttr = link.exists ? "" : " disabled";
-  return `<button class="action-button" type="button" data-link-key="${escapeHtml(link.key)}"${disabledAttr}>${escapeHtml(link.label)}</button>`;
+  const toneClass = link.key === "launcher" ? " is-primary" : "";
+  return `<button class="action-button${toneClass}" type="button" data-link-key="${escapeHtml(link.key)}"${disabledAttr}>${escapeHtml(link.label)}</button>`;
 }
 
 function renderFileEntry(file: InternalViewerFileEntry): string {
   const disabledAttr = file.exists ? "" : " disabled";
+  const toneClass = file.key === "launcher" ? " is-primary" : "";
   return `<div class="file-row">
     <div class="file-meta">
       <strong>${escapeHtml(file.label)}</strong>
@@ -226,13 +148,12 @@ function renderFileEntry(file: InternalViewerFileEntry): string {
     </div>
     <div class="file-actions">
       <span class="file-status ${file.exists ? "is-available" : "is-missing"}">${file.exists ? "available" : "missing"}</span>
-      <button class="mini-button" type="button" data-link-key="${escapeHtml(file.key)}"${disabledAttr}>Open</button>
+      <button class="mini-button${toneClass}" type="button" data-link-key="${escapeHtml(file.key)}"${disabledAttr}>Open</button>
     </div>
   </div>`;
 }
 
 function renderOverview(model: InternalViewerModel): string {
-  const routingHealth = getRoutingHealth(model);
   const warningBlock = model.warningMessage
     ? `<div class="notice warning">${escapeHtml(model.warningMessage)}</div>`
     : "";
@@ -255,20 +176,8 @@ function renderOverview(model: InternalViewerModel): string {
         <strong>${escapeHtml(model.hasExport ? "Ready" : "Waiting for export")}</strong>
       </article>
       <article class="overview-card">
-        <span class="label">Routing overrides</span>
-        <strong>${escapeHtml(routingHealth.label)}</strong>
-      </article>
-      <article class="overview-card">
-        <span class="label">Warnings</span>
-        <strong>${escapeHtml(String(model.manualRoutingWarnings.length))}</strong>
-      </article>
-      <article class="overview-card">
-        <span class="label">Set match</span>
-        <strong>${escapeHtml(model.manualRoutingSetMatch ? "OK" : "MISMATCH")}</strong>
-      </article>
-      <article class="overview-card">
-        <span class="label">Stale</span>
-        <strong>${escapeHtml(model.manualRoutingStale ? "YES" : "NO")}</strong>
+        <span class="label">Viewer</span>
+        <strong>${escapeHtml(model.internalVisualPreviewEnabled ? "Internal preview enabled" : "Metadata only")}</strong>
       </article>
     </div>
     <div class="notice">${escapeHtml(model.statusMessage)}</div>
@@ -302,7 +211,6 @@ function renderSessionPreview(model: InternalViewerModel): string {
   return `<div class="notice">
       Internal preview uses exported JSON. For full diagrams, open the external launcher.
     </div>
-    ${renderRoutingHealthHint(model)}
     <div class="preview-metrics-inline">
       <span>tracks:${model.metrics.tracks}</span>
       <span>returns:${model.metrics.returns}</span>
@@ -361,7 +269,6 @@ function renderKanbanPreview(model: InternalViewerModel): string {
   return `<div class="notice">
       Kanban preview is rendered directly inside Live from exported JSON. Mermaid remains external.
     </div>
-    ${renderRoutingHealthHint(model)}
     <div class="kanban-scroll">
       <div class="kanban-grid">
         ${model.sessionPreviewColumns
@@ -414,7 +321,6 @@ function renderMetroPreview(model: InternalViewerModel): string {
   return `<div class="notice">
       Metro preview is native HTML/CSS inside Live. Full Git / Metro Mermaid remains external.
     </div>
-    ${renderRoutingHealthHint(model)}
     <div class="metro-list">
       ${model.sessionPreviewColumns
         .map(
@@ -465,14 +371,8 @@ function renderOutputs(model: InternalViewerModel): string {
   }
 
   return `<div class="notice">
-      Routing I/O may be unavailable in the current SDK scan. Manual routing-overrides.json can fill the missing data.
+      Routing I/O not exposed by current SDK version.
     </div>
-    <div class="notice">Manual routing status: ${escapeHtml(model.manualRoutingStatus.toUpperCase())}${model.manualRoutingWarnings.length ? ` · ${escapeHtml(model.manualRoutingWarnings.join(" · "))}` : ""}</div>
-    ${
-      model.hasMissingRoutingData
-        ? `<div class="notice warning">Routing I/O non disponible dans cette version du SDK.</div>`
-        : ""
-    }
     <div class="table-shell">
       <table>
         <thead>
@@ -480,12 +380,8 @@ function renderOutputs(model: InternalViewerModel): string {
             <th>#</th>
             <th>Track</th>
             <th>Kind</th>
-            <th>MIDI From</th>
-            <th>MIDI To</th>
-            <th>Audio From</th>
-            <th>Audio To</th>
-            <th>Monitor</th>
-            <th>Source</th>
+            <th>Input</th>
+            <th>Output</th>
             <th>Sends</th>
           </tr>
         </thead>
@@ -496,12 +392,8 @@ function renderOutputs(model: InternalViewerModel): string {
                 <td>${row.sectionType === "master" ? "★" : row.index + 1}</td>
                 <td>${escapeHtml(row.name)}</td>
                 <td><span class="kind-badge kind-${escapeHtml(row.sectionType)}">${escapeHtml(row.kind)}</span></td>
-                <td>${escapeHtml(row.midiFrom)}</td>
-                <td>${escapeHtml(row.midiTo)}</td>
                 <td>${escapeHtml(row.audioFrom)}</td>
                 <td>${escapeHtml(row.audioTo)}</td>
-                <td>${escapeHtml(row.monitor)}</td>
-                <td>${escapeHtml(row.source)}</td>
                 <td>${escapeHtml(row.sends)}</td>
               </tr>`,
             )
@@ -510,175 +402,10 @@ function renderOutputs(model: InternalViewerModel): string {
       </table>
     </div>
     ${
-      model.connections.length
-        ? `<div class="file-group">
-            <div class="section-header">
-              <h3>Manual Connections</h3>
-              <p>${model.connections.length} links</p>
-            </div>
-            <div class="file-group-list">
-              ${model.connections
-                .map(
-                  (connection) => `<div class="file-row">
-                    <div class="file-meta">
-                      <strong>${escapeHtml(connection.from)} → ${escapeHtml(connection.to)}</strong>
-                      <span>${escapeHtml(connection.type)}${connection.label ? ` · ${escapeHtml(connection.label)}` : ""}</span>
-                    </div>
-                  </div>`,
-                )
-                .join("")}
-            </div>
-          </div>`
+      model.hasMissingRoutingData
+        ? `<div class="notice warning">Routing I/O non disponible dans cette version du SDK.</div>`
         : ""
     }`;
-}
-
-function renderRouting(model: InternalViewerModel): string {
-  if (!model.hasExport) {
-    return `<div class="empty-state">
-      <strong>No export generated yet.</strong>
-      <span>Run Export Session Map first, then reopen this viewer.</span>
-    </div>`;
-  }
-
-  const status = model.manualRoutingStatus.toUpperCase();
-  const warningRows = model.manualRoutingWarnings.length
-    ? `<div class="file-group">
-        <div class="section-header">
-          <h3>Warnings</h3>
-          <p>${model.manualRoutingWarnings.length}</p>
-        </div>
-        <div class="chip-group">${model.manualRoutingWarnings
-          .map((warning) => `<span class="chip chip-warning">${escapeHtml(warning)}</span>`)
-          .join("")}</div>
-      </div>`
-    : "";
-
-  const hasMissingTrackWarnings = model.manualRoutingWarnings.some((warning) =>
-    warning.toLowerCase().includes("references missing track"),
-  );
-  const needsRefreshSuggestion =
-    model.manualRoutingStale ||
-    !model.manualRoutingSetMatch ||
-    hasMissingTrackWarnings;
-
-  const connectionsBlock = model.connections.length
-    ? `<section class="file-group">
-        <div class="section-header">
-          <h3>Manual Connections</h3>
-          <p>${model.connections.length} links</p>
-        </div>
-        <div class="file-group-list">
-          ${model.connections
-            .map(
-              (connection) => `<div class="file-row">
-                <div class="file-meta">
-                  <strong>${escapeHtml(connection.from)} → ${escapeHtml(connection.to)}</strong>
-                  <span>${escapeHtml(connection.type)}${connection.label ? ` · ${escapeHtml(connection.label)}` : ""} · source MANUAL</span>
-                </div>
-              </div>`,
-            )
-            .join("")}
-        </div>
-      </section>`
-    : `<div class="notice">No manual connections listed.</div>`;
-
-  const sidechainsBlock = model.sidechains.length
-    ? `<section class="file-group">
-        <div class="section-header">
-          <h3>Sidechains</h3>
-          <p>${model.sidechains.length}</p>
-        </div>
-        <div class="file-group-list">
-          ${model.sidechains
-            .map(
-              (sidechain) => `<div class="file-row">
-                <div class="file-meta">
-                  <strong>${escapeHtml(sidechain.sourceTrack)} → ${escapeHtml(sidechain.targetTrack)}</strong>
-                  <span>${escapeHtml(sidechain.targetDevice || "Unknown device")} · ${escapeHtml(sidechain.enabled)}${sidechain.notes ? ` · ${escapeHtml(sidechain.notes)}` : ""}</span>
-                </div>
-              </div>`,
-            )
-            .join("")}
-        </div>
-      </section>`
-    : `<div class="notice">No sidechains declared in routing-overrides.json.</div>`;
-
-  let statusNotice = "Routing overrides loaded.";
-  if (model.manualRoutingStatus === "missing") {
-    statusNotice = "No routing-overrides.json found. Run npm run create:routing-overrides.";
-  } else if (model.manualRoutingStatus === "invalid") {
-    statusNotice = "routing-overrides.json is invalid. Check warnings below.";
-  }
-
-  return `<div class="overview-grid">
-      <article class="overview-card">
-        <span class="label">Routing status</span>
-        <strong>${escapeHtml(status)}</strong>
-      </article>
-      <article class="overview-card">
-        <span class="label">Overrides file</span>
-        <strong>${escapeHtml(model.routingOverridesExists ? "Found" : "Missing")}</strong>
-      </article>
-      <article class="overview-card">
-        <span class="label">Warnings</span>
-        <strong>${escapeHtml(String(model.manualRoutingWarnings.length))}</strong>
-      </article>
-      <article class="overview-card">
-        <span class="label">Manual connections</span>
-        <strong>${escapeHtml(String(model.connections.length))}</strong>
-      </article>
-      <article class="overview-card">
-        <span class="label">Set match</span>
-        <strong>${escapeHtml(model.manualRoutingSetMatch ? "OK" : "MISMATCH")}</strong>
-      </article>
-      <article class="overview-card">
-        <span class="label">Stale</span>
-        <strong>${escapeHtml(model.manualRoutingStale ? "YES" : "NO")}</strong>
-      </article>
-      <article class="overview-card">
-        <span class="label">Overrides modified</span>
-        <strong>${escapeHtml(formatExportDate(model.routingOverridesModifiedAt))}</strong>
-      </article>
-      <article class="overview-card">
-        <span class="label">Session export compared</span>
-        <strong>${escapeHtml(formatExportDate(model.sessionExportComparedAt))}</strong>
-      </article>
-    </div>
-    <div class="notice">${escapeHtml(statusNotice)}</div>
-    <div class="notice">Path: ${escapeHtml(model.routingOverridesPath)}</div>
-    ${needsRefreshSuggestion
-      ? `<div class="notice warning">routing-overrides.json may not match the current Live Set. Run <code>npm run refresh:routing-overrides</code> to regenerate a template for this Set.</div>`
-      : ""}
-    ${
-      model.missingFromCurrent.length
-        ? `<section class="file-group">
-            <div class="section-header">
-              <h3>Overrides reference tracks not found in current Set</h3>
-              <p>${model.missingFromCurrent.length}</p>
-            </div>
-            <div class="chip-group">${model.missingFromCurrent
-              .map((name) => `<span class="chip chip-warning">${escapeHtml(name)}</span>`)
-              .join("")}</div>
-          </section>`
-        : ""
-    }
-    ${
-      model.missingFromOverrides.length
-        ? `<section class="file-group">
-            <div class="section-header">
-              <h3>Current Set tracks missing from overrides</h3>
-              <p>${model.missingFromOverrides.length}</p>
-            </div>
-            <div class="chip-group">${model.missingFromOverrides
-              .map((name) => `<span class="chip chip-warning">${escapeHtml(name)}</span>`)
-              .join("")}</div>
-          </section>`
-        : ""
-    }
-    ${warningRows}
-    ${connectionsBlock}
-    ${sidechainsBlock}`;
 }
 
 function renderDevices(model: InternalViewerModel): string {
@@ -799,157 +526,134 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
   </script>
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #171717;
-      --panel: #242424;
-      --panel-2: #1f1f1f;
-      --panel-3: #2e2e2e;
-      --border: rgba(255,255,255,0.08);
-      --text: #ece9e2;
-      --muted: #aaa59c;
-      --accent: #f5a623;
-      --accent-2: #7ec7ff;
-      --danger: #ffb26b;
+      color-scheme: light dark;
+      --live-bg: #8f8f8f;
+      --live-panel: #b7b7b7;
+      --live-panel-light: #c7c7c7;
+      --live-panel-dark: #727272;
+      --live-panel-deep: #616161;
+      --live-border: #5e5e5e;
+      --live-text: #111111;
+      --live-muted: #383838;
+      --live-orange: #f5a000;
+      --live-orange-deep: #db8f00;
+      --live-cyan: #00cfe8;
+      --live-magenta: #d26ecf;
+      --live-purple: #9384ff;
+      --live-grid: rgba(0, 0, 0, 0.18);
+      --live-shadow: rgba(0, 0, 0, 0.14);
+      --live-slot: #d0d0d0;
+      --live-slot-muted: #d7d7d7;
+      --live-rack: #f3d099;
     }
     * { box-sizing: border-box; }
     html, body {
       margin: 0;
       height: 100%;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--live-bg);
+      color: var(--live-text);
       font-family: "Avenir Next", "Segoe UI", sans-serif;
       font-size: 12px;
       -webkit-font-smoothing: antialiased;
     }
     body {
       background:
-        radial-gradient(circle at top right, rgba(245,166,35,0.11), transparent 28%),
-        linear-gradient(180deg, #2a2a2a 0%, #191919 100%);
-      padding: 14px;
+        linear-gradient(180deg, #9c9c9c 0%, #898989 100%);
+      padding: 10px;
     }
     .shell {
-      height: calc(100vh - 28px);
+      height: calc(100vh - 20px);
       max-width: 95vw;
       max-height: 92vh;
       display: grid;
       grid-template-rows: auto auto auto minmax(0, 1fr) auto;
-      gap: 10px;
+      gap: 8px;
     }
     .hero, .metrics, .tab-bar, .panel-shell, .footer {
-      background: rgba(31,31,31,0.94);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+      background: var(--live-panel);
+      border: 1px solid var(--live-border);
+      border-radius: 6px;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset, 0 1px 4px var(--live-shadow);
     }
     .hero {
-      padding: 14px 16px;
+      padding: 9px 12px;
       display: flex;
       justify-content: space-between;
-      align-items: end;
+      align-items: center;
       gap: 16px;
+      background: linear-gradient(180deg, #7a7a7a, #6f6f6f);
+      color: #101010;
     }
     .eyebrow {
-      margin: 0 0 6px;
+      margin: 0 0 3px;
       text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--accent);
-      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: rgba(17,17,17,0.7);
+      font-size: 9px;
+      font-weight: 700;
     }
     h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 18px;
       line-height: 1;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.02em;
+      font-weight: 700;
     }
     .subline {
-      margin: 8px 0 0;
-      color: var(--muted);
-      line-height: 1.45;
-      font-size: 12px;
+      margin: 4px 0 0;
+      color: rgba(17,17,17,0.76);
+      line-height: 1.35;
+      font-size: 11px;
+      max-width: 60ch;
     }
     .hero-meta {
-      text-align: right;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.5;
-    }
-    .routing-health {
       display: grid;
-      gap: 6px;
-      justify-items: end;
-      margin-top: 8px;
-    }
-    .routing-health small {
-      color: var(--muted);
-      font-size: 10px;
-      max-width: 220px;
-      text-align: right;
-      line-height: 1.4;
-    }
-    .routing-health-badge {
-      display: inline-flex;
+      grid-auto-flow: column;
+      gap: 14px;
       align-items: center;
-      min-height: 26px;
-      padding: 0 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
+      color: rgba(17,17,17,0.76);
       font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 120ms ease, filter 120ms ease, border-color 120ms ease;
+      line-height: 1.3;
+      text-align: left;
     }
-    .routing-health-badge:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.04);
-    }
-    .routing-health-badge:active {
-      transform: translateY(0);
-    }
-    .routing-health-badge.tone-success {
-      color: #b8efc4;
-      border-color: rgba(125, 210, 143, 0.32);
-      background: rgba(72, 120, 80, 0.22);
-    }
-    .routing-health-badge.tone-warning {
-      color: #ffd89f;
-      border-color: rgba(245,166,35,0.3);
-      background: rgba(113, 80, 21, 0.25);
-    }
-    .routing-health-badge.tone-danger {
-      color: #ffb3aa;
-      border-color: rgba(255, 107, 107, 0.28);
-      background: rgba(102, 38, 38, 0.26);
-    }
-    .routing-health-badge.tone-neutral {
-      color: #d7d2c9;
-      border-color: rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
+    .hero-meta div {
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .metrics {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 1px;
-      padding: 1px;
-      background: rgba(255,255,255,0.04);
+      gap: 6px;
+      padding: 6px;
+      background: var(--live-panel-dark);
     }
     .metric {
-      background: var(--panel);
-      padding: 11px 8px;
+      background: linear-gradient(180deg, #c9c9c9, #b8b8b8);
+      border: 1px solid var(--live-border);
+      padding: 8px 6px;
       text-align: center;
+      border-radius: 3px;
+      transition: border-color 120ms ease, background 120ms ease;
+    }
+    .metric:hover {
+      border-color: var(--live-orange);
+      background: linear-gradient(180deg, #d3d3d3, #c1c1c1);
     }
     .metric strong {
       display: block;
-      font-size: 20px;
-      margin-bottom: 4px;
+      font-size: 19px;
+      margin-bottom: 2px;
+      color: var(--live-text);
+      line-height: 1;
     }
     .metric span {
-      color: var(--muted);
-      font-size: 10px;
+      color: var(--live-muted);
+      font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
+      font-weight: 700;
     }
     .tab-toggle {
       position: absolute;
@@ -960,56 +664,61 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     }
     .tab-bar {
       display: flex;
-      gap: 8px;
-      padding: 8px;
+      gap: 6px;
+      padding: 6px;
       flex-wrap: wrap;
+      background: linear-gradient(180deg, #7c7c7c, #6e6e6e);
     }
     .tab-label, .action-button, .mini-button, .close-button, .cancel-button {
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--text);
-      background: linear-gradient(180deg, #383838, #2f2f2f);
+      border-radius: 4px;
+      border: 1px solid var(--live-border);
+      color: var(--live-text);
+      background: linear-gradient(180deg, #909090, #7d7d7d);
       cursor: pointer;
-      transition: background 120ms ease, transform 120ms ease;
+      transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+      font-family: inherit;
     }
     .tab-label:hover, .action-button:hover, .mini-button:hover, .close-button:hover, .cancel-button:hover {
-      background: linear-gradient(180deg, #444, #353535);
+      background: linear-gradient(180deg, #a1a1a1, #8a8a8a);
+      border-color: #4f4f4f;
     }
     .tab-label {
-      min-height: 32px;
-      padding: 0 14px;
-      font-size: 12px;
+      min-height: 28px;
+      padding: 0 12px;
+      font-size: 11px;
       display: inline-flex;
       align-items: center;
       cursor: pointer;
+      font-weight: 700;
     }
     #internal-tab-session:checked ~ .tab-bar label[for="internal-tab-session"],
     #internal-tab-kanban:checked ~ .tab-bar label[for="internal-tab-kanban"],
     #internal-tab-metro:checked ~ .tab-bar label[for="internal-tab-metro"],
     #internal-tab-outputs:checked ~ .tab-bar label[for="internal-tab-outputs"],
-    #internal-tab-routing:checked ~ .tab-bar label[for="internal-tab-routing"],
     #internal-tab-devices:checked ~ .tab-bar label[for="internal-tab-devices"],
     #internal-tab-files:checked ~ .tab-bar label[for="internal-tab-files"],
     #internal-tab-overview:checked ~ .tab-bar label[for="internal-tab-overview"] {
-      background: linear-gradient(180deg, #f5a623, #cf8615);
-      color: #141414;
-      border-color: rgba(245,166,35,0.45);
+      background: linear-gradient(180deg, var(--live-orange), var(--live-orange-deep));
+      color: #111;
+      border-color: #865100;
     }
     .panel-shell {
       min-height: 0;
-      padding: 12px;
+      padding: 8px;
       overflow: auto;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), transparent 30%),
+        linear-gradient(180deg, #bdbdbd, #b5b5b5);
     }
     .panel {
       display: none;
-      gap: 12px;
+      gap: 8px;
       align-content: start;
     }
     #internal-tab-session:checked ~ .panel-shell .panel-session,
     #internal-tab-kanban:checked ~ .panel-shell .panel-kanban,
     #internal-tab-metro:checked ~ .panel-shell .panel-metro,
     #internal-tab-outputs:checked ~ .panel-shell .panel-outputs,
-    #internal-tab-routing:checked ~ .panel-shell .panel-routing,
     #internal-tab-devices:checked ~ .panel-shell .panel-devices,
     #internal-tab-files:checked ~ .panel-shell .panel-files,
     #internal-tab-overview:checked ~ .panel-shell .panel-overview {
@@ -1017,39 +726,42 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     }
     .overview-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
     }
     .overview-card, .device-card, .notice, .empty-state, .file-group {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
+      background: var(--live-panel-light);
+      border: 1px solid var(--live-border);
+      border-radius: 4px;
     }
     .overview-card {
-      padding: 12px;
+      padding: 10px;
     }
     .overview-card .label, .rack-summary .label {
       display: block;
-      color: var(--muted);
-      font-size: 10px;
+      color: var(--live-muted);
+      font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+      font-weight: 700;
     }
     .overview-card strong {
       display: block;
-      font-size: 13px;
-      line-height: 1.4;
+      font-size: 12px;
+      line-height: 1.35;
       word-break: break-word;
     }
     .notice {
-      padding: 11px 12px;
-      line-height: 1.5;
-      color: var(--muted);
+      padding: 9px 10px;
+      line-height: 1.45;
+      color: var(--live-muted);
+      background: #c5c5c5;
     }
     .notice.warning {
-      color: var(--danger);
-      border-color: rgba(245,166,35,0.22);
+      color: #5a3200;
+      border-color: #a87d37;
+      background: #d8c29c;
     }
     .section-header {
       display: flex;
@@ -1060,15 +772,15 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     }
     .section-header h3 {
       margin: 0;
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: var(--accent-2);
+      color: var(--live-text);
     }
     .section-header p {
       margin: 0;
-      color: var(--muted);
-      font-size: 11px;
+      color: var(--live-muted);
+      font-size: 10px;
     }
     .button-grid {
       display: grid;
@@ -1076,242 +788,236 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       gap: 8px;
     }
     .action-button {
-      min-height: 34px;
-      padding: 0 12px;
+      min-height: 32px;
+      padding: 0 10px;
       text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .action-button.is-primary,
+    .mini-button.is-primary,
+    .close-button {
+      background: linear-gradient(180deg, var(--live-orange), var(--live-orange-deep));
+      border-color: #865100;
+      color: #111;
+    }
+    .action-button.is-primary:hover,
+    .mini-button.is-primary:hover,
+    .close-button:hover {
+      background: linear-gradient(180deg, #ffb019, #e39500);
     }
     .action-button:disabled, .mini-button:disabled {
       cursor: not-allowed;
-      opacity: 0.42;
-      background: #2b2b2b;
-      color: #8f8f8f;
+      opacity: 0.5;
+      background: #a5a5a5;
+      color: #5f5f5f;
+      border-color: #7d7d7d;
     }
     .table-shell {
       overflow: auto;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: var(--panel);
+      border: 1px solid var(--live-border);
+      border-radius: 4px;
+      background: #cbcbcb;
     }
     .preview-metrics-inline {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 11px;
+      gap: 6px;
+      color: var(--live-muted);
+      font-size: 10px;
     }
     .preview-metrics-inline span {
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: var(--panel);
-      border: 1px solid var(--border);
+      padding: 3px 7px;
+      border-radius: 3px;
+      background: #cfcfcf;
+      border: 1px solid var(--live-border);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
     }
-    .session-preview-scroll {
+    .session-preview-scroll,
+    .kanban-scroll,
+    .metro-line-shell {
       overflow-x: auto;
       overflow-y: hidden;
-      padding-bottom: 4px;
+      padding-bottom: 2px;
     }
     .session-preview-grid {
       display: grid;
       grid-auto-flow: column;
-      grid-auto-columns: minmax(180px, 220px);
-      gap: 12px;
+      grid-auto-columns: minmax(176px, 210px);
+      gap: 8px;
       align-items: start;
       min-height: 0;
     }
-    .session-column {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
+    .session-column,
+    .kanban-column {
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.02) 0,
+          rgba(0,0,0,0.02) 27px,
+          rgba(0,0,0,0.08) 28px
+        ),
+        var(--live-panel-light);
+      border: 1px solid var(--live-border);
+      border-radius: 3px;
       overflow: hidden;
-      min-height: 220px;
+      min-height: 250px;
       display: grid;
       grid-template-rows: auto 1fr;
+      transition: border-color 120ms ease, box-shadow 120ms ease;
     }
-    .session-kind-midi .session-column-header {
-      background: linear-gradient(180deg, rgba(119,92,186,0.36), rgba(56,50,76,0.66));
+    .session-column:hover,
+    .kanban-column:hover {
+      border-color: var(--live-orange);
+      box-shadow: inset 0 0 0 1px rgba(245,160,0,0.38);
     }
-    .session-kind-audio .session-column-header {
-      background: linear-gradient(180deg, rgba(81,112,146,0.34), rgba(49,55,66,0.66));
+    .session-kind-midi .session-column-header,
+    .session-kind-midi .kanban-column-header {
+      background: linear-gradient(180deg, #a4b8de, #8ea0c5);
     }
-    .session-column-return .session-column-header {
-      background: linear-gradient(180deg, rgba(65,146,178,0.36), rgba(46,55,62,0.6));
+    .session-kind-audio .session-column-header,
+    .session-kind-audio .kanban-column-header {
+      background: linear-gradient(180deg, #c5cf8d, #b0ba78);
     }
-    .session-column-master .session-column-header {
-      background: linear-gradient(180deg, rgba(245,166,35,0.32), rgba(70,56,35,0.62));
+    .session-column-return .session-column-header,
+    .session-column-return .kanban-column-header {
+      background: linear-gradient(180deg, #8de0ec, #72cad5);
+    }
+    .session-column-master .session-column-header,
+    .session-column-master .kanban-column-header {
+      background: linear-gradient(180deg, #dca1ce, #c989ba);
     }
     .session-kind-group .session-column-header,
-    .session-kind-unknown .session-column-header {
-      background: linear-gradient(180deg, rgba(108,108,108,0.28), rgba(54,54,54,0.66));
+    .session-kind-group .kanban-column-header,
+    .session-kind-unknown .session-column-header,
+    .session-kind-unknown .kanban-column-header {
+      background: linear-gradient(180deg, #cacaca, #b7b7b7);
     }
-    .session-column-header {
-      padding: 12px 12px 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+    .session-column-header,
+    .kanban-column-header {
+      padding: 8px 8px 7px;
+      border-bottom: 1px solid rgba(0,0,0,0.22);
     }
     .session-column-title {
       display: flex;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
       align-items: start;
     }
-    .session-column-title strong {
+    .session-column-title strong,
+    .kanban-column-header strong {
       display: block;
-      font-size: 13px;
-      line-height: 1.3;
+      font-size: 12px;
+      line-height: 1.25;
       word-break: break-word;
     }
     .session-column-header p {
-      margin: 8px 0 0;
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.4;
+      margin: 5px 0 0;
+      font-size: 10px;
+      color: rgba(17,17,17,0.72);
+      line-height: 1.35;
+      font-weight: 600;
     }
-    .session-device-stack {
+    .session-device-stack,
+    .kanban-column-body {
       display: grid;
-      gap: 8px;
-      padding: 10px;
+      gap: 6px;
+      padding: 8px;
       align-content: start;
-      max-height: 560px;
+      max-height: 590px;
       overflow-y: auto;
     }
-    .session-device-card, .session-empty-card {
-      background: var(--panel-2);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 12px;
-      padding: 10px;
+    .session-device-card,
+    .session-empty-card,
+    .kanban-card {
+      background: var(--live-slot);
+      border: 1px solid rgba(0,0,0,0.2);
+      border-radius: 2px;
+      padding: 8px;
       display: grid;
-      gap: 4px;
-      line-height: 1.35;
+      gap: 3px;
+      line-height: 1.28;
+      min-height: 46px;
     }
-    .session-device-card.is-rack {
-      background: rgba(245,166,35,0.08);
-      border-color: rgba(245,166,35,0.18);
+    .session-device-card.is-rack,
+    .kanban-card.is-rack {
+      background: var(--live-rack);
+      border-color: #b77900;
+      box-shadow: inset 0 0 0 1px rgba(245,160,0,0.16);
     }
-    .session-device-card strong {
-      font-size: 12px;
-    }
-    .session-device-card span, .session-empty-card {
-      color: var(--muted);
+    .session-device-card strong,
+    .kanban-card strong {
       font-size: 11px;
+      color: var(--live-text);
     }
-    .kanban-scroll {
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding-bottom: 4px;
+    .session-device-card span,
+    .kanban-card span,
+    .session-empty-card {
+      color: var(--live-muted);
+      font-size: 10px;
     }
     .kanban-grid {
       display: grid;
       grid-auto-flow: column;
-      grid-auto-columns: minmax(190px, 220px);
-      gap: 12px;
-      align-items: start;
-    }
-    .kanban-column {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      min-height: 260px;
-      display: grid;
-      grid-template-rows: auto 1fr;
-    }
-    .kanban-column-header {
-      padding: 12px;
-      display: flex;
-      justify-content: space-between;
+      grid-auto-columns: minmax(185px, 216px);
       gap: 8px;
       align-items: start;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .kanban-column-header strong {
-      font-size: 13px;
-      line-height: 1.3;
-      word-break: break-word;
-    }
-    .kanban-column-body {
-      display: grid;
-      gap: 8px;
-      padding: 10px;
-      align-content: start;
-      max-height: 580px;
-      overflow-y: auto;
-    }
-    .kanban-card {
-      background: var(--panel-2);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 12px;
-      padding: 10px;
-      display: grid;
-      gap: 4px;
-    }
-    .kanban-card strong {
-      font-size: 12px;
-      line-height: 1.35;
-    }
-    .kanban-card span {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.35;
     }
     .kanban-summary-card {
-      background: rgba(255,255,255,0.03);
-    }
-    .kanban-card.is-rack {
-      background: rgba(245,166,35,0.08);
-      border-color: rgba(245,166,35,0.18);
+      background: #d6d6d6;
     }
     .metro-list {
       display: grid;
-      gap: 12px;
+      gap: 8px;
     }
     .metro-row {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.09), transparent 34%),
+        var(--live-panel-light);
+      border: 1px solid var(--live-border);
+      border-radius: 4px;
+      padding: 10px;
       display: grid;
-      grid-template-columns: 180px minmax(0, 1fr);
-      gap: 14px;
+      grid-template-columns: 168px minmax(0, 1fr);
+      gap: 12px;
       align-items: start;
     }
     .metro-track-name strong {
       display: block;
-      font-size: 13px;
-      line-height: 1.3;
-      margin-bottom: 4px;
+      font-size: 12px;
+      line-height: 1.25;
+      margin-bottom: 3px;
     }
     .metro-track-name span {
-      color: var(--muted);
-      font-size: 11px;
-    }
-    .metro-line-shell {
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding-bottom: 4px;
+      color: var(--live-muted);
+      font-size: 10px;
     }
     .metro-line {
       display: flex;
-      gap: 18px;
+      gap: 16px;
       align-items: center;
       min-width: max-content;
-      padding: 6px 0;
+      padding: 8px 0 4px;
     }
     .metro-stop {
       position: relative;
-      min-width: 120px;
-      max-width: 160px;
+      min-width: 116px;
+      max-width: 156px;
       padding-top: 14px;
       display: grid;
-      gap: 4px;
-      color: var(--text);
+      gap: 3px;
+      color: var(--live-text);
     }
     .metro-stop::before {
       content: "";
       position: absolute;
-      top: 6px;
+      top: 5px;
       left: 0;
-      right: -18px;
-      height: 3px;
-      background: rgba(126,199,255,0.36);
+      right: -16px;
+      height: 2px;
+      background: rgba(0, 0, 0, 0.26);
       z-index: 0;
     }
     .metro-stop:last-child::before {
@@ -1322,95 +1028,103 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       z-index: 1;
     }
     .metro-stop strong {
-      font-size: 12px;
-      line-height: 1.3;
+      font-size: 11px;
+      line-height: 1.2;
     }
     .metro-stop small {
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.3;
+      color: var(--live-muted);
+      font-size: 9px;
+      line-height: 1.25;
     }
     .metro-dot {
-      width: 12px;
-      height: 12px;
+      width: 11px;
+      height: 11px;
       border-radius: 999px;
-      background: var(--accent-2);
-      border: 2px solid #141414;
-      box-shadow: 0 0 0 2px rgba(126,199,255,0.22);
+      background: var(--live-cyan);
+      border: 1px solid rgba(17,17,17,0.6);
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.12);
     }
     .metro-stop.is-rack .metro-dot {
-      background: var(--accent);
-      box-shadow: 0 0 0 2px rgba(245,166,35,0.22);
+      background: var(--live-orange);
     }
     .metro-stop.is-track .metro-dot {
-      background: #f1f1f1;
-      box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+      background: #f3f3f3;
     }
     .metro-stop.is-empty .metro-dot {
-      background: #777;
-      box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
+      background: #8d8d8d;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       min-width: 760px;
+      color: var(--live-text);
     }
     thead th {
       position: sticky;
       top: 0;
-      background: var(--panel-3);
-      color: var(--accent-2);
+      background: var(--live-panel-deep);
+      color: #f2f2f2;
       text-align: left;
-      padding: 10px 12px;
-      font-size: 10px;
+      padding: 9px 10px;
+      font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--live-border);
     }
     tbody td {
-      padding: 10px 12px;
-      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 8px 10px;
+      border-top: 1px solid rgba(0,0,0,0.12);
       vertical-align: top;
-      line-height: 1.45;
+      line-height: 1.4;
+      background: rgba(255,255,255,0.06);
+    }
+    tbody tr:nth-child(even) td {
+      background: rgba(0,0,0,0.03);
     }
     tbody tr:hover td {
-      background: rgba(255,255,255,0.02);
+      background: rgba(245,160,0,0.1);
     }
     .kind-badge {
       display: inline-flex;
       align-items: center;
       border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 10px;
+      padding: 2px 7px;
+      font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      border: 1px solid var(--border);
-      background: #303030;
+      border: 1px solid rgba(0,0,0,0.22);
+      background: rgba(255,255,255,0.34);
+      font-weight: 700;
+      color: var(--live-text);
     }
-    .kind-return { border-color: rgba(126,199,255,0.4); color: var(--accent-2); }
-    .kind-master { border-color: rgba(245,166,35,0.4); color: var(--accent); }
-    .kind-track { border-color: rgba(255,255,255,0.14); }
+    .kind-return { border-color: rgba(0, 122, 140, 0.42); background: rgba(0, 207, 232, 0.16); }
+    .kind-master { border-color: rgba(150, 65, 135, 0.42); background: rgba(210, 110, 207, 0.16); }
+    .kind-track { border-color: rgba(0,0,0,0.18); }
     .device-list {
       display: grid;
-      gap: 10px;
+      gap: 8px;
     }
     .device-card {
-      padding: 12px;
+      padding: 10px;
+      background: #c3c3c3;
     }
     .device-card-header {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       align-items: start;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     .device-card-header h3 {
       margin: 0;
-      font-size: 14px;
+      font-size: 12px;
+      line-height: 1.2;
     }
     .device-card-header p {
-      margin: 4px 0 0;
-      color: var(--muted);
+      margin: 3px 0 0;
+      color: var(--live-muted);
+      font-size: 10px;
+      line-height: 1.25;
     }
     .chip-group {
       display: flex;
@@ -1418,56 +1132,57 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       gap: 6px;
     }
     .chip {
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #303030;
-      border: 1px solid var(--border);
-      line-height: 1.35;
+      padding: 5px 8px;
+      border-radius: 2px;
+      background: #d5d5d5;
+      border: 1px solid rgba(0,0,0,0.18);
+      line-height: 1.25;
+      font-size: 10px;
+      min-height: 24px;
+      display: inline-flex;
+      align-items: center;
     }
     .chip-rack {
-      background: rgba(245,166,35,0.12);
-      border-color: rgba(245,166,35,0.22);
-    }
-    .chip-warning {
-      background: rgba(255,178,107,0.1);
-      border-color: rgba(255,178,107,0.22);
-      color: #ffd0a6;
+      background: var(--live-rack);
+      border-color: #b77900;
     }
     .rack-summary {
-      margin-top: 10px;
+      margin-top: 8px;
     }
     .empty-inline {
-      color: var(--muted);
+      color: var(--live-muted);
+      font-size: 10px;
     }
     .file-group {
-      padding: 12px;
+      padding: 10px;
+      background: #c2c2c2;
     }
     .file-group-list {
       display: grid;
-      gap: 8px;
+      gap: 6px;
     }
     .file-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: var(--panel-2);
-      border: 1px solid rgba(255,255,255,0.05);
+      padding: 8px 10px;
+      border-radius: 3px;
+      background: #d3d3d3;
+      border: 1px solid rgba(0,0,0,0.14);
     }
     .file-meta {
       min-width: 0;
     }
     .file-meta strong {
       display: block;
-      font-size: 12px;
+      font-size: 11px;
       margin-bottom: 2px;
     }
     .file-meta span {
       display: block;
-      color: var(--muted);
-      font-size: 11px;
+      color: var(--live-muted);
+      font-size: 10px;
       overflow-wrap: anywhere;
     }
     .file-actions {
@@ -1477,69 +1192,81 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       flex-shrink: 0;
     }
     .file-status {
-      font-size: 10px;
+      font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: var(--muted);
+      color: var(--live-muted);
+      font-weight: 700;
     }
-    .file-status.is-available { color: #8ad49b; }
-    .file-status.is-missing { color: #d0a18a; }
+    .file-status.is-available { color: #2f5e2f; }
+    .file-status.is-missing { color: #7c5c30; }
     .mini-button {
-      min-height: 28px;
-      padding: 0 12px;
+      min-height: 24px;
+      padding: 0 10px;
+      font-size: 10px;
+      font-weight: 700;
     }
     .empty-state {
-      padding: 18px 16px;
+      padding: 14px 14px;
       display: grid;
       gap: 6px;
-      color: var(--muted);
+      color: var(--live-muted);
+      background: #cfcfcf;
     }
     .footer {
-      padding: 10px 12px;
+      padding: 8px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
+      background: linear-gradient(180deg, #b2b2b2, #aaaaaa);
     }
     .footer small {
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.45;
+      color: var(--live-muted);
+      font-size: 9px;
+      line-height: 1.35;
       max-width: 60%;
     }
     .footer-actions {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
     }
     .close-button, .cancel-button {
-      min-height: 30px;
-      padding: 0 12px;
+      min-height: 28px;
+      padding: 0 11px;
+      font-size: 10px;
+      font-weight: 700;
     }
     .cancel-button {
-      color: var(--muted);
-      background: linear-gradient(180deg, #2f2f2f, #292929);
+      color: var(--live-text);
+      background: linear-gradient(180deg, #b8b8b8, #a5a5a5);
     }
     .footer a {
-      color: #7c8799;
+      color: rgba(17,17,17,0.55);
       text-decoration: none;
-      font-size: 10px;
+      font-size: 9px;
       white-space: nowrap;
     }
     .footer a:hover {
-      color: var(--accent);
+      color: var(--live-orange-deep);
+    }
+    @media (max-width: 1024px) {
+      .hero {
+        flex-direction: column;
+        align-items: start;
+      }
+      .hero-meta {
+        grid-auto-flow: row;
+        gap: 4px;
+      }
     }
     @media (max-width: 860px) {
       .overview-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
-      .hero {
-        flex-direction: column;
-        align-items: start;
-      }
       .hero-meta, .footer small {
         max-width: none;
-        text-align: left;
       }
       .footer {
         flex-direction: column;
@@ -1563,7 +1290,6 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
         <div>Set: ${escapeHtml(model.setName ?? "Untitled Set")}</div>
         <div>Export: ${escapeHtml(formatExportDate(model.exportedAt))}</div>
         <div>Mode: ${escapeHtml(model.scanMode)}</div>
-        ${renderRoutingHealthBadge(model)}
       </div>
     </section>
 
@@ -1579,7 +1305,6 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-kanban">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-metro">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-outputs">
-    <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-routing">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-devices">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-files">
     <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-overview">
@@ -1589,7 +1314,6 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       <label class="tab-label" for="internal-tab-kanban">Kanban</label>
       <label class="tab-label" for="internal-tab-metro">Git / Metro</label>
       <label class="tab-label" for="internal-tab-outputs">Outputs</label>
-      <label class="tab-label" for="internal-tab-routing">Routing</label>
       <label class="tab-label" for="internal-tab-devices">Devices</label>
       <label class="tab-label" for="internal-tab-files">Files</label>
       <label class="tab-label" for="internal-tab-overview">Overview</label>
@@ -1610,9 +1334,6 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       </div>
       <div class="panel panel-outputs">
         ${renderOutputs(model)}
-      </div>
-      <div class="panel panel-routing">
-        ${renderRouting(model)}
       </div>
       <div class="panel panel-devices">
         ${renderDevices(model)}

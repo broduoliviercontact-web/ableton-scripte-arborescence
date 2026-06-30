@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "exportedAt": "2026-06-30T13:27:11.165Z",
+  "exportedAt": "2026-06-30T12:02:51.884Z",
   "set": {
     "name": null,
     "tempo": 133.5
@@ -186,14 +186,14 @@
         }
       ],
       "routing": {
-        "source": "manual",
+        "source": "none",
         "audioFrom": null,
         "audioTo": null,
         "midiFrom": null,
         "midiTo": null,
         "monitor": null,
         "group": null,
-        "notes": "Fill manually from Ableton I/O"
+        "notes": ""
       }
     },
     {
@@ -230,14 +230,14 @@
         }
       ],
       "routing": {
-        "source": "manual",
+        "source": "none",
         "audioFrom": null,
         "audioTo": null,
         "midiFrom": null,
         "midiTo": null,
         "monitor": null,
         "group": null,
-        "notes": "Fill manually from Ableton I/O"
+        "notes": ""
       }
     },
     {
@@ -400,14 +400,14 @@
         }
       ],
       "routing": {
-        "source": "manual",
+        "source": "none",
         "audioFrom": null,
         "audioTo": null,
         "midiFrom": null,
         "midiTo": null,
         "monitor": null,
         "group": null,
-        "notes": "Fill manually from Ableton I/O"
+        "notes": ""
       }
     },
     {
@@ -812,14 +812,14 @@
         }
       ],
       "routing": {
-        "source": "manual",
+        "source": "none",
         "audioFrom": null,
         "audioTo": null,
         "midiFrom": null,
         "midiTo": null,
         "monitor": null,
         "group": null,
-        "notes": "Fill manually from Ableton I/O"
+        "notes": ""
       }
     },
     {
@@ -1364,14 +1364,14 @@
         }
       ],
       "routing": {
-        "source": "manual",
+        "source": "none",
         "audioFrom": null,
         "audioTo": null,
         "midiFrom": null,
         "midiTo": null,
         "monitor": null,
         "group": null,
-        "notes": "Fill manually from Ableton I/O"
+        "notes": ""
       }
     },
     {
@@ -2190,14 +2190,14 @@
         }
       ],
       "routing": {
-        "source": "manual",
+        "source": "none",
         "audioFrom": null,
         "audioTo": null,
         "midiFrom": null,
         "midiTo": null,
         "monitor": null,
         "group": null,
-        "notes": "Fill manually from Ableton I/O"
+        "notes": ""
       }
     }
   ],
@@ -2596,62 +2596,46 @@
   },
   "manualRouting": {
     "status": "loaded",
-    "stale": true,
-    "setMatch": true,
+    "stale": false,
+    "setMatch": false,
     "sourcePath": "/Users/jeanclaude/Documents/ableton scripte arborescence/exports/routing-overrides.json",
-    "sourceModifiedAt": "2026-06-30T12:08:07.267Z",
-    "sessionMapModifiedAt": "2026-06-30T13:18:32.895Z",
+    "sourceModifiedAt": "2026-06-30T10:04:50.607Z",
+    "sessionMapModifiedAt": "2026-06-30T09:58:43.228Z",
     "currentTrackCount": 9,
-    "overrideTrackCount": 9,
-    "missingFromCurrent": [],
-    "missingFromOverrides": [],
+    "overrideTrackCount": 12,
+    "missingFromCurrent": [
+      "1-505 Core Kit",
+      "2-AG Techno Kit",
+      "3-808 Drifter",
+      "4-Audio",
+      "5-Audio",
+      "6-Audio",
+      "7-Alien Army",
+      "8-E-Piano Faceplant",
+      "9-Balafon Bright"
+    ],
+    "missingFromOverrides": [
+      "1 Drift",
+      "2 Drift",
+      "3-Group",
+      "4-Beastly Kit",
+      "5-909 Core Kit",
+      "6-Basic Fine Line Bass"
+    ],
     "warnings": [
-      "routing-overrides.json is older than session-map.json. Run npm run refresh:routing-overrides."
+      "Manual routing override references missing track: 1-505 Core Kit",
+      "Manual routing override references missing track: 2-AG Techno Kit",
+      "Manual routing override references missing track: 3-808 Drifter",
+      "Manual routing override references missing track: 4-Audio",
+      "Manual routing override references missing track: 5-Audio",
+      "Manual routing override references missing track: 6-Audio",
+      "Manual routing override references missing track: 7-Alien Army",
+      "Manual routing override references missing track: 8-E-Piano Faceplant",
+      "Manual routing override references missing track: 9-Balafon Bright",
+      "Current Set has tracks missing from routing-overrides.json: 1 Drift, 2 Drift, 3-Group, 4-Beastly Kit, 5-909 Core Kit, 6-Basic Fine Line Bass"
     ],
     "tracks": {
-      "1 Drift": {
-        "kind": "audio",
-        "midiFrom": null,
-        "midiTo": null,
-        "audioFrom": null,
-        "audioTo": null,
-        "monitor": null,
-        "sends": {
-          "A-Reverb": null,
-          "B-Delay": null
-        },
-        "group": null,
-        "notes": "Fill manually from Ableton I/O"
-      },
-      "2 Drift": {
-        "kind": "audio",
-        "midiFrom": null,
-        "midiTo": null,
-        "audioFrom": null,
-        "audioTo": null,
-        "monitor": null,
-        "sends": {
-          "A-Reverb": null,
-          "B-Delay": null
-        },
-        "group": null,
-        "notes": "Fill manually from Ableton I/O"
-      },
-      "3-Group": {
-        "kind": "group",
-        "midiFrom": null,
-        "midiTo": null,
-        "audioFrom": null,
-        "audioTo": null,
-        "monitor": null,
-        "sends": {
-          "A-Reverb": null,
-          "B-Delay": null
-        },
-        "group": null,
-        "notes": "Fill manually from Ableton I/O"
-      },
-      "4-Beastly Kit": {
+      "1-505 Core Kit": {
         "kind": "midi",
         "midiFrom": null,
         "midiTo": null,
@@ -2665,7 +2649,7 @@
         "group": null,
         "notes": "Fill manually from Ableton I/O"
       },
-      "5-909 Core Kit": {
+      "2-AG Techno Kit": {
         "kind": "midi",
         "midiFrom": null,
         "midiTo": null,
@@ -2679,7 +2663,91 @@
         "group": null,
         "notes": "Fill manually from Ableton I/O"
       },
-      "6-Basic Fine Line Bass": {
+      "3-808 Drifter": {
+        "kind": "midi",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "4-Audio": {
+        "kind": "audio",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "5-Audio": {
+        "kind": "audio",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "6-Audio": {
+        "kind": "audio",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "7-Alien Army": {
+        "kind": "midi",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "8-E-Piano Faceplant": {
+        "kind": "midi",
+        "midiFrom": null,
+        "midiTo": null,
+        "audioFrom": null,
+        "audioTo": null,
+        "monitor": null,
+        "sends": {
+          "A-Reverb": null,
+          "B-Delay": null
+        },
+        "group": null,
+        "notes": "Fill manually from Ableton I/O"
+      },
+      "9-Balafon Bright": {
         "kind": "midi",
         "midiFrom": null,
         "midiTo": null,

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "exportedAt": "2026-06-30T13:27:11.165Z",
+  "exportedAt": "2026-06-30T13:18:32.848Z",
   "set": {
     "name": null,
     "tempo": 133.5
@@ -2600,7 +2600,7 @@
     "setMatch": true,
     "sourcePath": "/Users/jeanclaude/Documents/ableton scripte arborescence/exports/routing-overrides.json",
     "sourceModifiedAt": "2026-06-30T12:08:07.267Z",
-    "sessionMapModifiedAt": "2026-06-30T13:18:32.895Z",
+    "sessionMapModifiedAt": "2026-06-30T13:17:33.078Z",
     "currentTrackCount": 9,
     "overrideTrackCount": 9,
     "missingFromCurrent": [],

@@ -977,20 +977,54 @@ footer a:hover { color: var(--orange); }
       ).join("") + '</div>';
     };
 
+    const manualConnectionsList = (track) => {
+      const items = asArray(manualRouting.connections).filter((connection) =>
+        connection?.from === track.name || connection?.to === track.name
+      );
+      if (!items.length) return "";
+      return '<div class="track-detail"><span class="detail-label">Manual Connections · ' + items.length + '</span>' +
+        '<div class="send-list">' + items.map((connection) =>
+          '<span class="send-chip"><b>' + escapeHtml(connection.type || "link") + '</b><em>' +
+          escapeHtml((connection.from || "?") + " → " + (connection.to || "?") + (connection.label ? " · " + connection.label : "")) +
+          '</em></span>'
+        ).join("") + '</div></div>';
+    };
+
     const trackCard = (track, ordinal, displayIndex) => {
+        const manualRoutingValues = effectiveManualRouting(track);
+        const manualBadge = manualRoutingValues.source === "MANUAL"
+          ? '<span class="kind-tag manual-tag">MANUAL</span>'
+          : "";
+        const manualRoutingBlock = manualRoutingValues.source === "MANUAL"
+          ? '<div class="routing-grid manual-routing-grid">' +
+              '<div><span>MIDI From</span><strong>' + escapeHtml(manualRoutingValues.midiFrom) + '</strong></div>' +
+              '<div><span>MIDI To</span><strong>' + escapeHtml(manualRoutingValues.midiTo) + '</strong></div>' +
+              '<div><span>Audio From</span><strong>' + escapeHtml(manualRoutingValues.audioFrom) + '</strong></div>' +
+              '<div><span>Audio To</span><strong>' + escapeHtml(manualRoutingValues.audioTo) + '</strong></div>' +
+              '<div><span>Monitor</span><strong>' + escapeHtml(manualRoutingValues.monitor) + '</strong></div>' +
+              '<div><span>Source</span><strong>' + escapeHtml(manualRoutingValues.source) + '</strong></div>' +
+            '</div>'
+          : "";
+        const notesBlock = manualRoutingValues.source === "MANUAL" && manualRoutingValues.notes !== "—"
+          ? '<div class="track-detail"><span class="detail-label">Manual Routing Notes</span><div class="empty-state compact">' + escapeHtml(manualRoutingValues.notes) + '</div></div>'
+          : "";
+
         return '<article class="track-card kind-' + escapeHtml(track.kind) + '" style="--delay:' + Math.min(ordinal * 35, 420) + 'ms">' +
         '<div class="track-rail"><span>' + escapeHtml(displayIndex) + '</span></div>' +
         '<div class="track-body">' +
           '<header class="track-header">' +
-            '<div><span class="kind-tag">' + escapeHtml(track.kind) + '</span><h3>' + escapeHtml(track.name) + '</h3></div>' +
+            '<div><span class="kind-tag">' + escapeHtml(track.kind) + '</span>' + manualBadge + '<h3>' + escapeHtml(track.name) + '</h3></div>' +
             '<div class="track-state" aria-label="État de la piste">' + stateLeds(track) + '</div>' +
           '</header>' +
           '<div class="routing-grid">' +
             '<div><span>IN</span><strong>' + escapeHtml(routingText(track.input)) + '</strong></div>' +
             '<div><span>OUT</span><strong>' + escapeHtml(routingText(track.output)) + '</strong></div>' +
           '</div>' +
+          manualRoutingBlock +
           '<div class="track-detail"><span class="detail-label">Device chain · ' + countDevicesDeep(track.devices) + '</span>' + deviceChain(track.devices) + '</div>' +
           '<div class="track-detail sends-row"><span class="detail-label">Sends · ' + asArray(track.sends).length + '</span>' + sendsList(track.sends) + '</div>' +
+          manualConnectionsList(track) +
+          notesBlock +
         '</div>' +
       '</article>';
       };
@@ -1041,10 +1075,38 @@ footer a:hover { color: var(--orange); }
     document.getElementById("session-sections").innerHTML =
       '<section class="track-section">' +
         '<div class="section-heading"><span>SET</span><h2>Ordre du Set</h2><i></i><b>' + sessionOrderTracks.length + '</b></div>' +
+        (manualRouting.status !== "missing"
+          ? '<div class="diagnostic-empty"><strong>Manual routing: ' + escapeHtml(manualRouting.status.toUpperCase()) + ' · stale: ' + escapeHtml(manualRouting.stale ? "YES" : "NO") + ' · set match: ' + escapeHtml(manualRouting.setMatch ? "OK" : "MISMATCH") + '</strong><span>' +
+            (manualRouting.warnings?.length
+              ? escapeHtml(manualRouting.warnings.join(" · "))
+              : 'routing-overrides.json loaded') +
+            '</span></div>'
+          : '') +
+        (manualRouting.status !== "missing"
+          ? '<div class="track-detail"><span class="detail-label">Manual Routing Health</span>' +
+            '<div class="routing-grid manual-routing-grid">' +
+              '<div><span>Status</span><strong>' + escapeHtml(manualRouting.status.toUpperCase()) + '</strong></div>' +
+              '<div><span>Stale</span><strong>' + escapeHtml(manualRouting.stale ? "YES" : "NO") + '</strong></div>' +
+              '<div><span>Set Match</span><strong>' + escapeHtml(manualRouting.setMatch ? "OK" : "MISMATCH") + '</strong></div>' +
+              '<div><span>Warnings</span><strong>' + escapeHtml(String((manualRouting.warnings || []).length)) + '</strong></div>' +
+            '</div>' +
+            ((manualRouting.stale || !manualRouting.setMatch)
+              ? '<div class="empty-state compact">routing-overrides.json may not match the current Live Set. Run <code>npm run refresh:routing-overrides</code>.</div>'
+              : '') +
+            '</div>'
+          : '') +
         '<div class="track-stack">' + (sessionOrderTracks.length
           ? renderSessionOrder()
           : '<div class="empty-section">No tracks in this section</div>') +
         '</div>' +
+        (asArray(manualRouting.connections).length
+          ? '<div class="track-detail"><span class="detail-label">Manual Connections · ' + manualRouting.connections.length + '</span>' +
+            '<div class="send-list">' + manualRouting.connections.map((connection) =>
+              '<span class="send-chip"><b>' + escapeHtml(connection.type || "link") + '</b><em>' +
+              escapeHtml((connection.from || "?") + " → " + (connection.to || "?") + (connection.label ? " · " + connection.label : "")) +
+              '</em></span>'
+            ).join("") + '</div></div>'
+          : '') +
         '</section>';
 
     const preferredMode = (() => {

@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createInternalViewerHtml, type InternalViewerModel } from "../extension/src/internal-viewer/template.js";
 
-const views = ["session", "kanban", "metro", "outputs", "routing", "devices", "files", "overview"] as const;
+const views = ["session", "kanban", "metro", "outputs", "devices", "files", "overview"] as const;
 
 const columns: InternalViewerModel["sessionPreviewColumns"] = [
   { index: 0, name: "DRUMS", kind: "group", sectionType: "track", deviceCount: 2, sendCount: 2, rackCount: 1, deviceCards: [
@@ -101,10 +101,7 @@ const model: InternalViewerModel = {
   ],
   sessionPreviewColumns: columns,
   outputs,
-  connections: [
-    { from: "Kick — Analog", to: "DRUMS", type: "audio", label: "Bus" },
-    { from: "Percussion", to: "DRUMS", type: "audio", label: "Bus" },
-  ],
+  connections: [],
   manualRoutingStatus: "loaded",
   manualRoutingStale: false,
   manualRoutingSetMatch: true,
@@ -131,44 +128,6 @@ const model: InternalViewerModel = {
   internalVisualPreviewEnabled: true,
 };
 
-const routingVariants = {
-  ok: {},
-  missing: {
-    manualRoutingStatus: "missing",
-    manualRoutingStale: false,
-    manualRoutingSetMatch: false,
-    manualRoutingWarnings: [],
-    routingOverridesExists: false,
-    routingOverridesModifiedAt: null,
-    missingFromCurrent: [],
-    missingFromOverrides: [],
-  },
-  stale: {
-    manualRoutingStatus: "loaded",
-    manualRoutingStale: true,
-    manualRoutingSetMatch: true,
-    manualRoutingWarnings: ["routing-overrides.json is older than session-map.json. Run npm run refresh:routing-overrides."],
-  },
-  mismatch: {
-    manualRoutingStatus: "loaded",
-    manualRoutingStale: false,
-    manualRoutingSetMatch: false,
-    manualRoutingWarnings: ["Current Set has tracks missing from routing-overrides.json: New Bass, New Lead"],
-    missingFromCurrent: ["1-MIDI", "2-Dexed"],
-    missingFromOverrides: ["New Bass", "New Lead"],
-  },
-  invalid: {
-    manualRoutingStatus: "invalid",
-    manualRoutingStale: false,
-    manualRoutingSetMatch: false,
-    manualRoutingWarnings: ["routing-overrides.json is invalid."],
-    routingOverridesExists: true,
-    routingOverridesModifiedAt: "2026-06-30T18:41:00+02:00",
-    missingFromCurrent: [],
-    missingFromOverrides: [],
-  },
-} as const;
-
 const previewScript = `<script>
     (() => {
       const views = ${JSON.stringify(views)};
@@ -192,17 +151,9 @@ const previewStyles = `<style>
 const outputDirectory = fileURLToPath(new URL("./", import.meta.url));
 await mkdir(outputDirectory, { recursive: true });
 
-for (const [variantName, variantPatch] of Object.entries(routingVariants)) {
-  const variantModel: InternalViewerModel = {
-    ...model,
-    ...variantPatch,
-  };
-  const html = createInternalViewerHtml(variantModel)
-    .replace("</head>", `${previewStyles}</head>`)
-    .replace("</body>", `${previewScript}</body>`);
-  const fileName = variantName === "ok" ? "index.html" : `index-${variantName}.html`;
-  await writeFile(fileURLToPath(new URL(`./${fileName}`, import.meta.url)), html, "utf8");
-}
+const html = createInternalViewerHtml(model)
+  .replace("</head>", `${previewStyles}</head>`)
+  .replace("</body>", `${previewScript}</body>`);
+await writeFile(fileURLToPath(new URL("./index.html", import.meta.url)), html, "utf8");
 
 console.log("Generated internal-viewer-preview/index.html (1400x950)");
-console.log("Generated routing health previews: index-missing.html, index-stale.html, index-mismatch.html, index-invalid.html");

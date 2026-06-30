@@ -2,7 +2,6 @@ import { access, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import type { ExtensionContext } from "@ableton-extensions/sdk";
 import { resolveExportLocations } from "../exportJson.js";
-import { routingOverridesPath } from "../routingOverrides.js";
 import type { DeviceInfo, SessionMap, TrackInfo } from "../types.js";
 import {
   createInternalViewerHtml,
@@ -70,10 +69,6 @@ function formatRoutingLabel(track: TrackInfo["input"] | TrackInfo["output"]): st
   const channel = formatRoutingPart(track.channel);
   if (!type && !channel) return ROUTING_NOT_EXPOSED;
   return [type, channel].filter(Boolean).join(" · ");
-}
-
-function formatManualRouting(value: string | null | undefined): string {
-  return value && value.trim().length > 0 ? value.trim() : "—";
 }
 
 function formatSendSummary(track: TrackInfo): string {
@@ -204,39 +199,32 @@ async function buildLinkTargets(exportDirectory: string, jsonPath: string, htmlP
       group: "Core Outputs",
     },
     {
-      key: "routing-overrides",
-      label: "Open routing-overrides.json",
-      path: routingOverridesPath(exportDirectory),
-      openLabel: "routing-overrides.json",
-      group: "Routing / Diagnostics",
-    },
-    {
       key: "capability-matrix-html",
       label: "Open SDK Capability Matrix",
       path: join(exportDirectory, "sdk-capability-matrix.html"),
       openLabel: "SDK Capability Matrix",
-      group: "Routing / Diagnostics",
+      group: "Diagnostics",
     },
     {
       key: "capability-matrix-json",
       label: "Open SDK Capability Matrix JSON",
       path: join(exportDirectory, "sdk-capability-matrix.json"),
       openLabel: "SDK Capability Matrix JSON",
-      group: "Routing / Diagnostics",
+      group: "Diagnostics",
     },
     {
       key: "sdk-diagnostic",
       label: "Open sdk-diagnostic.json",
       path: join(exportDirectory, "sdk-diagnostic.json"),
       openLabel: "sdk-diagnostic.json",
-      group: "Routing / Diagnostics",
+      group: "Diagnostics",
     },
     {
       key: "rack-diagnostic",
       label: "Open rack-diagnostic.json",
       path: join(exportDirectory, "rack-diagnostic.json"),
       openLabel: "rack-diagnostic.json",
-      group: "Routing / Diagnostics",
+      group: "Diagnostics",
     },
     {
       key: "flow-html",
@@ -320,49 +308,42 @@ async function buildLinkTargets(exportDirectory: string, jsonPath: string, htmlP
 
 function buildOutputsModel(sessionMap: SessionMap | null): {
   outputs: InternalViewerOutputRow[];
-  connections: InternalViewerModel["connections"];
   hasMissingRoutingData: boolean;
 } {
   console.log("[Ableton Session Mapper] Internal Viewer outputs model started");
 
   if (!sessionMap) {
     console.log("[Ableton Session Mapper] Internal Viewer outputs model completed");
-    return { outputs: [], connections: [], hasMissingRoutingData: false };
+    return { outputs: [], hasMissingRoutingData: false };
   }
 
   const outputs = orderedTracks(sessionMap).map(({ track, sectionType }) => ({
     index: track.index,
     name: track.name,
     kind: formatTrackKind(track.kind),
-    midiFrom: formatManualRouting(track.routing?.midiFrom),
-    midiTo: formatManualRouting(track.routing?.midiTo),
-    audioFrom: track.routing?.source === "manual" ? formatManualRouting(track.routing?.audioFrom) : formatRoutingLabel(track.input),
-    audioTo: track.routing?.source === "manual" ? formatManualRouting(track.routing?.audioTo) : formatRoutingLabel(track.output),
-    monitor: formatManualRouting(track.routing?.monitor),
-    source: track.routing?.source === "manual" ? "MANUAL" : track.routing?.source === "sdk" ? "SDK" : "NONE",
+    midiFrom: "—",
+    midiTo: "—",
+    audioFrom: formatRoutingLabel(track.input),
+    audioTo: formatRoutingLabel(track.output),
+    monitor: "—",
+    source: "SDK",
     sends: formatSendSummary(track),
     sectionType,
-  }));
-  const connections = (sessionMap.manualRouting?.connections ?? []).map((connection) => ({
-    from: connection.from,
-    to: connection.to,
-    type: connection.type,
-    label: connection.label,
   }));
 
   const hasMissingRoutingData =
     outputs.length > 0 &&
     outputs.every(
-      (row) => row.audioFrom === ROUTING_NOT_EXPOSED && row.audioTo === ROUTING_NOT_EXPOSED && row.source !== "MANUAL",
+      (row) => row.audioFrom === ROUTING_NOT_EXPOSED && row.audioTo === ROUTING_NOT_EXPOSED,
     );
 
   if (hasMissingRoutingData) {
-    console.log("[Ableton Session Mapper] Internal Viewer missing routing data detected");
+  console.log("[Ableton Session Mapper] Internal Viewer missing routing data detected");
   }
 
   console.log("[Ableton Session Mapper] Internal Viewer outputs built");
   console.log("[Ableton Session Mapper] Internal Viewer outputs model completed");
-  return { outputs, connections, hasMissingRoutingData };
+  return { outputs, hasMissingRoutingData };
 }
 
 function buildDevicesModel(sessionMap: SessionMap | null): InternalViewerDeviceTrack[] {
@@ -461,7 +442,7 @@ function buildModel(
   );
   const sends = ordered.reduce((sum, track) => sum + track.sends.length, 0);
 
-  const { outputs, connections, hasMissingRoutingData } = buildOutputsModel(sessionMap);
+  const { outputs, hasMissingRoutingData } = buildOutputsModel(sessionMap);
   const deviceTracks = buildDevicesModel(sessionMap);
   const sessionPreviewColumns = buildSessionPreviewColumns(sessionMap);
   const quickLinks: InternalViewerQuickLink[] = links
@@ -509,13 +490,13 @@ function buildModel(
     quickLinks,
     sessionPreviewColumns,
     outputs,
-    connections,
+    connections: [],
     manualRoutingStatus: sessionMap?.manualRouting?.status ?? "missing",
     manualRoutingStale: sessionMap?.manualRouting?.stale ?? false,
     manualRoutingSetMatch: sessionMap?.manualRouting?.setMatch ?? false,
     manualRoutingWarnings: sessionMap?.manualRouting?.warnings ?? [],
-    routingOverridesPath: sessionMap?.manualRouting?.sourcePath ?? routingOverridesPath(exportDirectory),
-    routingOverridesExists: links.some((link) => link.key === "routing-overrides" && link.exists),
+    routingOverridesPath: sessionMap?.manualRouting?.sourcePath ?? "",
+    routingOverridesExists: false,
     routingOverridesModifiedAt: sessionMap?.manualRouting?.sourceModifiedAt ?? null,
     sessionExportComparedAt: sessionMap?.manualRouting?.sessionMapModifiedAt ?? null,
     missingFromCurrent: sessionMap?.manualRouting?.missingFromCurrent ?? [],
