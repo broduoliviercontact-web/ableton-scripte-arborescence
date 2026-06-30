@@ -1,4 +1,4 @@
-import { access, readFile } from "node:fs/promises";
+import { access, readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import type {
   ManualRoutingConnection,
@@ -106,6 +106,7 @@ export async function loadRoutingOverrides(
   exportDirectory: string,
 ): Promise<ManualRoutingState> {
   const sourcePath = routingOverridesPath(exportDirectory);
+  const sessionMapPath = join(exportDirectory, "session-map.json");
   console.log("[Ableton Session Mapper] Load routing overrides started");
   try {
     await access(sourcePath);
@@ -113,7 +114,15 @@ export async function loadRoutingOverrides(
     console.log("[Ableton Session Mapper] Routing overrides missing");
     return {
       status: "missing",
+      stale: false,
+      setMatch: false,
       sourcePath,
+      sourceModifiedAt: null,
+      sessionMapModifiedAt: null,
+      currentTrackCount: 0,
+      overrideTrackCount: 0,
+      missingFromCurrent: [],
+      missingFromOverrides: [],
       warnings: [],
       tracks: {},
       sidechains: [],
@@ -122,6 +131,10 @@ export async function loadRoutingOverrides(
   }
 
   try {
+    const [sourceStats, sessionMapStats] = await Promise.all([
+      stat(sourcePath),
+      stat(sessionMapPath).catch(() => null),
+    ]);
     const raw = await readFile(sourcePath, "utf8");
     const parsed = JSON.parse(raw) as ManualRoutingOverrideFile;
     const warnings: string[] = [];
@@ -139,7 +152,15 @@ export async function loadRoutingOverrides(
     console.log("[Ableton Session Mapper] Routing overrides loaded");
     return {
       status: "loaded",
+      stale: false,
+      setMatch: false,
       sourcePath,
+      sourceModifiedAt: sourceStats.mtime.toISOString(),
+      sessionMapModifiedAt: sessionMapStats?.mtime.toISOString() ?? null,
+      currentTrackCount: 0,
+      overrideTrackCount: Object.keys(tracks).length,
+      missingFromCurrent: [],
+      missingFromOverrides: [],
       warnings,
       tracks,
       sidechains: normalizeSidechains(parsed.sidechains),
@@ -150,7 +171,15 @@ export async function loadRoutingOverrides(
     console.warn(`[Ableton Session Mapper] Routing overrides invalid: ${message}`);
     return {
       status: "invalid",
+      stale: false,
+      setMatch: false,
       sourcePath,
+      sourceModifiedAt: null,
+      sessionMapModifiedAt: null,
+      currentTrackCount: 0,
+      overrideTrackCount: 0,
+      missingFromCurrent: [],
+      missingFromOverrides: [],
       warnings: [`routing-overrides.json invalid: ${message}`],
       tracks: {},
       sidechains: [],
@@ -223,42 +252,94 @@ function orderedTracks(sessionMap: SessionMap): TrackInfo[] {
 function validateRoutingOverrides(
   sessionMap: SessionMap,
   manualRouting: ManualRoutingState,
-): string[] {
+): {
+  warnings: string[];
+  setMatch: boolean;
+  stale: boolean;
+  missingFromCurrent: string[];
+  missingFromOverrides: string[];
+  currentTrackCount: number;
+  overrideTrackCount: number;
+} {
+  console.log("[Ableton Session Mapper] Routing overrides health check started");
   const warnings = [...manualRouting.warnings];
   const ordered = orderedTracks(sessionMap);
-  const trackNames = new Set(ordered.map((track) => track.name));
+  const currentTrackNames = ordered.map((track) => track.name);
+  const overrideTrackNames = Object.keys(manualRouting.tracks);
+  const trackNames = new Set(currentTrackNames);
+  const overrideNameSet = new Set(overrideTrackNames);
+  const pushWarning = (warning: string): void => {
+    if (!warnings.includes(warning)) warnings.push(warning);
+  };
   const duplicateNames = ordered
     .map((track) => track.name)
     .filter((name, index, names) => names.indexOf(name) !== index);
   for (const duplicateName of new Set(duplicateNames)) {
-    warnings.push(`Manual routing override may be ambiguous because track name is duplicated: ${duplicateName}`);
+    pushWarning(`Manual routing override may be ambiguous because track name is duplicated: ${duplicateName}`);
   }
 
-  for (const name of Object.keys(manualRouting.tracks)) {
+  const missingFromCurrent = overrideTrackNames.filter((name) => !trackNames.has(name));
+  const missingFromOverrides = currentTrackNames.filter((name) => !overrideNameSet.has(name));
+
+  for (const name of missingFromCurrent) {
     if (!trackNames.has(name)) {
-      warnings.push(`Manual routing override references missing track: ${name}`);
+      pushWarning(`Manual routing override references missing track: ${name}`);
     }
+  }
+
+  if (missingFromOverrides.length > 0) {
+    pushWarning(
+      `Current Set has tracks missing from routing-overrides.json: ${missingFromOverrides.join(", ")}`,
+    );
   }
 
   for (const connection of manualRouting.connections) {
     if (connection.from && !trackNames.has(connection.from)) {
-      warnings.push(`Manual connection source missing: ${connection.from}`);
+      pushWarning(`Manual connection source missing: ${connection.from}`);
     }
     if (connection.to && !trackNames.has(connection.to)) {
-      warnings.push(`Manual connection target missing: ${connection.to}`);
+      pushWarning(`Manual connection target missing: ${connection.to}`);
     }
   }
 
   for (const sidechain of manualRouting.sidechains) {
     if (sidechain.sourceTrack && !trackNames.has(sidechain.sourceTrack)) {
-      warnings.push(`Manual sidechain source missing: ${sidechain.sourceTrack}`);
+      pushWarning(`Manual sidechain source missing: ${sidechain.sourceTrack}`);
     }
     if (sidechain.targetTrack && !trackNames.has(sidechain.targetTrack)) {
-      warnings.push(`Manual sidechain target missing: ${sidechain.targetTrack}`);
+      pushWarning(`Manual sidechain target missing: ${sidechain.targetTrack}`);
     }
   }
 
-  return warnings;
+  console.log("[Ableton Session Mapper] Routing overrides mtime checked");
+  const stale =
+    manualRouting.status === "loaded" &&
+    Boolean(manualRouting.sourceModifiedAt && manualRouting.sessionMapModifiedAt) &&
+    new Date(manualRouting.sourceModifiedAt!).getTime() < new Date(manualRouting.sessionMapModifiedAt!).getTime();
+
+  if (stale) {
+    pushWarning(
+      "routing-overrides.json is older than session-map.json. Run npm run refresh:routing-overrides.",
+    );
+  }
+
+  const setMatch = missingFromCurrent.length === 0 && missingFromOverrides.length === 0;
+
+  console.log(`[Ableton Session Mapper] Routing overrides stale: ${stale}`);
+  console.log(`[Ableton Session Mapper] Routing overrides set match: ${setMatch}`);
+  console.log(`[Ableton Session Mapper] Missing override tracks: ${missingFromCurrent.length}`);
+  console.log(`[Ableton Session Mapper] Missing current tracks in overrides: ${missingFromOverrides.length}`);
+  console.log("[Ableton Session Mapper] Routing overrides health check completed");
+
+  return {
+    warnings,
+    setMatch,
+    stale,
+    missingFromCurrent,
+    missingFromOverrides,
+    currentTrackCount: currentTrackNames.length,
+    overrideTrackCount: overrideTrackNames.length,
+  };
 }
 
 export function mergeManualRouting(
@@ -266,7 +347,7 @@ export function mergeManualRouting(
   manualRouting: ManualRoutingState,
 ): SessionMap {
   console.log("[Ableton Session Mapper] Merge manual routing started");
-  const warnings = validateRoutingOverrides(sessionMap, manualRouting);
+  const health = validateRoutingOverrides(sessionMap, manualRouting);
 
   const decorateTrack = (track: TrackInfo): TrackInfo => ({
     ...track,
@@ -277,7 +358,13 @@ export function mergeManualRouting(
     ...sessionMap,
     manualRouting: {
       ...manualRouting,
-      warnings,
+      stale: health.stale,
+      setMatch: health.setMatch,
+      currentTrackCount: health.currentTrackCount,
+      overrideTrackCount: health.overrideTrackCount,
+      missingFromCurrent: health.missingFromCurrent,
+      missingFromOverrides: health.missingFromOverrides,
+      warnings: health.warnings,
     },
     tracks: sessionMap.tracks.map(decorateTrack),
     returnTracks: sessionMap.returnTracks.map(decorateTrack),
@@ -285,6 +372,6 @@ export function mergeManualRouting(
   };
 
   console.log("[Ableton Session Mapper] Merge manual routing completed");
-  console.log(`[Ableton Session Mapper] Manual routing warnings: ${warnings.length}`);
+  console.log(`[Ableton Session Mapper] Manual routing warnings: ${health.warnings.length}`);
   return merged;
 }

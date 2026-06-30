@@ -31,7 +31,15 @@ export interface ManualRoutingSidechain {
 
 export interface ManualRoutingState {
   status: "missing" | "loaded" | "invalid";
+  stale: boolean;
+  setMatch: boolean;
   sourcePath: string;
+  sourceModifiedAt: string | null;
+  sessionMapModifiedAt: string | null;
+  currentTrackCount: number;
+  overrideTrackCount: number;
+  missingFromCurrent: string[];
+  missingFromOverrides: string[];
   warnings: string[];
   tracks: Record<string, unknown>;
   sidechains: ManualRoutingSidechain[];
@@ -291,7 +299,15 @@ export function renderTemplate(
     ];
     const manualRouting = session.manualRouting || {
       status: "missing",
+      stale: false,
+      setMatch: false,
       sourcePath: "exports/routing-overrides.json",
+      sourceModifiedAt: null,
+      sessionMapModifiedAt: null,
+      currentTrackCount: 0,
+      overrideTrackCount: 0,
+      missingFromCurrent: [],
+      missingFromOverrides: [],
       warnings: [],
       tracks: {},
       sidechains: [],
@@ -547,11 +563,24 @@ export function renderTemplate(
       '<section class="track-section">' +
         '<div class="section-heading"><span>SET</span><h2>Ordre du Set</h2><i></i><b>' + sessionOrderTracks.length + '</b></div>' +
         (manualRouting.status !== "missing"
-          ? '<div class="diagnostic-empty"><strong>Manual routing: ' + escapeHtml(manualRouting.status.toUpperCase()) + '</strong><span>' +
+          ? '<div class="diagnostic-empty"><strong>Manual routing: ' + escapeHtml(manualRouting.status.toUpperCase()) + ' · stale: ' + escapeHtml(manualRouting.stale ? "YES" : "NO") + ' · set match: ' + escapeHtml(manualRouting.setMatch ? "OK" : "MISMATCH") + '</strong><span>' +
             (manualRouting.warnings?.length
               ? escapeHtml(manualRouting.warnings.join(" · "))
               : 'routing-overrides.json loaded') +
             '</span></div>'
+          : '') +
+        (manualRouting.status !== "missing"
+          ? '<div class="track-detail"><span class="detail-label">Manual Routing Health</span>' +
+            '<div class="routing-grid manual-routing-grid">' +
+              '<div><span>Status</span><strong>' + escapeHtml(manualRouting.status.toUpperCase()) + '</strong></div>' +
+              '<div><span>Stale</span><strong>' + escapeHtml(manualRouting.stale ? "YES" : "NO") + '</strong></div>' +
+              '<div><span>Set Match</span><strong>' + escapeHtml(manualRouting.setMatch ? "OK" : "MISMATCH") + '</strong></div>' +
+              '<div><span>Warnings</span><strong>' + escapeHtml(String((manualRouting.warnings || []).length)) + '</strong></div>' +
+            '</div>' +
+            ((manualRouting.stale || !manualRouting.setMatch)
+              ? '<div class="empty-state compact">routing-overrides.json may not match the current Live Set. Run <code>npm run refresh:routing-overrides</code>.</div>'
+              : '') +
+            '</div>'
           : '') +
         '<div class="track-stack">' + (sessionOrderTracks.length
           ? renderSessionOrder()

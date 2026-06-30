@@ -1,0 +1,187 @@
+{
+  "version": "1.0.0",
+  "exportedAt": "2026-06-30T12:30:00.000Z",
+  "set": {
+    "name": "Test Set",
+    "tempo": 120
+  },
+  "scan": {
+    "mode": "ultra-safe",
+    "maxDeviceDepth": 0,
+    "scanInternalChainDevices": false,
+    "scanNestedRacks": false,
+    "partial": false,
+    "warnings": [],
+    "totalScannedDevices": 0,
+    "maxTotalScannedDevices": 500
+  },
+  "tracks": [
+    {
+      "id": "0",
+      "index": 0,
+      "name": "1-505 Core Kit",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [],
+      "sends": [
+        {
+          "id": "a",
+          "index": 0,
+          "name": "A-Reverb",
+          "value": 0
+        },
+        {
+          "id": "b",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "1",
+      "index": 1,
+      "name": "2-AG Techno Kit",
+      "kind": "midi",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [],
+      "sends": [
+        {
+          "id": "a",
+          "index": 0,
+          "name": "A-Reverb",
+          "value": 0
+        },
+        {
+          "id": "b",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "index": 2,
+      "name": "3-808 Drifter",
+      "kind": "audio",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [],
+      "sends": [
+        {
+          "id": "a",
+          "index": 0,
+          "name": "A-Reverb",
+          "value": 0
+        },
+        {
+          "id": "b",
+          "index": 1,
+          "name": "B-Delay",
+          "value": 0
+        }
+      ]
+    }
+  ],
+  "returnTracks": [
+    {
+      "id": "r0",
+      "index": 0,
+      "name": "A-Reverb",
+      "kind": "return",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [],
+      "sends": []
+    },
+    {
+      "id": "r1",
+      "index": 1,
+      "name": "B-Delay",
+      "kind": "return",
+      "color": null,
+      "isMuted": false,
+      "isSoloed": false,
+      "isArmed": false,
+      "groupTrackId": null,
+      "input": {
+        "type": null,
+        "channel": null
+      },
+      "output": {
+        "type": null,
+        "channel": null
+      },
+      "devices": [],
+      "sends": []
+    }
+  ],
+  "masterTrack": {
+    "id": "m",
+    "index": 0,
+    "name": "Main",
+    "kind": "master",
+    "color": null,
+    "isMuted": false,
+    "isSoloed": false,
+    "isArmed": false,
+    "groupTrackId": null,
+    "input": {
+      "type": null,
+      "channel": null
+    },
+    "output": {
+      "type": null,
+      "channel": null
+    },
+    "devices": [],
+    "sends": []
+  }
+}

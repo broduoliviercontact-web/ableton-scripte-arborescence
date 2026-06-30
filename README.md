@@ -23,6 +23,14 @@ internal-viewer-preview/index.html?view=overview
 
 `npm run generate:internal-viewer-preview` régénère uniquement la page statique sans l’ouvrir. Cette preview réutilise le template de la modale et n’intervient pas dans le comportement de l’extension.
 
+Des variantes de preview du badge routing sont aussi générées :
+
+- `internal-viewer-preview/index.html`
+- `internal-viewer-preview/index-missing.html`
+- `internal-viewer-preview/index-stale.html`
+- `internal-viewer-preview/index-mismatch.html`
+- `internal-viewer-preview/index-invalid.html`
+
 Extension TypeScript pour Ableton Live Extensions SDK. Elle analyse le Set
 courant et écrit une représentation JSON des pistes normales, groupes, retours,
 master, devices, racks, chains, macros lisibles et sends disponibles.
@@ -112,6 +120,7 @@ légère :
 - pas de rendu diagramme complet dans la modale ;
 - les previews internes sont en HTML/CSS simple ;
 - le launcher externe reste disponible en fallback ou en ouverture manuelle.
+- un badge global **Routing health** apparaît directement dans le header.
 
 En usage normal, le menu **Extensions** n'affiche qu'une seule entrée :
 
@@ -578,6 +587,12 @@ Ensuite relancer :
 Le JSON exporté ajoute :
 
 - `manualRouting.status`
+- `manualRouting.stale`
+- `manualRouting.setMatch`
+- `manualRouting.sourceModifiedAt`
+- `manualRouting.sessionMapModifiedAt`
+- `manualRouting.missingFromCurrent`
+- `manualRouting.missingFromOverrides`
 - `manualRouting.warnings`
 - `manualRouting.connections`
 - `track.routing.source`
@@ -634,6 +649,37 @@ Backups :
 - `exports/routing-overrides_YYYY-MM-DD_HH-mm.backup.json`
 
 En cas de collision, un suffixe numérique est ajouté.
+
+### Detecting stale routing overrides
+
+Le projet détecte maintenant automatiquement si `routing-overrides.json` semble
+obsolète pour le Set courant.
+
+Les viewers peuvent afficher :
+
+- `missing`
+- `loaded`
+- `invalid`
+- `stale`
+- `matching current set`
+
+La détection combine :
+
+- la date du dernier `session-map.json` déjà présent avant export ;
+- les noms de pistes du Set courant ;
+- les clés `tracks` présentes dans `routing-overrides.json`.
+
+Workflow recommandé :
+
+1. Dans Live : **Export Session Map**
+2. Si la modale ou le launcher indique `stale` ou `mismatch` :
+
+   ```bash
+   npm run refresh:routing-overrides
+   ```
+
+3. Éditer le fichier si nécessaire
+4. Relancer **Export Session Map**
 
 ### Actions de diagnostic en mode développement
 

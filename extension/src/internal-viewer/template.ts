@@ -87,9 +87,15 @@ export interface InternalViewerModel {
   outputs: InternalViewerOutputRow[];
   connections: InternalViewerConnectionRow[];
   manualRoutingStatus: string;
+  manualRoutingStale: boolean;
+  manualRoutingSetMatch: boolean;
   manualRoutingWarnings: string[];
   routingOverridesPath: string;
   routingOverridesExists: boolean;
+  routingOverridesModifiedAt: string | null;
+  sessionExportComparedAt: string | null;
+  missingFromCurrent: string[];
+  missingFromOverrides: string[];
   sidechains: InternalViewerSidechainRow[];
   deviceTracks: InternalViewerDeviceTrack[];
   files: InternalViewerFileEntry[];
@@ -126,6 +132,81 @@ function truncateLabel(value: string, max = 18): string {
   return value.length <= max ? value : `${value.slice(0, max - 1)}…`;
 }
 
+type RoutingHealthVariant = "success" | "warning" | "danger" | "neutral";
+
+function getRoutingHealth(model: InternalViewerModel): {
+  label: string;
+  variant: RoutingHealthVariant;
+  message: string;
+  isOk: boolean;
+} {
+  if (model.manualRoutingStatus === "missing") {
+    return {
+      label: "Routing missing",
+      variant: "neutral",
+      message: "No routing-overrides.json found.",
+      isOk: false,
+    };
+  }
+
+  if (model.manualRoutingStatus === "invalid") {
+    return {
+      label: "Routing invalid",
+      variant: "danger",
+      message: "routing-overrides.json is invalid.",
+      isOk: false,
+    };
+  }
+
+  if (model.manualRoutingStatus === "loaded" && model.manualRoutingStale) {
+    return {
+      label: "Routing stale",
+      variant: "warning",
+      message: "Run npm run refresh:routing-overrides.",
+      isOk: false,
+    };
+  }
+
+  if (model.manualRoutingStatus === "loaded" && !model.manualRoutingSetMatch) {
+    return {
+      label: "Routing mismatch",
+      variant: "warning",
+      message: "Overrides do not match current tracks.",
+      isOk: false,
+    };
+  }
+
+  if (model.manualRoutingStatus === "loaded" && !model.manualRoutingStale && model.manualRoutingSetMatch) {
+    return {
+      label: "Routing OK",
+      variant: "success",
+      message: "Manual routing matches this Set.",
+      isOk: true,
+    };
+  }
+
+  return {
+    label: "Routing unknown",
+    variant: "neutral",
+    message: "Routing health could not be determined.",
+    isOk: false,
+  };
+}
+
+function renderRoutingHealthBadge(model: InternalViewerModel): string {
+  const health = getRoutingHealth(model);
+  return `<div class="routing-health">
+    <span class="routing-health-badge tone-${escapeHtml(health.variant)}">${escapeHtml(health.label)}</span>
+    <small>${escapeHtml(health.message)}</small>
+  </div>`;
+}
+
+function renderRoutingHealthHint(model: InternalViewerModel): string {
+  const health = getRoutingHealth(model);
+  if (health.isOk) return "";
+  return `<div class="notice warning">${escapeHtml(health.label)} · see Routing tab. ${escapeHtml(health.message)}</div>`;
+}
+
 function renderQuickOpenButton(link: InternalViewerQuickLink): string {
   const disabledAttr = link.exists ? "" : " disabled";
   return `<button class="action-button" type="button" data-link-key="${escapeHtml(link.key)}"${disabledAttr}>${escapeHtml(link.label)}</button>`;
@@ -146,6 +227,7 @@ function renderFileEntry(file: InternalViewerFileEntry): string {
 }
 
 function renderOverview(model: InternalViewerModel): string {
+  const routingHealth = getRoutingHealth(model);
   const warningBlock = model.warningMessage
     ? `<div class="notice warning">${escapeHtml(model.warningMessage)}</div>`
     : "";
@@ -169,11 +251,19 @@ function renderOverview(model: InternalViewerModel): string {
       </article>
       <article class="overview-card">
         <span class="label">Routing overrides</span>
-        <strong>${escapeHtml(model.manualRoutingStatus.toUpperCase())}</strong>
+        <strong>${escapeHtml(routingHealth.label)}</strong>
       </article>
       <article class="overview-card">
         <span class="label">Warnings</span>
         <strong>${escapeHtml(String(model.manualRoutingWarnings.length))}</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Set match</span>
+        <strong>${escapeHtml(model.manualRoutingSetMatch ? "OK" : "MISMATCH")}</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Stale</span>
+        <strong>${escapeHtml(model.manualRoutingStale ? "YES" : "NO")}</strong>
       </article>
     </div>
     <div class="notice">${escapeHtml(model.statusMessage)}</div>
@@ -207,6 +297,7 @@ function renderSessionPreview(model: InternalViewerModel): string {
   return `<div class="notice">
       Internal preview uses exported JSON. For full diagrams, open the external launcher.
     </div>
+    ${renderRoutingHealthHint(model)}
     <div class="preview-metrics-inline">
       <span>tracks:${model.metrics.tracks}</span>
       <span>returns:${model.metrics.returns}</span>
@@ -265,6 +356,7 @@ function renderKanbanPreview(model: InternalViewerModel): string {
   return `<div class="notice">
       Kanban preview is rendered directly inside Live from exported JSON. Mermaid remains external.
     </div>
+    ${renderRoutingHealthHint(model)}
     <div class="kanban-scroll">
       <div class="kanban-grid">
         ${model.sessionPreviewColumns
@@ -317,6 +409,7 @@ function renderMetroPreview(model: InternalViewerModel): string {
   return `<div class="notice">
       Metro preview is native HTML/CSS inside Live. Full Git / Metro Mermaid remains external.
     </div>
+    ${renderRoutingHealthHint(model)}
     <div class="metro-list">
       ${model.sessionPreviewColumns
         .map(
@@ -459,6 +552,10 @@ function renderRouting(model: InternalViewerModel): string {
   const hasMissingTrackWarnings = model.manualRoutingWarnings.some((warning) =>
     warning.toLowerCase().includes("references missing track"),
   );
+  const needsRefreshSuggestion =
+    model.manualRoutingStale ||
+    !model.manualRoutingSetMatch ||
+    hasMissingTrackWarnings;
 
   const connectionsBlock = model.connections.length
     ? `<section class="file-group">
@@ -526,12 +623,52 @@ function renderRouting(model: InternalViewerModel): string {
         <span class="label">Manual connections</span>
         <strong>${escapeHtml(String(model.connections.length))}</strong>
       </article>
+      <article class="overview-card">
+        <span class="label">Set match</span>
+        <strong>${escapeHtml(model.manualRoutingSetMatch ? "OK" : "MISMATCH")}</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Stale</span>
+        <strong>${escapeHtml(model.manualRoutingStale ? "YES" : "NO")}</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Overrides modified</span>
+        <strong>${escapeHtml(formatExportDate(model.routingOverridesModifiedAt))}</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Session export compared</span>
+        <strong>${escapeHtml(formatExportDate(model.sessionExportComparedAt))}</strong>
+      </article>
     </div>
     <div class="notice">${escapeHtml(statusNotice)}</div>
     <div class="notice">Path: ${escapeHtml(model.routingOverridesPath)}</div>
+    ${needsRefreshSuggestion
+      ? `<div class="notice warning">routing-overrides.json may not match the current Live Set. Run <code>npm run refresh:routing-overrides</code> to regenerate a template for this Set.</div>`
+      : ""}
     ${
-      hasMissingTrackWarnings
-        ? `<div class="notice warning">Some manual routing overrides reference tracks that are not in the current Set. Run <code>npm run refresh:routing-overrides</code> to regenerate a template for this Set.</div>`
+      model.missingFromCurrent.length
+        ? `<section class="file-group">
+            <div class="section-header">
+              <h3>Overrides reference tracks not found in current Set</h3>
+              <p>${model.missingFromCurrent.length}</p>
+            </div>
+            <div class="chip-group">${model.missingFromCurrent
+              .map((name) => `<span class="chip chip-warning">${escapeHtml(name)}</span>`)
+              .join("")}</div>
+          </section>`
+        : ""
+    }
+    ${
+      model.missingFromOverrides.length
+        ? `<section class="file-group">
+            <div class="section-header">
+              <h3>Current Set tracks missing from overrides</h3>
+              <p>${model.missingFromOverrides.length}</p>
+            </div>
+            <div class="chip-group">${model.missingFromOverrides
+              .map((name) => `<span class="chip chip-warning">${escapeHtml(name)}</span>`)
+              .join("")}</div>
+          </section>`
         : ""
     }
     ${warningRows}
@@ -730,6 +867,51 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
       color: var(--muted);
       font-size: 11px;
       line-height: 1.5;
+    }
+    .routing-health {
+      display: grid;
+      gap: 6px;
+      justify-items: end;
+      margin-top: 8px;
+    }
+    .routing-health small {
+      color: var(--muted);
+      font-size: 10px;
+      max-width: 220px;
+      text-align: right;
+      line-height: 1.4;
+    }
+    .routing-health-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+    .routing-health-badge.tone-success {
+      color: #b8efc4;
+      border-color: rgba(125, 210, 143, 0.32);
+      background: rgba(72, 120, 80, 0.22);
+    }
+    .routing-health-badge.tone-warning {
+      color: #ffd89f;
+      border-color: rgba(245,166,35,0.3);
+      background: rgba(113, 80, 21, 0.25);
+    }
+    .routing-health-badge.tone-danger {
+      color: #ffb3aa;
+      border-color: rgba(255, 107, 107, 0.28);
+      background: rgba(102, 38, 38, 0.26);
+    }
+    .routing-health-badge.tone-neutral {
+      color: #d7d2c9;
+      border-color: rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
     }
     .metrics {
       display: grid;
@@ -1366,6 +1548,7 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
         <div>Set: ${escapeHtml(model.setName ?? "Untitled Set")}</div>
         <div>Export: ${escapeHtml(formatExportDate(model.exportedAt))}</div>
         <div>Mode: ${escapeHtml(model.scanMode)}</div>
+        ${renderRoutingHealthBadge(model)}
       </div>
     </section>
 

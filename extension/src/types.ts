@@ -55,7 +55,15 @@ export type ManualRoutingStatus = "missing" | "loaded" | "invalid";
 
 export interface ManualRoutingState {
   status: ManualRoutingStatus;
+  stale: boolean;
+  setMatch: boolean;
   sourcePath: string;
+  sourceModifiedAt: string | null;
+  sessionMapModifiedAt: string | null;
+  currentTrackCount: number;
+  overrideTrackCount: number;
+  missingFromCurrent: string[];
+  missingFromOverrides: string[];
   warnings: string[];
   tracks: Record<string, ManualRoutingOverrideTrack>;
   sidechains: ManualRoutingSidechain[];
