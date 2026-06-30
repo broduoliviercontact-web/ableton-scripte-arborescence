@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session Mapper</title>
+  <script>
+    const viewerModel = {"setName":"NEON TRANSIT — Live Set","exportedAt":"2026-06-30T18:42:00+02:00","statusMessage":"Latest export metadata loaded. Use Quick Open or Files to jump to external outputs.","warningMessage":null,"scanMode":"ultra-safe","metrics":{"tracks":6,"returns":2,"devices":22,"racks":5,"sends":12},"quickLinks":[{"key":"launcher","label":"Open External Launcher","exists":true},{"key":"report","label":"Open HTML Report","exists":true},{"key":"session-grid","label":"Open Session Grid","exists":true},{"key":"git-svg","label":"Open Git / Metro","exists":true},{"key":"kanban-svg","label":"Open Kanban","exists":true}],"sessionPreviewColumns":[{"index":0,"name":"DRUMS","kind":"group","sectionType":"track","deviceCount":2,"sendCount":2,"rackCount":1,"deviceCards":[{"name":"Drum Buss","summary":"Drum Buss · Audio Effect","isRack":false},{"name":"Parallel Crunch","summary":"Parallel Crunch · Rack · chains:3","isRack":true}]},{"index":1,"name":"Kick — Analog","kind":"midi","sectionType":"track","deviceCount":3,"sendCount":2,"rackCount":1,"deviceCards":[{"name":"Kick Designer","summary":"Kick Designer · Rack · chains:4","isRack":true},{"name":"Saturator","summary":"Saturator · Audio Effect","isRack":false},{"name":"EQ Eight","summary":"EQ Eight · Audio Effect","isRack":false}]},{"index":2,"name":"Percussion","kind":"midi","sectionType":"track","deviceCount":2,"sendCount":2,"rackCount":1,"deviceCards":[{"name":"Drum Rack","summary":"Drum Rack · Rack · pads:16","isRack":true},{"name":"Glue Compressor","summary":"Glue Compressor · Audio Effect","isRack":false}]},{"index":3,"name":"Bass Sequence","kind":"midi","sectionType":"track","deviceCount":3,"sendCount":2,"rackCount":1,"deviceCards":[{"name":"Bass Engine","summary":"Bass Engine · Rack · chains:3","isRack":true},{"name":"Roar","summary":"Roar · Audio Effect","isRack":false},{"name":"Utility","summary":"Utility · Audio Effect","isRack":false}]},{"index":4,"name":"Juno Chords","kind":"audio","sectionType":"track","deviceCount":2,"sendCount":2,"rackCount":0,"deviceCards":[{"name":"Auto Filter","summary":"Auto Filter · Audio Effect","isRack":false},{"name":"Chorus-Ensemble","summary":"Chorus-Ensemble · Audio Effect","isRack":false}]},{"index":5,"name":"Lead Atmosphere","kind":"midi","sectionType":"track","deviceCount":3,"sendCount":2,"rackCount":1,"deviceCards":[{"name":"Wavetable","summary":"Wavetable · Instrument","isRack":false},{"name":"Movement Rack","summary":"Movement Rack · Rack · chains:2","isRack":true},{"name":"Echo","summary":"Echo · Audio Effect","isRack":false}]},{"index":0,"name":"A — Short Verb","kind":"return","sectionType":"return","deviceCount":2,"sendCount":0,"rackCount":0,"deviceCards":[{"name":"Hybrid Reverb","summary":"Hybrid Reverb · Audio Effect","isRack":false},{"name":"EQ Eight","summary":"EQ Eight · Audio Effect","isRack":false}]},{"index":1,"name":"B — Tape Delay","kind":"return","sectionType":"return","deviceCount":2,"sendCount":0,"rackCount":0,"deviceCards":[{"name":"Echo","summary":"Echo · Audio Effect","isRack":false},{"name":"Saturator","summary":"Saturator · Audio Effect","isRack":false}]},{"index":0,"name":"Master","kind":"master","sectionType":"master","deviceCount":3,"sendCount":0,"rackCount":0,"deviceCards":[{"name":"EQ Eight","summary":"EQ Eight · Audio Effect","isRack":false},{"name":"Glue Compressor","summary":"Glue Compressor · Audio Effect","isRack":false},{"name":"Limiter","summary":"Limiter · Audio Effect","isRack":false}]}],"outputs":[{"index":0,"name":"DRUMS","kind":"group","sectionType":"track","input":"—","output":"Master","sends":"A: 0.186, B: 0.094"},{"index":1,"name":"Kick — Analog","kind":"midi","sectionType":"track","input":"All Ins · All Channels","output":"DRUMS","sends":"A: 0.186, B: 0.094"},{"index":2,"name":"Percussion","kind":"midi","sectionType":"track","input":"All Ins · All Channels","output":"DRUMS","sends":"A: 0.186, B: 0.094"},{"index":3,"name":"Bass Sequence","kind":"midi","sectionType":"track","input":"All Ins · All Channels","output":"Master","sends":"A: 0.186, B: 0.094"},{"index":4,"name":"Juno Chords","kind":"audio","sectionType":"track","input":"Ext. In · 1/2","output":"Master","sends":"A: 0.186, B: 0.094"},{"index":5,"name":"Lead Atmosphere","kind":"midi","sectionType":"track","input":"All Ins · All Channels","output":"Master","sends":"A: 0.186, B: 0.094"},{"index":0,"name":"A — Short Verb","kind":"return","sectionType":"return","input":"—","output":"Master","sends":"—"},{"index":1,"name":"B — Tape Delay","kind":"return","sectionType":"return","input":"—","output":"Master","sends":"—"},{"index":0,"name":"Master","kind":"master","sectionType":"master","input":"—","output":"Ext. Out · 1/2","sends":"—"}],"deviceTracks":[{"index":0,"name":"DRUMS","kind":"group","sectionType":"track","deviceCount":2,"rackCount":1,"deviceSummary":["Drum Buss · Audio Effect","Parallel Crunch · Rack · chains:3"],"rackSummary":["Parallel Crunch · chains:3 · complete"]},{"index":1,"name":"Kick — Analog","kind":"midi","sectionType":"track","deviceCount":3,"rackCount":1,"deviceSummary":["Kick Designer · Rack · chains:4","Saturator · Audio Effect","EQ Eight · Audio Effect"],"rackSummary":["Kick Designer · chains:3 · complete"]},{"index":2,"name":"Percussion","kind":"midi","sectionType":"track","deviceCount":2,"rackCount":1,"deviceSummary":["Drum Rack · Rack · pads:16","Glue Compressor · Audio Effect"],"rackSummary":["Drum Rack · chains:16 · complete"]},{"index":3,"name":"Bass Sequence","kind":"midi","sectionType":"track","deviceCount":3,"rackCount":1,"deviceSummary":["Bass Engine · Rack · chains:3","Roar · Audio Effect","Utility · Audio Effect"],"rackSummary":["Bass Engine · chains:3 · complete"]},{"index":4,"name":"Juno Chords","kind":"audio","sectionType":"track","deviceCount":2,"rackCount":0,"deviceSummary":["Auto Filter · Audio Effect","Chorus-Ensemble · Audio Effect"],"rackSummary":[]},{"index":5,"name":"Lead Atmosphere","kind":"midi","sectionType":"track","deviceCount":3,"rackCount":1,"deviceSummary":["Wavetable · Instrument","Movement Rack · Rack · chains:2","Echo · Audio Effect"],"rackSummary":["Movement Rack · chains:3 · complete"]},{"index":0,"name":"A — Short Verb","kind":"return","sectionType":"return","deviceCount":2,"rackCount":0,"deviceSummary":["Hybrid Reverb · Audio Effect","EQ Eight · Audio Effect"],"rackSummary":[]},{"index":1,"name":"B — Tape Delay","kind":"return","sectionType":"return","deviceCount":2,"rackCount":0,"deviceSummary":["Echo · Audio Effect","Saturator · Audio Effect"],"rackSummary":[]},{"index":0,"name":"Master","kind":"master","sectionType":"master","deviceCount":3,"rackCount":0,"deviceSummary":["EQ Eight · Audio Effect","Glue Compressor · Audio Effect","Limiter · Audio Effect"],"rackSummary":[]}],"files":[{"key":"launcher","label":"Open External Launcher","fileName":"session-map-diagrams.html","group":"Core Outputs","exists":true},{"key":"report","label":"Open HTML Report","fileName":"session-map.html","group":"Core Outputs","exists":true},{"key":"session-grid","label":"Open Session Grid","fileName":"session-map-session-grid.html","group":"Core Outputs","exists":true},{"key":"json","label":"Open session-map.json","fileName":"session-map.json","group":"Core Outputs","exists":true},{"key":"flow-svg","label":"Open Flow SVG","fileName":"session-map-flow.svg","group":"Mermaid Flow","exists":true},{"key":"flow-png","label":"Open Flow PNG","fileName":"session-map-flow.png","group":"Mermaid Flow","exists":true},{"key":"git-svg","label":"Open Git / Metro SVG","fileName":"session-map-git.svg","group":"Mermaid Git / Metro","exists":true},{"key":"git-png","label":"Open Git / Metro PNG","fileName":"session-map-git.png","group":"Mermaid Git / Metro","exists":true},{"key":"kanban-svg","label":"Open Kanban SVG","fileName":"session-map-kanban.svg","group":"Mermaid Kanban","exists":true},{"key":"kanban-png","label":"Open Kanban PNG","fileName":"session-map-kanban.png","group":"Mermaid Kanban","exists":true}],"hasExport":true,"hasMissingRoutingData":false,"internalVisualPreviewEnabled":true};
+    const isWebKit = window.webkit?.messageHandlers?.live;
+    const isWebView2 = window.chrome?.webview;
+
+    function sendMessage(message) {
+      if (isWebKit) {
+        window.webkit.messageHandlers.live.postMessage(message);
+      } else if (isWebView2) {
+        window.chrome.webview.postMessage(message);
+      }
+    }
+
+    function closeWithResult(result) {
+      sendMessage({
+        method: "close_and_send",
+        params: [JSON.stringify(result)],
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("[data-link-key]").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (button.hasAttribute("disabled")) return;
+          const key = button.getAttribute("data-link-key");
+          closeWithResult({ action: "open-link", key });
+        });
+      });
+
+      document.getElementById("refresh-viewer")?.addEventListener("click", () => {
+        closeWithResult({ action: "refresh" });
+      });
+
+      document.getElementById("close-viewer")?.addEventListener("click", () => {
+        closeWithResult({ action: "close" });
+      });
+
+      document.getElementById("cancel-viewer")?.addEventListener("click", () => {
+        closeWithResult({ action: "cancel" });
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeWithResult({ action: "cancel" });
+        }
+      });
+    });
+  </script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #171717;
+      --panel: #242424;
+      --panel-2: #1f1f1f;
+      --panel-3: #2e2e2e;
+      --border: rgba(255,255,255,0.08);
+      --text: #ece9e2;
+      --muted: #aaa59c;
+      --accent: #f5a623;
+      --accent-2: #7ec7ff;
+      --danger: #ffb26b;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 12px;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      background:
+        radial-gradient(circle at top right, rgba(245,166,35,0.11), transparent 28%),
+        linear-gradient(180deg, #2a2a2a 0%, #191919 100%);
+      padding: 14px;
+    }
+    .shell {
+      height: calc(100vh - 28px);
+      max-width: 95vw;
+      max-height: 92vh;
+      display: grid;
+      grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+    .hero, .metrics, .tab-bar, .panel-shell, .footer {
+      background: rgba(31,31,31,0.94);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .hero {
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+    }
+    .eyebrow {
+      margin: 0 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      font-size: 10px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .subline {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 12px;
+    }
+    .hero-meta {
+      text-align: right;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 1px;
+      padding: 1px;
+      background: rgba(255,255,255,0.04);
+    }
+    .metric {
+      background: var(--panel);
+      padding: 11px 8px;
+      text-align: center;
+    }
+    .metric strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    .metric span {
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .tab-toggle {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      height: 0;
+    }
+    .tab-bar {
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      flex-wrap: wrap;
+    }
+    .tab-label, .action-button, .mini-button, .close-button, .cancel-button {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: linear-gradient(180deg, #383838, #2f2f2f);
+      cursor: pointer;
+      transition: background 120ms ease, transform 120ms ease;
+    }
+    .tab-label:hover, .action-button:hover, .mini-button:hover, .close-button:hover, .cancel-button:hover {
+      background: linear-gradient(180deg, #444, #353535);
+    }
+    .tab-label {
+      min-height: 32px;
+      padding: 0 14px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    #internal-tab-session:checked ~ .tab-bar label[for="internal-tab-session"],
+    #internal-tab-kanban:checked ~ .tab-bar label[for="internal-tab-kanban"],
+    #internal-tab-metro:checked ~ .tab-bar label[for="internal-tab-metro"],
+    #internal-tab-outputs:checked ~ .tab-bar label[for="internal-tab-outputs"],
+    #internal-tab-devices:checked ~ .tab-bar label[for="internal-tab-devices"],
+    #internal-tab-files:checked ~ .tab-bar label[for="internal-tab-files"],
+    #internal-tab-overview:checked ~ .tab-bar label[for="internal-tab-overview"] {
+      background: linear-gradient(180deg, #f5a623, #cf8615);
+      color: #141414;
+      border-color: rgba(245,166,35,0.45);
+    }
+    .panel-shell {
+      min-height: 0;
+      padding: 12px;
+      overflow: auto;
+    }
+    .panel {
+      display: none;
+      gap: 12px;
+      align-content: start;
+    }
+    #internal-tab-session:checked ~ .panel-shell .panel-session,
+    #internal-tab-kanban:checked ~ .panel-shell .panel-kanban,
+    #internal-tab-metro:checked ~ .panel-shell .panel-metro,
+    #internal-tab-outputs:checked ~ .panel-shell .panel-outputs,
+    #internal-tab-devices:checked ~ .panel-shell .panel-devices,
+    #internal-tab-files:checked ~ .panel-shell .panel-files,
+    #internal-tab-overview:checked ~ .panel-shell .panel-overview {
+      display: grid;
+    }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .overview-card, .device-card, .notice, .empty-state, .file-group {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+    .overview-card {
+      padding: 12px;
+    }
+    .overview-card .label, .rack-summary .label {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+    .overview-card strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .notice {
+      padding: 11px 12px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .notice.warning {
+      color: var(--danger);
+      border-color: rgba(245,166,35,0.22);
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .section-header h3 {
+      margin: 0;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-2);
+    }
+    .section-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+    }
+    .action-button {
+      min-height: 34px;
+      padding: 0 12px;
+      text-align: left;
+    }
+    .action-button:disabled, .mini-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+      background: #2b2b2b;
+      color: #8f8f8f;
+    }
+    .table-shell {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel);
+    }
+    .preview-metrics-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .preview-metrics-inline span {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+    }
+    .session-preview-scroll {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 4px;
+    }
+    .session-preview-grid {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(180px, 220px);
+      gap: 12px;
+      align-items: start;
+      min-height: 0;
+    }
+    .session-column {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      min-height: 220px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .session-kind-midi .session-column-header {
+      background: linear-gradient(180deg, rgba(119,92,186,0.36), rgba(56,50,76,0.66));
+    }
+    .session-kind-audio .session-column-header {
+      background: linear-gradient(180deg, rgba(81,112,146,0.34), rgba(49,55,66,0.66));
+    }
+    .session-column-return .session-column-header {
+      background: linear-gradient(180deg, rgba(65,146,178,0.36), rgba(46,55,62,0.6));
+    }
+    .session-column-master .session-column-header {
+      background: linear-gradient(180deg, rgba(245,166,35,0.32), rgba(70,56,35,0.62));
+    }
+    .session-kind-group .session-column-header,
+    .session-kind-unknown .session-column-header {
+      background: linear-gradient(180deg, rgba(108,108,108,0.28), rgba(54,54,54,0.66));
+    }
+    .session-column-header {
+      padding: 12px 12px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .session-column-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: start;
+    }
+    .session-column-title strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+    .session-column-header p {
+      margin: 8px 0 0;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .session-device-stack {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      align-content: start;
+      max-height: 560px;
+      overflow-y: auto;
+    }
+    .session-device-card, .session-empty-card {
+      background: var(--panel-2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      gap: 4px;
+      line-height: 1.35;
+    }
+    .session-device-card.is-rack {
+      background: rgba(245,166,35,0.08);
+      border-color: rgba(245,166,35,0.18);
+    }
+    .session-device-card strong {
+      font-size: 12px;
+    }
+    .session-device-card span, .session-empty-card {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .kanban-scroll {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 4px;
+    }
+    .kanban-grid {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(190px, 220px);
+      gap: 12px;
+      align-items: start;
+    }
+    .kanban-column {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      min-height: 260px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .kanban-column-header {
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: start;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .kanban-column-header strong {
+      font-size: 13px;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+    .kanban-column-body {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      align-content: start;
+      max-height: 580px;
+      overflow-y: auto;
+    }
+    .kanban-card {
+      background: var(--panel-2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      gap: 4px;
+    }
+    .kanban-card strong {
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .kanban-card span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .kanban-summary-card {
+      background: rgba(255,255,255,0.03);
+    }
+    .kanban-card.is-rack {
+      background: rgba(245,166,35,0.08);
+      border-color: rgba(245,166,35,0.18);
+    }
+    .metro-list {
+      display: grid;
+      gap: 12px;
+    }
+    .metro-row {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .metro-track-name strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+    .metro-track-name span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .metro-line-shell {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 4px;
+    }
+    .metro-line {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      min-width: max-content;
+      padding: 6px 0;
+    }
+    .metro-stop {
+      position: relative;
+      min-width: 120px;
+      max-width: 160px;
+      padding-top: 14px;
+      display: grid;
+      gap: 4px;
+      color: var(--text);
+    }
+    .metro-stop::before {
+      content: "";
+      position: absolute;
+      top: 6px;
+      left: 0;
+      right: -18px;
+      height: 3px;
+      background: rgba(126,199,255,0.36);
+      z-index: 0;
+    }
+    .metro-stop:last-child::before {
+      right: 0;
+    }
+    .metro-stop strong, .metro-stop small, .metro-dot {
+      position: relative;
+      z-index: 1;
+    }
+    .metro-stop strong {
+      font-size: 12px;
+      line-height: 1.3;
+    }
+    .metro-stop small {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.3;
+    }
+    .metro-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--accent-2);
+      border: 2px solid #141414;
+      box-shadow: 0 0 0 2px rgba(126,199,255,0.22);
+    }
+    .metro-stop.is-rack .metro-dot {
+      background: var(--accent);
+      box-shadow: 0 0 0 2px rgba(245,166,35,0.22);
+    }
+    .metro-stop.is-track .metro-dot {
+      background: #f1f1f1;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+    }
+    .metro-stop.is-empty .metro-dot {
+      background: #777;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+    thead th {
+      position: sticky;
+      top: 0;
+      background: var(--panel-3);
+      color: var(--accent-2);
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td {
+      padding: 10px 12px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      vertical-align: top;
+      line-height: 1.45;
+    }
+    tbody tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+    .kind-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid var(--border);
+      background: #303030;
+    }
+    .kind-return { border-color: rgba(126,199,255,0.4); color: var(--accent-2); }
+    .kind-master { border-color: rgba(245,166,35,0.4); color: var(--accent); }
+    .kind-track { border-color: rgba(255,255,255,0.14); }
+    .device-list {
+      display: grid;
+      gap: 10px;
+    }
+    .device-card {
+      padding: 12px;
+    }
+    .device-card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+    .device-card-header h3 {
+      margin: 0;
+      font-size: 14px;
+    }
+    .device-card-header p {
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .chip {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #303030;
+      border: 1px solid var(--border);
+      line-height: 1.35;
+    }
+    .chip-rack {
+      background: rgba(245,166,35,0.12);
+      border-color: rgba(245,166,35,0.22);
+    }
+    .rack-summary {
+      margin-top: 10px;
+    }
+    .empty-inline {
+      color: var(--muted);
+    }
+    .file-group {
+      padding: 12px;
+    }
+    .file-group-list {
+      display: grid;
+      gap: 8px;
+    }
+    .file-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--panel-2);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .file-meta {
+      min-width: 0;
+    }
+    .file-meta strong {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+    .file-meta span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      overflow-wrap: anywhere;
+    }
+    .file-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .file-status {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .file-status.is-available { color: #8ad49b; }
+    .file-status.is-missing { color: #d0a18a; }
+    .mini-button {
+      min-height: 28px;
+      padding: 0 12px;
+    }
+    .empty-state {
+      padding: 18px 16px;
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+    }
+    .footer {
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .footer small {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+      max-width: 60%;
+    }
+    .footer-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .close-button, .cancel-button {
+      min-height: 30px;
+      padding: 0 12px;
+    }
+    .cancel-button {
+      color: var(--muted);
+      background: linear-gradient(180deg, #2f2f2f, #292929);
+    }
+    .footer a {
+      color: #7c8799;
+      text-decoration: none;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+    .footer a:hover {
+      color: var(--accent);
+    }
+    @media (max-width: 860px) {
+      .overview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .hero {
+        flex-direction: column;
+        align-items: start;
+      }
+      .hero-meta, .footer small {
+        max-width: none;
+        text-align: left;
+      }
+      .footer {
+        flex-direction: column;
+        align-items: start;
+      }
+      .metro-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+<style>
+    html { width: 1400px; height: 950px; overflow: hidden; }
+    body { width: 1400px; height: 950px; overflow: hidden; }
+    .shell { width: 1372px; max-width: none; height: 922px; max-height: none; }
+  </style></head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Experimental Internal Viewer</p>
+        <h1>Session Mapper</h1>
+        <p class="subline">Compact internal hub for the latest export metadata. External launcher remains the recommended workflow.</p>
+      </div>
+      <div class="hero-meta">
+        <div>Set: NEON TRANSIT — Live Set</div>
+        <div>Export: 30/06/2026 18:42:00</div>
+        <div>Mode: ultra-safe</div>
+      </div>
+    </section>
+
+    <section class="metrics" aria-label="Session metrics">
+      <article class="metric"><strong>6</strong><span>Tracks</span></article>
+      <article class="metric"><strong>2</strong><span>Returns</span></article>
+      <article class="metric"><strong>22</strong><span>Devices</span></article>
+      <article class="metric"><strong>5</strong><span>Racks</span></article>
+      <article class="metric"><strong>12</strong><span>Sends</span></article>
+    </section>
+
+    <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-session" checked>
+    <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-kanban">
+    <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-metro">
+    <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-outputs">
+    <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-devices">
+    <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-files">
+    <input class="tab-toggle" type="radio" name="internal-tab" id="internal-tab-overview">
+
+    <nav class="tab-bar" aria-label="Internal viewer tabs">
+      <label class="tab-label" for="internal-tab-session">Session</label>
+      <label class="tab-label" for="internal-tab-kanban">Kanban</label>
+      <label class="tab-label" for="internal-tab-metro">Git / Metro</label>
+      <label class="tab-label" for="internal-tab-outputs">Outputs</label>
+      <label class="tab-label" for="internal-tab-devices">Devices</label>
+      <label class="tab-label" for="internal-tab-files">Files</label>
+      <label class="tab-label" for="internal-tab-overview">Overview</label>
+    </nav>
+
+    <section class="panel-shell">
+      <div class="panel panel-session">
+        <div class="notice">
+      Internal preview uses exported JSON. For full diagrams, open the external launcher.
+    </div>
+    <div class="preview-metrics-inline">
+      <span>tracks:6</span>
+      <span>returns:2</span>
+      <span>devices:22</span>
+      <span>racks:5</span>
+      <span>sends:12</span>
+    </div>
+    <div class="session-preview-scroll">
+      <div class="session-preview-grid">
+        <section class="session-column session-column-track session-kind-group">
+              <header class="session-column-header">
+                <div class="session-column-title">
+                  <strong>DRUMS</strong>
+                  <span class="kind-badge kind-track">group</span>
+                </div>
+                <p>1 · dev:2 · sends:2 · racks:1</p>
+              </header>
+              <div class="session-device-stack">
+                <article class="session-device-card ">
+                            <strong>Drum Buss</strong>
+                            <span>Drum Buss · Audio Effect</span>
+                          </article><article class="session-device-card is-rack">
+                            <strong>Parallel Crunch</strong>
+                            <span>Parallel Crunch · Rack · chains:3</span>
+                          </article>
+              </div>
+            </section><section class="session-column session-column-track session-kind-midi">
+              <header class="session-column-header">
+                <div class="session-column-title">
+                  <strong>Kick — Analog</strong>
+                  <span class="kind-badge kind-track">midi</span>
+                </div>
+                <p>2 · dev:3 · sends:2 · racks:1</p>
+              </header>
+              <div class="session-device-stack">
+                <article class="session-device-card is-rack">
+                            <strong>Kick Designer</strong>
+                            <span>Kick Designer · Rack · chains:4</span>
+                          </article><article class="session-device-card ">
+                            <strong>Saturator</strong>
+                            <span>Saturator · Audio Effect</span>
+                          </article><article class="session-device-card ">
+                            <strong>EQ Eight</strong>
+                            <span>EQ Eight · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="session-column session-column-track session-kind-midi">
+              <header class="session-column-header">
+                <div class="session-column-title">
+                  <strong>Percussion</strong>
+                  <span class="kind-badge kind-track">midi</span>
+                </div>
+                <p>3 · dev:2 · sends:2 · racks:1</p>
+              </header>
+              <div class="session-device-stack">
+                <article class="session-device-card is-rack">
+                            <strong>Drum Rack</strong>
+                            <span>Drum Rack · Rack · pads:16</span>
+                          </article><article class="session-device-card ">
+                            <strong>Glue Compressor</strong>
+                            <span>Glue Compressor · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="session-column session-column-track session-kind-midi">
+              <header class="session-column-header">
+                <div class="session-column-title">
+                  <strong>Bass Sequence</strong>
+                  <span class="kind-badge kind-track">midi</span>
+                </div>
+                <p>4 · dev:3 · sends:2 · racks:1</p>
+              </header>
+              <div class="session-device-stack">
+                <article class="session-device-card is-rack">
+                            <strong>Bass Engine</strong>
+                            <span>Bass Engine · Rack · chains:3</span>
+                          </article><article class="session-device-card ">
+                            <strong>Roar</strong>
+                            <span>Roar · Audio Effect</span>
+                          </article><article class="session-device-card ">
+                            <strong>Utility</strong>
+                            <span>Utility · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="session-column session-column-track session-kind-audio">
+              <header class="session-column-header">
+                <div class="session-column-title">
+                  <strong>Juno Chords</strong>
+                  <span class="kind-badge kind-track">audio</span>
+                </div>
+                <p>5 · dev:2 · sends:2 · racks:0</p>
+              </header>
+              <div class="session-device-stack">
+                <article class="session-device-card ">
+                            <strong>Auto Filter</strong>
+                            <span>Auto Filter · Audio Effect</span>
+                          </article><article class="session-device-card ">
+                            <strong>Chorus-Ensemble</strong>
+                            <span>Chorus-Ensemble · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="session-column session-column-track session-kind-midi">
+              <header class="session-column-header">
+                <div class="session-column-title">
+                  <strong>Lead Atmosphere</strong>
+                  <span class="kind-badge kind-track">midi</span>
+                </div>
+                <p>6 · dev:3 · sends:2 · racks:1</p>
+              </header>
+              <div class="session-device-stack">
+                <article class="session-device-card ">
+                            <strong>Wavetable</strong>
+                            <span>Wavetable · Instrument</span>
+                          </article><article class="session-device-card is-rack">
+                            <strong>Movement Rack</strong>
+                            <span>Movement Rack · Rack · chains:2</span>
+                          </article><article class="session-device-card ">
+                            <strong>Echo</strong>
+                            <span>Echo · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="session-column session-column-return session-kind-return">
+              <header class="session-column-header">
+                <div class="session-column-title">
+                  <strong>A — Short Verb</strong>
+                  <span class="kind-badge kind-return">return</span>
+                </div>
+                <p>1 · dev:2 · sends:0 · racks:0</p>
+              </header>
+              <div class="session-device-stack">
+                <article class="session-device-card ">
+                            <strong>Hybrid Reverb</strong>
+                            <span>Hybrid Reverb · Audio Effect</span>
+                          </article><article class="session-device-card ">
+                            <strong>EQ Eight</strong>
+                            <span>EQ Eight · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="session-column session-column-return session-kind-return">
+              <header class="session-column-header">
+                <div class="session-column-title">
+                  <strong>B — Tape Delay</strong>
+                  <span class="kind-badge kind-return">return</span>
+                </div>
+                <p>2 · dev:2 · sends:0 · racks:0</p>
+              </header>
+              <div class="session-device-stack">
+                <article class="session-device-card ">
+                            <strong>Echo</strong>
+                            <span>Echo · Audio Effect</span>
+                          </article><article class="session-device-card ">
+                            <strong>Saturator</strong>
+                            <span>Saturator · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="session-column session-column-master session-kind-master">
+              <header class="session-column-header">
+                <div class="session-column-title">
+                  <strong>Master</strong>
+                  <span class="kind-badge kind-master">master</span>
+                </div>
+                <p>★ · dev:3 · sends:0 · racks:0</p>
+              </header>
+              <div class="session-device-stack">
+                <article class="session-device-card ">
+                            <strong>EQ Eight</strong>
+                            <span>EQ Eight · Audio Effect</span>
+                          </article><article class="session-device-card ">
+                            <strong>Glue Compressor</strong>
+                            <span>Glue Compressor · Audio Effect</span>
+                          </article><article class="session-device-card ">
+                            <strong>Limiter</strong>
+                            <span>Limiter · Audio Effect</span>
+                          </article>
+              </div>
+            </section>
+      </div>
+    </div>
+      </div>
+      <div class="panel panel-kanban">
+        <div class="notice">
+      Kanban preview is rendered directly inside Live from exported JSON. Mermaid remains external.
+    </div>
+    <div class="kanban-scroll">
+      <div class="kanban-grid">
+        <section class="kanban-column session-column-track session-kind-group">
+              <header class="kanban-column-header">
+                <strong>DRUMS</strong>
+                <span class="kind-badge kind-track">group</span>
+              </header>
+              <div class="kanban-column-body">
+                <article class="kanban-card kanban-summary-card">
+                  <strong>DRUMS · GROUP</strong>
+                  <span>dev:2 · sends:2 · racks:1</span>
+                </article>
+                <article class="kanban-card ">
+                            <strong>Drum Buss</strong>
+                            <span>Drum Buss · Audio Effect</span>
+                          </article><article class="kanban-card is-rack">
+                            <strong>Parallel Crunch</strong>
+                            <span>Parallel Crunch · Rack · chains:3</span>
+                          </article>
+              </div>
+            </section><section class="kanban-column session-column-track session-kind-midi">
+              <header class="kanban-column-header">
+                <strong>Kick — Analog</strong>
+                <span class="kind-badge kind-track">midi</span>
+              </header>
+              <div class="kanban-column-body">
+                <article class="kanban-card kanban-summary-card">
+                  <strong>Kick — Analog · MIDI</strong>
+                  <span>dev:3 · sends:2 · racks:1</span>
+                </article>
+                <article class="kanban-card is-rack">
+                            <strong>Kick Designer</strong>
+                            <span>Kick Designer · Rack · chains:4</span>
+                          </article><article class="kanban-card ">
+                            <strong>Saturator</strong>
+                            <span>Saturator · Audio Effect</span>
+                          </article><article class="kanban-card ">
+                            <strong>EQ Eight</strong>
+                            <span>EQ Eight · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="kanban-column session-column-track session-kind-midi">
+              <header class="kanban-column-header">
+                <strong>Percussion</strong>
+                <span class="kind-badge kind-track">midi</span>
+              </header>
+              <div class="kanban-column-body">
+                <article class="kanban-card kanban-summary-card">
+                  <strong>Percussion · MIDI</strong>
+                  <span>dev:2 · sends:2 · racks:1</span>
+                </article>
+                <article class="kanban-card is-rack">
+                            <strong>Drum Rack</strong>
+                            <span>Drum Rack · Rack · pads:16</span>
+                          </article><article class="kanban-card ">
+                            <strong>Glue Compressor</strong>
+                            <span>Glue Compressor · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="kanban-column session-column-track session-kind-midi">
+              <header class="kanban-column-header">
+                <strong>Bass Sequence</strong>
+                <span class="kind-badge kind-track">midi</span>
+              </header>
+              <div class="kanban-column-body">
+                <article class="kanban-card kanban-summary-card">
+                  <strong>Bass Sequence · MIDI</strong>
+                  <span>dev:3 · sends:2 · racks:1</span>
+                </article>
+                <article class="kanban-card is-rack">
+                            <strong>Bass Engine</strong>
+                            <span>Bass Engine · Rack · chains:3</span>
+                          </article><article class="kanban-card ">
+                            <strong>Roar</strong>
+                            <span>Roar · Audio Effect</span>
+                          </article><article class="kanban-card ">
+                            <strong>Utility</strong>
+                            <span>Utility · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="kanban-column session-column-track session-kind-audio">
+              <header class="kanban-column-header">
+                <strong>Juno Chords</strong>
+                <span class="kind-badge kind-track">audio</span>
+              </header>
+              <div class="kanban-column-body">
+                <article class="kanban-card kanban-summary-card">
+                  <strong>Juno Chords · AUDIO</strong>
+                  <span>dev:2 · sends:2 · racks:0</span>
+                </article>
+                <article class="kanban-card ">
+                            <strong>Auto Filter</strong>
+                            <span>Auto Filter · Audio Effect</span>
+                          </article><article class="kanban-card ">
+                            <strong>Chorus-Ensemble</strong>
+                            <span>Chorus-Ensemble · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="kanban-column session-column-track session-kind-midi">
+              <header class="kanban-column-header">
+                <strong>Lead Atmosphere</strong>
+                <span class="kind-badge kind-track">midi</span>
+              </header>
+              <div class="kanban-column-body">
+                <article class="kanban-card kanban-summary-card">
+                  <strong>Lead Atmosphere · MIDI</strong>
+                  <span>dev:3 · sends:2 · racks:1</span>
+                </article>
+                <article class="kanban-card ">
+                            <strong>Wavetable</strong>
+                            <span>Wavetable · Instrument</span>
+                          </article><article class="kanban-card is-rack">
+                            <strong>Movement Rack</strong>
+                            <span>Movement Rack · Rack · chains:2</span>
+                          </article><article class="kanban-card ">
+                            <strong>Echo</strong>
+                            <span>Echo · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="kanban-column session-column-return session-kind-return">
+              <header class="kanban-column-header">
+                <strong>A — Short Verb</strong>
+                <span class="kind-badge kind-return">return</span>
+              </header>
+              <div class="kanban-column-body">
+                <article class="kanban-card kanban-summary-card">
+                  <strong>A — Short Verb · RETURN</strong>
+                  <span>dev:2 · sends:0 · racks:0</span>
+                </article>
+                <article class="kanban-card ">
+                            <strong>Hybrid Reverb</strong>
+                            <span>Hybrid Reverb · Audio Effect</span>
+                          </article><article class="kanban-card ">
+                            <strong>EQ Eight</strong>
+                            <span>EQ Eight · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="kanban-column session-column-return session-kind-return">
+              <header class="kanban-column-header">
+                <strong>B — Tape Delay</strong>
+                <span class="kind-badge kind-return">return</span>
+              </header>
+              <div class="kanban-column-body">
+                <article class="kanban-card kanban-summary-card">
+                  <strong>B — Tape Delay · RETURN</strong>
+                  <span>dev:2 · sends:0 · racks:0</span>
+                </article>
+                <article class="kanban-card ">
+                            <strong>Echo</strong>
+                            <span>Echo · Audio Effect</span>
+                          </article><article class="kanban-card ">
+                            <strong>Saturator</strong>
+                            <span>Saturator · Audio Effect</span>
+                          </article>
+              </div>
+            </section><section class="kanban-column session-column-master session-kind-master">
+              <header class="kanban-column-header">
+                <strong>Master</strong>
+                <span class="kind-badge kind-master">master</span>
+              </header>
+              <div class="kanban-column-body">
+                <article class="kanban-card kanban-summary-card">
+                  <strong>Master · MASTER</strong>
+                  <span>dev:3 · sends:0 · racks:0</span>
+                </article>
+                <article class="kanban-card ">
+                            <strong>EQ Eight</strong>
+                            <span>EQ Eight · Audio Effect</span>
+                          </article><article class="kanban-card ">
+                            <strong>Glue Compressor</strong>
+                            <span>Glue Compressor · Audio Effect</span>
+                          </article><article class="kanban-card ">
+                            <strong>Limiter</strong>
+                            <span>Limiter · Audio Effect</span>
+                          </article>
+              </div>
+            </section>
+      </div>
+    </div>
+      </div>
+      <div class="panel panel-metro">
+        <div class="notice">
+      Metro preview is native HTML/CSS inside Live. Full Git / Metro Mermaid remains external.
+    </div>
+    <div class="metro-list">
+      <section class="metro-row session-column-track session-kind-group">
+            <div class="metro-track-name">
+              <strong>DRUMS</strong>
+              <span>group · dev:2</span>
+            </div>
+            <div class="metro-line-shell">
+              <div class="metro-line">
+                <article class="metro-stop is-track">
+                  <span class="metro-dot"></span>
+                  <strong>DRUMS</strong>
+                  <small>group</small>
+                </article>
+                <article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Drum Buss</strong>
+                      <small>Drum Buss · Audio Effect</small>
+                    </article><article class="metro-stop is-rack">
+                      <span class="metro-dot"></span>
+                      <strong>Parallel Crunch</strong>
+                      <small>Parallel Crunch · Rack …</small>
+                    </article>
+                
+              </div>
+            </div>
+          </section><section class="metro-row session-column-track session-kind-midi">
+            <div class="metro-track-name">
+              <strong>Kick — Analog</strong>
+              <span>midi · dev:3</span>
+            </div>
+            <div class="metro-line-shell">
+              <div class="metro-line">
+                <article class="metro-stop is-track">
+                  <span class="metro-dot"></span>
+                  <strong>Kick — Analog</strong>
+                  <small>midi</small>
+                </article>
+                <article class="metro-stop is-rack">
+                      <span class="metro-dot"></span>
+                      <strong>Kick Designer</strong>
+                      <small>Kick Designer · Rack · …</small>
+                    </article><article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Saturator</strong>
+                      <small>Saturator · Audio Effect</small>
+                    </article><article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>EQ Eight</strong>
+                      <small>EQ Eight · Audio Effect</small>
+                    </article>
+                
+              </div>
+            </div>
+          </section><section class="metro-row session-column-track session-kind-midi">
+            <div class="metro-track-name">
+              <strong>Percussion</strong>
+              <span>midi · dev:2</span>
+            </div>
+            <div class="metro-line-shell">
+              <div class="metro-line">
+                <article class="metro-stop is-track">
+                  <span class="metro-dot"></span>
+                  <strong>Percussion</strong>
+                  <small>midi</small>
+                </article>
+                <article class="metro-stop is-rack">
+                      <span class="metro-dot"></span>
+                      <strong>Drum Rack</strong>
+                      <small>Drum Rack · Rack · pads…</small>
+                    </article><article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Glue Compressor</strong>
+                      <small>Glue Compressor · Audio…</small>
+                    </article>
+                
+              </div>
+            </div>
+          </section><section class="metro-row session-column-track session-kind-midi">
+            <div class="metro-track-name">
+              <strong>Bass Sequence</strong>
+              <span>midi · dev:3</span>
+            </div>
+            <div class="metro-line-shell">
+              <div class="metro-line">
+                <article class="metro-stop is-track">
+                  <span class="metro-dot"></span>
+                  <strong>Bass Sequence</strong>
+                  <small>midi</small>
+                </article>
+                <article class="metro-stop is-rack">
+                      <span class="metro-dot"></span>
+                      <strong>Bass Engine</strong>
+                      <small>Bass Engine · Rack · ch…</small>
+                    </article><article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Roar</strong>
+                      <small>Roar · Audio Effect</small>
+                    </article><article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Utility</strong>
+                      <small>Utility · Audio Effect</small>
+                    </article>
+                
+              </div>
+            </div>
+          </section><section class="metro-row session-column-track session-kind-audio">
+            <div class="metro-track-name">
+              <strong>Juno Chords</strong>
+              <span>audio · dev:2</span>
+            </div>
+            <div class="metro-line-shell">
+              <div class="metro-line">
+                <article class="metro-stop is-track">
+                  <span class="metro-dot"></span>
+                  <strong>Juno Chords</strong>
+                  <small>audio</small>
+                </article>
+                <article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Auto Filter</strong>
+                      <small>Auto Filter · Audio Eff…</small>
+                    </article><article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Chorus-Ensemble</strong>
+                      <small>Chorus-Ensemble · Audio…</small>
+                    </article>
+                
+              </div>
+            </div>
+          </section><section class="metro-row session-column-track session-kind-midi">
+            <div class="metro-track-name">
+              <strong>Lead Atmosphere</strong>
+              <span>midi · dev:3</span>
+            </div>
+            <div class="metro-line-shell">
+              <div class="metro-line">
+                <article class="metro-stop is-track">
+                  <span class="metro-dot"></span>
+                  <strong>Lead Atmosphere</strong>
+                  <small>midi</small>
+                </article>
+                <article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Wavetable</strong>
+                      <small>Wavetable · Instrument</small>
+                    </article><article class="metro-stop is-rack">
+                      <span class="metro-dot"></span>
+                      <strong>Movement Rack</strong>
+                      <small>Movement Rack · Rack · …</small>
+                    </article><article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Echo</strong>
+                      <small>Echo · Audio Effect</small>
+                    </article>
+                
+              </div>
+            </div>
+          </section><section class="metro-row session-column-return session-kind-return">
+            <div class="metro-track-name">
+              <strong>A — Short Verb</strong>
+              <span>return · dev:2</span>
+            </div>
+            <div class="metro-line-shell">
+              <div class="metro-line">
+                <article class="metro-stop is-track">
+                  <span class="metro-dot"></span>
+                  <strong>A — Short Verb</strong>
+                  <small>return</small>
+                </article>
+                <article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Hybrid Reverb</strong>
+                      <small>Hybrid Reverb · Audio E…</small>
+                    </article><article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>EQ Eight</strong>
+                      <small>EQ Eight · Audio Effect</small>
+                    </article>
+                
+              </div>
+            </div>
+          </section><section class="metro-row session-column-return session-kind-return">
+            <div class="metro-track-name">
+              <strong>B — Tape Delay</strong>
+              <span>return · dev:2</span>
+            </div>
+            <div class="metro-line-shell">
+              <div class="metro-line">
+                <article class="metro-stop is-track">
+                  <span class="metro-dot"></span>
+                  <strong>B — Tape Delay</strong>
+                  <small>return</small>
+                </article>
+                <article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Echo</strong>
+                      <small>Echo · Audio Effect</small>
+                    </article><article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Saturator</strong>
+                      <small>Saturator · Audio Effect</small>
+                    </article>
+                
+              </div>
+            </div>
+          </section><section class="metro-row session-column-master session-kind-master">
+            <div class="metro-track-name">
+              <strong>Master</strong>
+              <span>master · dev:3</span>
+            </div>
+            <div class="metro-line-shell">
+              <div class="metro-line">
+                <article class="metro-stop is-track">
+                  <span class="metro-dot"></span>
+                  <strong>Master</strong>
+                  <small>master</small>
+                </article>
+                <article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>EQ Eight</strong>
+                      <small>EQ Eight · Audio Effect</small>
+                    </article><article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Glue Compressor</strong>
+                      <small>Glue Compressor · Audio…</small>
+                    </article><article class="metro-stop ">
+                      <span class="metro-dot"></span>
+                      <strong>Limiter</strong>
+                      <small>Limiter · Audio Effect</small>
+                    </article>
+                
+              </div>
+            </div>
+          </section>
+    </div>
+      </div>
+      <div class="panel panel-overview">
+        <div class="overview-grid">
+      <article class="overview-card">
+        <span class="label">Set</span>
+        <strong>NEON TRANSIT — Live Set</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Export date</span>
+        <strong>30/06/2026 18:42:00</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Mode</span>
+        <strong>ultra-safe</strong>
+      </article>
+      <article class="overview-card">
+        <span class="label">Status</span>
+        <strong>Ready</strong>
+      </article>
+    </div>
+    <div class="notice">Latest export metadata loaded. Use Quick Open or Files to jump to external outputs.</div>
+    
+    <div class="quick-open">
+      <div class="section-header">
+        <h3>Quick Open</h3>
+        <p>External files only — no heavy rendering inside Live</p>
+      </div>
+      <div class="button-grid">
+        <button class="action-button" type="button" data-link-key="launcher">Open External Launcher</button><button class="action-button" type="button" data-link-key="report">Open HTML Report</button><button class="action-button" type="button" data-link-key="session-grid">Open Session Grid</button><button class="action-button" type="button" data-link-key="git-svg">Open Git / Metro</button><button class="action-button" type="button" data-link-key="kanban-svg">Open Kanban</button>
+      </div>
+    </div>
+      </div>
+      <div class="panel panel-outputs">
+        <div class="notice">
+      Routing I/O may be unavailable in the current SDK scan. Manual routing-overrides.json will be added later.
+    </div>
+    
+    <div class="table-shell">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Track</th>
+            <th>Kind</th>
+            <th>Input</th>
+            <th>Output</th>
+            <th>Sends</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+                <td>1</td>
+                <td>DRUMS</td>
+                <td><span class="kind-badge kind-track">group</span></td>
+                <td>—</td>
+                <td>Master</td>
+                <td>A: 0.186, B: 0.094</td>
+              </tr><tr>
+                <td>2</td>
+                <td>Kick — Analog</td>
+                <td><span class="kind-badge kind-track">midi</span></td>
+                <td>All Ins · All Channels</td>
+                <td>DRUMS</td>
+                <td>A: 0.186, B: 0.094</td>
+              </tr><tr>
+                <td>3</td>
+                <td>Percussion</td>
+                <td><span class="kind-badge kind-track">midi</span></td>
+                <td>All Ins · All Channels</td>
+                <td>DRUMS</td>
+                <td>A: 0.186, B: 0.094</td>
+              </tr><tr>
+                <td>4</td>
+                <td>Bass Sequence</td>
+                <td><span class="kind-badge kind-track">midi</span></td>
+                <td>All Ins · All Channels</td>
+                <td>Master</td>
+                <td>A: 0.186, B: 0.094</td>
+              </tr><tr>
+                <td>5</td>
+                <td>Juno Chords</td>
+                <td><span class="kind-badge kind-track">audio</span></td>
+                <td>Ext. In · 1/2</td>
+                <td>Master</td>
+                <td>A: 0.186, B: 0.094</td>
+              </tr><tr>
+                <td>6</td>
+                <td>Lead Atmosphere</td>
+                <td><span class="kind-badge kind-track">midi</span></td>
+                <td>All Ins · All Channels</td>
+                <td>Master</td>
+                <td>A: 0.186, B: 0.094</td>
+              </tr><tr>
+                <td>1</td>
+                <td>A — Short Verb</td>
+                <td><span class="kind-badge kind-return">return</span></td>
+                <td>—</td>
+                <td>Master</td>
+                <td>—</td>
+              </tr><tr>
+                <td>2</td>
+                <td>B — Tape Delay</td>
+                <td><span class="kind-badge kind-return">return</span></td>
+                <td>—</td>
+                <td>Master</td>
+                <td>—</td>
+              </tr><tr>
+                <td>★</td>
+                <td>Master</td>
+                <td><span class="kind-badge kind-master">master</span></td>
+                <td>—</td>
+                <td>Ext. Out · 1/2</td>
+                <td>—</td>
+              </tr>
+        </tbody>
+      </table>
+    </div>
+      </div>
+      <div class="panel panel-devices">
+        <div class="device-list">
+    <article class="device-card">
+          <header class="device-card-header">
+            <div>
+              <h3>DRUMS</h3>
+              <p>group · dev:2 · racks:1</p>
+            </div>
+            <span class="kind-badge kind-track">group</span>
+          </header>
+          <div class="chip-group">
+            <span class="chip">Drum Buss · Audio Effect</span><span class="chip">Parallel Crunch · Rack · chains:3</span>
+          </div>
+          <div class="rack-summary">
+                  <span class="label">Racks</span>
+                  <div class="chip-group"><span class="chip chip-rack">Parallel Crunch · chains:3 · complete</span></div>
+                </div>
+        </article><article class="device-card">
+          <header class="device-card-header">
+            <div>
+              <h3>Kick — Analog</h3>
+              <p>midi · dev:3 · racks:1</p>
+            </div>
+            <span class="kind-badge kind-track">midi</span>
+          </header>
+          <div class="chip-group">
+            <span class="chip">Kick Designer · Rack · chains:4</span><span class="chip">Saturator · Audio Effect</span><span class="chip">EQ Eight · Audio Effect</span>
+          </div>
+          <div class="rack-summary">
+                  <span class="label">Racks</span>
+                  <div class="chip-group"><span class="chip chip-rack">Kick Designer · chains:3 · complete</span></div>
+                </div>
+        </article><article class="device-card">
+          <header class="device-card-header">
+            <div>
+              <h3>Percussion</h3>
+              <p>midi · dev:2 · racks:1</p>
+            </div>
+            <span class="kind-badge kind-track">midi</span>
+          </header>
+          <div class="chip-group">
+            <span class="chip">Drum Rack · Rack · pads:16</span><span class="chip">Glue Compressor · Audio Effect</span>
+          </div>
+          <div class="rack-summary">
+                  <span class="label">Racks</span>
+                  <div class="chip-group"><span class="chip chip-rack">Drum Rack · chains:16 · complete</span></div>
+                </div>
+        </article><article class="device-card">
+          <header class="device-card-header">
+            <div>
+              <h3>Bass Sequence</h3>
+              <p>midi · dev:3 · racks:1</p>
+            </div>
+            <span class="kind-badge kind-track">midi</span>
+          </header>
+          <div class="chip-group">
+            <span class="chip">Bass Engine · Rack · chains:3</span><span class="chip">Roar · Audio Effect</span><span class="chip">Utility · Audio Effect</span>
+          </div>
+          <div class="rack-summary">
+                  <span class="label">Racks</span>
+                  <div class="chip-group"><span class="chip chip-rack">Bass Engine · chains:3 · complete</span></div>
+                </div>
+        </article><article class="device-card">
+          <header class="device-card-header">
+            <div>
+              <h3>Juno Chords</h3>
+              <p>audio · dev:2 · racks:0</p>
+            </div>
+            <span class="kind-badge kind-track">audio</span>
+          </header>
+          <div class="chip-group">
+            <span class="chip">Auto Filter · Audio Effect</span><span class="chip">Chorus-Ensemble · Audio Effect</span>
+          </div>
+          
+        </article><article class="device-card">
+          <header class="device-card-header">
+            <div>
+              <h3>Lead Atmosphere</h3>
+              <p>midi · dev:3 · racks:1</p>
+            </div>
+            <span class="kind-badge kind-track">midi</span>
+          </header>
+          <div class="chip-group">
+            <span class="chip">Wavetable · Instrument</span><span class="chip">Movement Rack · Rack · chains:2</span><span class="chip">Echo · Audio Effect</span>
+          </div>
+          <div class="rack-summary">
+                  <span class="label">Racks</span>
+                  <div class="chip-group"><span class="chip chip-rack">Movement Rack · chains:3 · complete</span></div>
+                </div>
+        </article><article class="device-card">
+          <header class="device-card-header">
+            <div>
+              <h3>A — Short Verb</h3>
+              <p>return · dev:2 · racks:0</p>
+            </div>
+            <span class="kind-badge kind-return">return</span>
+          </header>
+          <div class="chip-group">
+            <span class="chip">Hybrid Reverb · Audio Effect</span><span class="chip">EQ Eight · Audio Effect</span>
+          </div>
+          
+        </article><article class="device-card">
+          <header class="device-card-header">
+            <div>
+              <h3>B — Tape Delay</h3>
+              <p>return · dev:2 · racks:0</p>
+            </div>
+            <span class="kind-badge kind-return">return</span>
+          </header>
+          <div class="chip-group">
+            <span class="chip">Echo · Audio Effect</span><span class="chip">Saturator · Audio Effect</span>
+          </div>
+          
+        </article><article class="device-card">
+          <header class="device-card-header">
+            <div>
+              <h3>Master</h3>
+              <p>master · dev:3 · racks:0</p>
+            </div>
+            <span class="kind-badge kind-master">master</span>
+          </header>
+          <div class="chip-group">
+            <span class="chip">EQ Eight · Audio Effect</span><span class="chip">Glue Compressor · Audio Effect</span><span class="chip">Limiter · Audio Effect</span>
+          </div>
+          
+        </article>
+  </div>
+      </div>
+      <div class="panel panel-files">
+        <section class="file-group">
+        <div class="section-header">
+          <h3>Core Outputs</h3>
+          <p>4/4 available</p>
+        </div>
+        <div class="file-group-list">
+          <div class="file-row">
+    <div class="file-meta">
+      <strong>Open External Launcher</strong>
+      <span>session-map-diagrams.html</span>
+    </div>
+    <div class="file-actions">
+      <span class="file-status is-available">available</span>
+      <button class="mini-button" type="button" data-link-key="launcher">Open</button>
+    </div>
+  </div><div class="file-row">
+    <div class="file-meta">
+      <strong>Open HTML Report</strong>
+      <span>session-map.html</span>
+    </div>
+    <div class="file-actions">
+      <span class="file-status is-available">available</span>
+      <button class="mini-button" type="button" data-link-key="report">Open</button>
+    </div>
+  </div><div class="file-row">
+    <div class="file-meta">
+      <strong>Open Session Grid</strong>
+      <span>session-map-session-grid.html</span>
+    </div>
+    <div class="file-actions">
+      <span class="file-status is-available">available</span>
+      <button class="mini-button" type="button" data-link-key="session-grid">Open</button>
+    </div>
+  </div><div class="file-row">
+    <div class="file-meta">
+      <strong>Open session-map.json</strong>
+      <span>session-map.json</span>
+    </div>
+    <div class="file-actions">
+      <span class="file-status is-available">available</span>
+      <button class="mini-button" type="button" data-link-key="json">Open</button>
+    </div>
+  </div>
+        </div>
+      </section><section class="file-group">
+        <div class="section-header">
+          <h3>Mermaid Flow</h3>
+          <p>2/2 available</p>
+        </div>
+        <div class="file-group-list">
+          <div class="file-row">
+    <div class="file-meta">
+      <strong>Open Flow SVG</strong>
+      <span>session-map-flow.svg</span>
+    </div>
+    <div class="file-actions">
+      <span class="file-status is-available">available</span>
+      <button class="mini-button" type="button" data-link-key="flow-svg">Open</button>
+    </div>
+  </div><div class="file-row">
+    <div class="file-meta">
+      <strong>Open Flow PNG</strong>
+      <span>session-map-flow.png</span>
+    </div>
+    <div class="file-actions">
+      <span class="file-status is-available">available</span>
+      <button class="mini-button" type="button" data-link-key="flow-png">Open</button>
+    </div>
+  </div>
+        </div>
+      </section><section class="file-group">
+        <div class="section-header">
+          <h3>Mermaid Git / Metro</h3>
+          <p>2/2 available</p>
+        </div>
+        <div class="file-group-list">
+          <div class="file-row">
+    <div class="file-meta">
+      <strong>Open Git / Metro SVG</strong>
+      <span>session-map-git.svg</span>
+    </div>
+    <div class="file-actions">
+      <span class="file-status is-available">available</span>
+      <button class="mini-button" type="button" data-link-key="git-svg">Open</button>
+    </div>
+  </div><div class="file-row">
+    <div class="file-meta">
+      <strong>Open Git / Metro PNG</strong>
+      <span>session-map-git.png</span>
+    </div>
+    <div class="file-actions">
+      <span class="file-status is-available">available</span>
+      <button class="mini-button" type="button" data-link-key="git-png">Open</button>
+    </div>
+  </div>
+        </div>
+      </section><section class="file-group">
+        <div class="section-header">
+          <h3>Mermaid Kanban</h3>
+          <p>2/2 available</p>
+        </div>
+        <div class="file-group-list">
+          <div class="file-row">
+    <div class="file-meta">
+      <strong>Open Kanban SVG</strong>
+      <span>session-map-kanban.svg</span>
+    </div>
+    <div class="file-actions">
+      <span class="file-status is-available">available</span>
+      <button class="mini-button" type="button" data-link-key="kanban-svg">Open</button>
+    </div>
+  </div><div class="file-row">
+    <div class="file-meta">
+      <strong>Open Kanban PNG</strong>
+      <span>session-map-kanban.png</span>
+    </div>
+    <div class="file-actions">
+      <span class="file-status is-available">available</span>
+      <button class="mini-button" type="button" data-link-key="kanban-png">Open</button>
+    </div>
+  </div>
+        </div>
+      </section>
+      </div>
+    </section>
+
+    <section class="footer">
+      <small>Recommended mode remains the external launcher. This internal viewer stays intentionally lightweight: no Mermaid, no embedded SVG, no heavy report rendering inside Live.</small>
+      <div class="footer-actions">
+        <button id="refresh-viewer" class="cancel-button" type="button">Refresh Metadata</button>
+        <button id="cancel-viewer" class="cancel-button" type="button">Cancel</button>
+        <button id="close-viewer" class="close-button" type="button">Close</button>
+      </div>
+      <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a>
+    </section>
+  </div>
+<script>
+    (() => {
+      const views = ["session","kanban","metro","outputs","devices","files","overview"];
+      const requested = new URLSearchParams(location.search).get("view") || "session";
+      const view = views.includes(requested) ? requested : "session";
+      const input = document.getElementById("internal-tab-" + view);
+      if (input) input.checked = true;
+      document.querySelectorAll('input[name="internal-tab"]').forEach((tab) => {
+        tab.addEventListener("change", () => history.replaceState(null, "", "?view=" + tab.id.replace("internal-tab-", "")));
+      });
+      document.documentElement.dataset.staticPreview = "true";
+    })();
+  </script></body>
+</html>

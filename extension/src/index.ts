@@ -5,6 +5,7 @@ import {
   type ExtensionContext,
 } from "@ableton-extensions/sdk";
 import {
+  exportCapabilityMatrixArtifacts,
   exportDiagnosticJson,
   exportJson,
   exportRackDiagnosticJson,
@@ -12,10 +13,16 @@ import {
   generateHtml,
   generateMermaidDiagrams,
   generateSessionGrid,
+  resolveCapabilityMatrixExportPaths,
   resolveExportLocations,
   resolveSessionExportPaths,
 } from "./exportJson.js";
 import { showInternalViewerExperimental } from "./internal-viewer/createInternalViewer.js";
+import {
+  renderCapabilityMatrixHtml,
+  renderCapabilityMatrixMarkdown,
+  scanCapabilityMatrix,
+} from "./scanCapabilityMatrix.js";
 import { scanRackDiagnostic } from "./scanRackDiagnostic.js";
 import { scanSdkDiagnostic } from "./scanDiagnostic.js";
 import { scanLiveSet } from "./scanLiveSet.js";
@@ -25,7 +32,9 @@ const OPEN_INTERNAL_VIEWER_COMMAND_ID = "abletonSessionMapper.openInternalViewer
 const EXPORT_COMMAND_ID = "abletonSessionMapper.exportJson";
 const EXPORT_DIAGNOSTIC_COMMAND_ID = "abletonSessionMapper.exportSdkDiagnostic";
 const EXPORT_RACK_DIAGNOSTIC_COMMAND_ID = "abletonSessionMapper.exportRackDiagnostic";
+const EXPORT_CAPABILITY_MATRIX_COMMAND_ID = "abletonSessionMapper.exportSdkCapabilityMatrix";
 const ENABLE_DIAGNOSTIC_ACTIONS = process.env.ENABLE_DIAGNOSTIC_ACTIONS === "true";
+const ENABLE_CAPABILITY_MATRIX = process.env.ENABLE_CAPABILITY_MATRIX === "true";
 const ENABLE_OPEN_HTML = process.env.ENABLE_OPEN_HTML !== "false";
 const GENERATE_DIAGRAMS_ON_EXPORT = process.env.GENERATE_DIAGRAMS_ON_EXPORT === "true";
 const ENABLE_INTERNAL_VIEWER = process.env.ENABLE_INTERNAL_VIEWER === "true";
@@ -305,6 +314,38 @@ async function exportRackDiagnosticOnly(
   return diagnosticPath;
 }
 
+async function exportCapabilityMatrixOnly(
+  context: ExtensionContext<"1.0.0">,
+): Promise<string | null> {
+  let htmlPath: string | null = null;
+  const locations = await resolveExportLocations(context);
+  console.log(`[Ableton Session Mapper] Resolved project root: ${locations.projectRoot}`);
+  console.log(`[Ableton Session Mapper] Resolved exports directory: ${locations.exportDirectory}`);
+  await context.ui.withinProgressDialog(
+    "Generating SDK Capability Matrix…",
+    { progress: 0 },
+    async (update, signal) => {
+      try {
+        await update("Scanning SDK capabilities…", 20);
+        if (signal.aborted) return;
+        const matrix = await scanCapabilityMatrix(context);
+        const html = renderCapabilityMatrixHtml(matrix);
+        const markdown = renderCapabilityMatrixMarkdown(matrix);
+        const paths = await resolveCapabilityMatrixExportPaths(context, matrix);
+        await update("Writing capability matrix reports…", 80);
+        if (signal.aborted) return;
+        await exportCapabilityMatrixArtifacts(paths, matrix, html, markdown);
+        htmlPath = paths.latestHtmlPath;
+        await update("Capability matrix complete", 100);
+      } catch (error) {
+        logActionFailed("Generate SDK Capability Matrix", error);
+        throw error;
+      }
+    },
+  );
+  return htmlPath;
+}
+
 export function activate(activation: ActivationContext): void {
   const context = initialize(activation, "1.0.0");
 
@@ -352,6 +393,17 @@ export function activate(activation: ActivationContext): void {
     });
   }
 
+  if (ENABLE_DIAGNOSTIC_ACTIONS || ENABLE_CAPABILITY_MATRIX) {
+    context.commands.registerCommand(EXPORT_CAPABILITY_MATRIX_COMMAND_ID, () => {
+      void runSafeAction("Generate SDK Capability Matrix", async () => {
+        const htmlPath = await exportCapabilityMatrixOnly(context);
+        if (htmlPath) {
+          console.log(`[Ableton Session Mapper] Capability matrix available at: ${htmlPath}`);
+        }
+      });
+    });
+  }
+
   const actions = ENABLE_DIAGNOSTIC_ACTIONS
     ? ([
         [NORMAL_ACTION_LABEL, EXPORT_SESSION_MAP_COMMAND_ID],
@@ -361,12 +413,18 @@ export function activate(activation: ActivationContext): void {
         ["Export JSON", EXPORT_COMMAND_ID],
         ["Export SDK Diagnostic JSON", EXPORT_DIAGNOSTIC_COMMAND_ID],
         ["Export Rack Diagnostic JSON", EXPORT_RACK_DIAGNOSTIC_COMMAND_ID],
+        ...((ENABLE_DIAGNOSTIC_ACTIONS || ENABLE_CAPABILITY_MATRIX)
+          ? ([["Generate SDK Capability Matrix", EXPORT_CAPABILITY_MATRIX_COMMAND_ID]] as const)
+          : []),
       ] as const)
     : ([
         [NORMAL_ACTION_LABEL, EXPORT_SESSION_MAP_COMMAND_ID],
         ...(ENABLE_INTERNAL_VIEWER
           ? ([[INTERNAL_VIEWER_ACTION_LABEL, OPEN_INTERNAL_VIEWER_COMMAND_ID]] as const)
           : []),
+        ...((ENABLE_CAPABILITY_MATRIX
+          ? ([["Generate SDK Capability Matrix", EXPORT_CAPABILITY_MATRIX_COMMAND_ID]] as const)
+          : [])),
       ] as const);
 
   for (const scope of CONTEXT_MENU_SCOPES) {
@@ -387,6 +445,9 @@ export function activate(activation: ActivationContext): void {
   );
   console.log(
     `[Ableton Session Mapper] Diagnostic actions ${ENABLE_DIAGNOSTIC_ACTIONS ? "enabled" : "disabled"}${ENABLE_DIAGNOSTIC_ACTIONS ? " via ENABLE_DIAGNOSTIC_ACTIONS=true" : ""}.`,
+  );
+  console.log(
+    `[Ableton Session Mapper] SDK Capability Matrix ${ENABLE_CAPABILITY_MATRIX ? "enabled" : "disabled"}${ENABLE_CAPABILITY_MATRIX ? " via ENABLE_CAPABILITY_MATRIX=true" : ""}.`,
   );
   console.log(
     `[Ableton Session Mapper] External HTML auto-open ${ENABLE_OPEN_HTML ? "enabled" : "disabled"}${ENABLE_OPEN_HTML ? " (set ENABLE_OPEN_HTML=false to disable)" : " via ENABLE_OPEN_HTML=false"}.`,

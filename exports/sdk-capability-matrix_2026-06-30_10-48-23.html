@@ -1,0 +1,1116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SDK Capability Matrix</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #121212;
+      --panel: #1d1d1d;
+      --panel-2: #252525;
+      --border: rgba(255,255,255,0.08);
+      --text: #f2efe8;
+      --muted: #aaa59c;
+      --accent: #f5a623;
+      --supported: #53c26b;
+      --partial: #e4bf54;
+      --unavailable: #8f8f8f;
+      --unsafe: #f18d32;
+      --unknown: #7a7a7a;
+      --not-tested: #6d8fb7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(245,166,35,0.10), transparent 28%),
+        linear-gradient(180deg, #252525, #121212);
+      color: var(--text);
+      padding: 24px;
+    }
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+    .hero, .summary, .section-card, .safety-card {
+      background: rgba(29,29,29,0.95);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+    }
+    .hero, .safety-card, .section-card { padding: 18px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 11px;
+    }
+    h1, h2 { margin: 0; }
+    .hero p, .safety-card p, .section-head span { color: var(--muted); }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 1px;
+      padding: 1px;
+      background: rgba(255,255,255,0.04);
+    }
+    .metric-card {
+      background: var(--panel);
+      padding: 16px 12px;
+      text-align: center;
+    }
+    .metric-card strong { display: block; font-size: 26px; margin-bottom: 4px; }
+    .metric-card span { text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); }
+    .status-supported { color: var(--supported); }
+    .status-partial { color: var(--partial); }
+    .status-unavailable { color: var(--unavailable); }
+    .status-unsafe { color: var(--unsafe); }
+    .status-unknown { color: var(--unknown); }
+    .status-not-tested { color: var(--not-tested); }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .table-shell { overflow: auto; border-radius: 14px; border: 1px solid var(--border); }
+    table { width: 100%; min-width: 980px; border-collapse: collapse; background: var(--panel); }
+    th, td { padding: 12px; text-align: left; vertical-align: top; }
+    th {
+      background: var(--panel-2);
+      color: var(--accent);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    td { border-top: 1px solid rgba(255,255,255,0.05); font-size: 13px; line-height: 1.45; }
+    .status-badge {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px 8px;
+      border: 1px solid currentColor;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 10px;
+    }
+    .preview {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <p class="eyebrow">SDK Capability Matrix</p>
+      <h1>Ability map of the current Ableton Extensions SDK surface</h1>
+      <p>Generated at 2026-06-30T08:48:23.502Z · mode: sdk-capability-matrix</p>
+    </section>
+
+    <section class="summary">
+      <article class="metric-card status-supported">
+        <strong>20</strong>
+        <span>supported</span>
+      </article><article class="metric-card status-partial">
+        <strong>4</strong>
+        <span>partial</span>
+      </article><article class="metric-card status-unavailable">
+        <strong>38</strong>
+        <span>unavailable</span>
+      </article><article class="metric-card status-unsafe">
+        <strong>3</strong>
+        <span>unsafe</span>
+      </article><article class="metric-card status-unknown">
+        <strong>2</strong>
+        <span>unknown</span>
+      </article><article class="metric-card status-not-tested">
+        <strong>10</strong>
+        <span>not-tested</span>
+      </article>
+    </section>
+
+    <section class="safety-card">
+      <h2>Safety guardrails</h2>
+      <p>deepRackScan=false · recursiveScan=false · maxTracks=20 · maxDevices=80 · maxParameters=200 · maxDurationMs=15000</p>
+    </section>
+
+    <section class="section-card">
+        <header class="section-head">
+          <h2>Set</h2>
+          <span>5 capabilities</span>
+        </header>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Status</th>
+                <th>Evidence</th>
+                <th>Notes</th>
+                <th>Duration</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                    <td>
+                      <strong>Set name</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Set name is not exposed on this SDK object.</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Tempo</strong>
+                      <div class="preview">120</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read from song.tempo</td>
+                    <td>—</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Time signature</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>No stable time signature property found.</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Key / scale</strong>
+                      <div class="preview">Major</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read via scaleName</td>
+                    <td>—</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Arrangement / session info</strong>
+                      <div class="preview">{&quot;tracks&quot;:2,&quot;scenes&quot;:8}</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Tracks and scenes are readable from the song object</td>
+                    <td>—</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr>
+            </tbody>
+          </table>
+        </div>
+      </section><section class="section-card">
+        <header class="section-head">
+          <h2>Tracks</h2>
+          <span>12 capabilities</span>
+        </header>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Status</th>
+                <th>Evidence</th>
+                <th>Notes</th>
+                <th>Duration</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                    <td>
+                      <strong>Track list</strong>
+                      <div class="preview">5</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read from first 5 tracks</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Track order</strong>
+                      <div class="preview">[&quot;1-MIDI&quot;,&quot;2-Dexed&quot;,&quot;A-Reverb&quot;,&quot;B-Delay&quot;,&quot;Main&quot;]</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Order preserved from song.tracks / returnTracks / mainTrack</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Track name</strong>
+                      <div class="preview">[&quot;1-MIDI&quot;,&quot;2-Dexed&quot;,&quot;A-Reverb&quot;,&quot;B-Delay&quot;,&quot;Main&quot;]</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read from first 5 tracks</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Track type audio/midi/return/master</strong>
+                      <div class="preview">[&quot;midi&quot;,&quot;midi&quot;,&quot;return&quot;,&quot;return&quot;,&quot;master&quot;]</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Derived from SDK track classes and role</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Track color</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Track color is not exposed by the current SDK scan.</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Mute</strong>
+                      <div class="preview">false</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read via mute</td>
+                    <td>—</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Solo</strong>
+                      <div class="preview">false</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read via solo</td>
+                    <td>—</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Arm</strong>
+                      <div class="preview">false</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read via arm</td>
+                    <td>—</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Fold</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Fold information is not consistently exposed.</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Group membership</strong>
+                      <div class="preview">{&quot;groupedTracks&quot;:0}</div>
+                    </td>
+                    <td><span class="status-badge status-partial">partial</span></td>
+                    <td>groupTrack property visible on 5/5 sampled tracks</td>
+                    <td>Only parent-link visibility is tested here.</td>
+                    <td>0 ms</td>
+                    <td>medium</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Parent group</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>No parent group value returned on sampled tracks</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Child tracks</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>No direct child tracks collection found</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr>
+            </tbody>
+          </table>
+        </div>
+      </section><section class="section-card">
+        <header class="section-head">
+          <h2>Mixer</h2>
+          <span>7 capabilities</span>
+        </header>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Status</th>
+                <th>Evidence</th>
+                <th>Notes</th>
+                <th>Duration</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                    <td>
+                      <strong>Volume</strong>
+                      <div class="preview">{&quot;objectType&quot;:&quot;DeviceParameter&quot;,&quot;name&quot;:&quot;Track Volume&quot;}</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read via volume</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Pan</strong>
+                      <div class="preview">{&quot;objectType&quot;:&quot;DeviceParameter&quot;,&quot;name&quot;:&quot;Track Panning&quot;}</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read via panning</td>
+                    <td>—</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Sends count</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Read from first sampled track</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Send names</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unknown">unknown</span></td>
+                    <td>Probe failed</td>
+                    <td>Cannot read properties of undefined (reading &#039;map&#039;)</td>
+                    <td>0 ms</td>
+                    <td>medium</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Send values</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unknown">unknown</span></td>
+                    <td>Probe failed</td>
+                    <td>Cannot read properties of undefined (reading &#039;map&#039;)</td>
+                    <td>0 ms</td>
+                    <td>medium</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Return tracks</strong>
+                      <div class="preview">2</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read from song.returnTracks</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Master track</strong>
+                      <div class="preview">{&quot;objectType&quot;:&quot;MidiTrack&quot;,&quot;name&quot;:&quot;Main&quot;}</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read from song.mainTrack</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr>
+            </tbody>
+          </table>
+        </div>
+      </section><section class="section-card">
+        <header class="section-head">
+          <h2>Routing I/O</h2>
+          <span>12 capabilities</span>
+        </header>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Status</th>
+                <th>Evidence</th>
+                <th>Notes</th>
+                <th>Duration</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                    <td>
+                      <strong>Audio From</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Audio To</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>MIDI From</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>MIDI To</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>External In</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>External Out</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Monitor mode</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Monitor mode is not exposed by the sampled tracks.</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Sidechain source</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Sidechain source is not exposed by current SDK scan</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Sidechain enabled</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Sidechain enabled state is not exposed by current SDK scan</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Group routing</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-partial">partial</span></td>
+                    <td>Property exists (groupTrack) but no stable value was returned</td>
+                    <td>Group routing is not directly exposed.</td>
+                    <td>2 ms</td>
+                    <td>medium</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Return routing</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Return routing is not exposed by current SDK scan</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Master routing</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Master routing is not exposed by current SDK scan</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr>
+            </tbody>
+          </table>
+        </div>
+      </section><section class="section-card">
+        <header class="section-head">
+          <h2>Devices</h2>
+          <span>11 capabilities</span>
+        </header>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Status</th>
+                <th>Evidence</th>
+                <th>Notes</th>
+                <th>Duration</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                    <td>
+                      <strong>Device list</strong>
+                      <div class="preview">4</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read from 5 sampled tracks</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Device order</strong>
+                      <div class="preview">[&quot;Producer_Pal&quot;,&quot;Dexed&quot;,&quot;Reverb&quot;,&quot;Delay&quot;]</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Order preserved from track.devices</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Device name</strong>
+                      <div class="preview">[&quot;Producer_Pal&quot;,&quot;Dexed&quot;,&quot;Reverb&quot;,&quot;Delay&quot;]</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read from 4 sampled devices</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Device type/class</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Device class/type is not stably exposed on sampled devices.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Is rack</strong>
+                      <div class="preview">[]</div>
+                    </td>
+                    <td><span class="status-badge status-partial">partial</span></td>
+                    <td>Derived from RackDevice instances and object type names</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Device enabled</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Device enabled state is not consistently exposed.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Device parameters</strong>
+                      <div class="preview">193</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read from up to 200 sampled parameters</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Parameter name</strong>
+                      <div class="preview">Device On</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read via name</td>
+                    <td>—</td>
+                    <td>2 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Parameter value</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Parameter values are not exposed on sampled parameters.</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Parameter min/max</strong>
+                      <div class="preview">0</div>
+                    </td>
+                    <td><span class="status-badge status-supported">supported</span></td>
+                    <td>Read via min</td>
+                    <td>—</td>
+                    <td>3 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Parameter automation state</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Automation state is not exposed on sampled parameters.</td>
+                    <td>3 ms</td>
+                    <td>low</td>
+                  </tr>
+            </tbody>
+          </table>
+        </div>
+      </section><section class="section-card">
+        <header class="section-head">
+          <h2>Racks</h2>
+          <span>10 capabilities</span>
+        </header>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Status</th>
+                <th>Evidence</th>
+                <th>Notes</th>
+                <th>Duration</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                    <td>
+                      <strong>Rack detection</strong>
+                      <div class="preview">[]</div>
+                    </td>
+                    <td><span class="status-badge status-partial">partial</span></td>
+                    <td>Rack-like devices detected from sampled device list</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Rack chains count</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Chains are not exposed on sampled racks.</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Chain names</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>No racks sampled</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Chain devices</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unsafe">unsafe</span></td>
+                    <td>Disabled in diagnostic mode to protect Live stability</td>
+                    <td>Deep chain-device recursion is intentionally disabled because earlier scans could stall or freeze Live.</td>
+                    <td>0 ms</td>
+                    <td>high</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Nested racks</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unsafe">unsafe</span></td>
+                    <td>Disabled in diagnostic mode to protect Live stability</td>
+                    <td>Nested rack recursion remains disabled in capability-matrix mode.</td>
+                    <td>0 ms</td>
+                    <td>high</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Drum rack pads</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Pad collections are not exposed on sampled racks.</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Pad names</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>No racks sampled</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Pad chains</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unsafe">unsafe</span></td>
+                    <td>Disabled in diagnostic mode to protect Live stability</td>
+                    <td>Per-pad chain traversal is intentionally skipped in shallow capability mode.</td>
+                    <td>0 ms</td>
+                    <td>high</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Macro controls</strong>
+                      <div class="preview">[]</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>No racks sampled</td>
+                    <td>Only visible macro-like parameter names are counted here.</td>
+                    <td>0 ms</td>
+                    <td>medium</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Rack variations</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Rack variations are not exposed on sampled racks.</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr>
+            </tbody>
+          </table>
+        </div>
+      </section><section class="section-card">
+        <header class="section-head">
+          <h2>Clips</h2>
+          <span>10 capabilities</span>
+        </header>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Status</th>
+                <th>Evidence</th>
+                <th>Notes</th>
+                <th>Duration</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                    <td>
+                      <strong>Session clips</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>No clipSlots collection found on sampled scenes</td>
+                    <td>—</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Clip slots</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Clip-slot collections are not exposed on sampled scenes.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Clip names</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-not-tested">not-tested</span></td>
+                    <td>Skipped in shallow capability mode</td>
+                    <td>Clip object traversal is skipped by default to avoid context-dependent scans.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Clip colors</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-not-tested">not-tested</span></td>
+                    <td>Skipped in shallow capability mode</td>
+                    <td>Clip color probing is skipped in shallow capability mode.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>MIDI clip notes</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-not-tested">not-tested</span></td>
+                    <td>Skipped in shallow capability mode</td>
+                    <td>Reading note lists can be expensive and is not part of the default capability scan.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Audio clip metadata</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-not-tested">not-tested</span></td>
+                    <td>Skipped in shallow capability mode</td>
+                    <td>Audio clip metadata remains untested in shallow capability mode.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Arrangement clips</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-not-tested">not-tested</span></td>
+                    <td>Skipped in shallow capability mode</td>
+                    <td>Arrangement clip traversal is not enabled by default.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Clip start/end</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-not-tested">not-tested</span></td>
+                    <td>Skipped in shallow capability mode</td>
+                    <td>Clip timing fields are not traversed in the default safe scan.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Loop start/end</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-not-tested">not-tested</span></td>
+                    <td>Skipped in shallow capability mode</td>
+                    <td>Loop timing fields are not traversed in the default safe scan.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Warp info</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-not-tested">not-tested</span></td>
+                    <td>Skipped in shallow capability mode</td>
+                    <td>Warp-related clip probing remains disabled by default.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr>
+            </tbody>
+          </table>
+        </div>
+      </section><section class="section-card">
+        <header class="section-head">
+          <h2>Arrangement</h2>
+          <span>5 capabilities</span>
+        </header>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Status</th>
+                <th>Evidence</th>
+                <th>Notes</th>
+                <th>Duration</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                    <td>
+                      <strong>Arrangement locators</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Arrangement locators are not exposed on the current song object.</td>
+                    <td>1 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Arrangement clips</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-not-tested">not-tested</span></td>
+                    <td>Skipped in shallow capability mode</td>
+                    <td>Arrangement clip traversal remains disabled in capability-matrix mode.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Automation lanes</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-not-tested">not-tested</span></td>
+                    <td>Skipped in shallow capability mode</td>
+                    <td>Automation-lane probing remains disabled in capability-matrix mode.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Selected arrangement region</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Arrangement selection is not exposed on the current song object.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Current song position</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Current song position is not exposed on the current song object.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr>
+            </tbody>
+          </table>
+        </div>
+      </section><section class="section-card">
+        <header class="section-head">
+          <h2>Browser / Files</h2>
+          <span>5 capabilities</span>
+        </header>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Status</th>
+                <th>Evidence</th>
+                <th>Notes</th>
+                <th>Duration</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                    <td>
+                      <strong>Project path</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Project path is not exposed on the current song object.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Set path</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Set path is not exposed on the current song object.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Sample references</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Sample references are not exposed on the current song object.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Missing media</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Missing media is not exposed on the current song object.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr><tr>
+                    <td>
+                      <strong>Device preset paths</strong>
+                      <div class="preview">—</div>
+                    </td>
+                    <td><span class="status-badge status-unavailable">unavailable</span></td>
+                    <td>Not exposed by current SDK scan</td>
+                    <td>Device preset paths are not exposed on the current song object.</td>
+                    <td>0 ms</td>
+                    <td>low</td>
+                  </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+  </div>
+</body>
+</html>

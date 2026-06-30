@@ -1,5 +1,27 @@
 # Ableton Session Mapper
 
+## Preview statique de l’Internal Viewer
+
+Générer puis ouvrir la modale seule, cadrée en `1400x950`, avec des données de démonstration réalistes :
+
+```bash
+npm run preview:internal-viewer
+```
+
+La vue affichée peut aussi être choisie directement dans l’URL :
+
+```text
+internal-viewer-preview/index.html?view=session
+internal-viewer-preview/index.html?view=kanban
+internal-viewer-preview/index.html?view=metro
+internal-viewer-preview/index.html?view=outputs
+internal-viewer-preview/index.html?view=devices
+internal-viewer-preview/index.html?view=files
+internal-viewer-preview/index.html?view=overview
+```
+
+`npm run generate:internal-viewer-preview` régénère uniquement la page statique sans l’ouvrir. Cette preview réutilise le template de la modale et n’intervient pas dans le comportement de l’extension.
+
 Extension TypeScript pour Ableton Live Extensions SDK. Elle analyse le Set
 courant et écrit une représentation JSON des pistes normales, groupes, retours,
 master, devices, racks, chains, macros lisibles et sends disponibles.
@@ -385,7 +407,9 @@ Workflow recommandé :
 
 ## Experimental Internal Viewer
 
-Un viewer interne minimal est disponible uniquement en mode expérimental.
+Un viewer interne expérimental plus grand est disponible uniquement en mode
+expérimental. Il reste volontairement léger et n'essaie pas de rendre les
+diagrammes Mermaid dans Live.
 
 Par défaut :
 
@@ -406,12 +430,28 @@ Live :
 
 Cette fenêtre interne reste volontairement ultra-safe :
 
-- titre + date d'export ;
-- métriques simples ;
-- boutons pour ouvrir les vues externes déjà générées ;
+- modale demandée en **1400 x 950** ;
+- fallback scrollable si Live / le SDK limite la taille réelle ;
+- onglets **Session / Kanban / Git-Metro / Outputs / Devices / Files / Overview** ;
+- navigation par **tabs CSS-only** sans dépendre du JS pour changer de vue ;
+- preview interne légère type Session View, basée uniquement sur le JSON exporté ;
+- preview **Kanban** interne en HTML/CSS ;
+- preview **Git / Metro** interne en HTML/CSS ;
+- métriques simples + date d'export + mode `ultra-safe` ;
+- table légère des outputs basée sur `session-map.json` ;
+- liste compacte des devices par piste ;
+- vérification des fichiers générés avant d'afficher les boutons Open ;
 - aucun Mermaid lourd rendu dans la fenêtre ;
 - aucun gros SVG/PNG injecté ;
 - aucun remplacement du launcher externe.
+
+Notes importantes :
+
+- les routings I/O peuvent apparaître comme **Non exposé par le SDK** ;
+- le message de fallback reste affiché si aucun export n'existe encore ;
+- les vues internes ne chargent **ni Mermaid.js ni SVG/PNG lourds** ;
+- la preview interne n'est **pas** un rendu Mermaid complet ;
+- le workflow recommandé reste toujours le launcher externe.
 
 Important :
 
@@ -429,6 +469,49 @@ npm start
 
 - le mode recommandé reste le **launcher externe** ;
 - la modale interne ne doit servir qu'aux tests ciblés du SDK.
+
+## v0.9 SDK Capability Matrix
+
+Une matrice de capacité du SDK est maintenant disponible en mode diagnostic.
+
+Objectif :
+
+- identifier ce que le SDK expose réellement ;
+- distinguer ce qui est **supported / partial / unavailable / unsafe / unknown / not-tested** ;
+- garder le scan principal stable totalement inchangé.
+
+Activation :
+
+```bash
+ENABLE_CAPABILITY_MATRIX=true npm start
+```
+
+ou :
+
+```bash
+ENABLE_DIAGNOSTIC_ACTIONS=true npm start
+```
+
+Quand ce mode est actif, une action dev supplémentaire apparaît dans Live :
+
+- **Generate SDK Capability Matrix**
+
+Cette action génère :
+
+- `exports/sdk-capability-matrix.json`
+- `exports/sdk-capability-matrix.html`
+- `exports/sdk-capability-matrix.md`
+
+avec aussi des archives datées correspondantes.
+
+Important :
+
+- ce diagnostic est **désactivé par défaut** ;
+- il ne modifie pas l'action stable **Export Session Map** ;
+- il n'active aucun scan profond récursif par défaut ;
+- le deep rack scan reste volontairement classé **unsafe** ;
+- les routings I/O peuvent rester **unavailable** selon la version Live Beta / SDK ;
+- le résultat dépend du **Set actuellement ouvert**.
 
 ### Actions de diagnostic en mode développement
 

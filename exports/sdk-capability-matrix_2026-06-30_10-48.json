@@ -1,0 +1,803 @@
+{
+  "version": "0.9.0",
+  "generatedAt": "2026-06-30T08:48:18.886Z",
+  "mode": "sdk-capability-matrix",
+  "safety": {
+    "deepRackScan": false,
+    "recursiveScan": false,
+    "maxTracks": 20,
+    "maxDevices": 80,
+    "maxParameters": 200,
+    "maxDurationMs": 15000
+  },
+  "summary": {
+    "supported": 20,
+    "partial": 4,
+    "unavailable": 38,
+    "unsafe": 3,
+    "unknown": 2,
+    "notTested": 10
+  },
+  "sections": [
+    {
+      "name": "Set",
+      "items": [
+        {
+          "capability": "Set name",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Set name is not exposed on this SDK object.",
+          "durationMs": 2,
+          "risk": "low"
+        },
+        {
+          "capability": "Tempo",
+          "status": "supported",
+          "evidence": "Read from song.tempo",
+          "valuePreview": 120,
+          "notes": "",
+          "durationMs": 2,
+          "risk": "low"
+        },
+        {
+          "capability": "Time signature",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "No stable time signature property found.",
+          "durationMs": 3,
+          "risk": "low"
+        },
+        {
+          "capability": "Key / scale",
+          "status": "supported",
+          "evidence": "Read via scaleName",
+          "valuePreview": "Major",
+          "notes": "",
+          "durationMs": 3,
+          "risk": "low"
+        },
+        {
+          "capability": "Arrangement / session info",
+          "status": "supported",
+          "evidence": "Tracks and scenes are readable from the song object",
+          "valuePreview": {
+            "tracks": 2,
+            "scenes": 8
+          },
+          "notes": "",
+          "durationMs": 3,
+          "risk": "low"
+        }
+      ]
+    },
+    {
+      "name": "Tracks",
+      "items": [
+        {
+          "capability": "Track list",
+          "status": "supported",
+          "evidence": "Read from first 5 tracks",
+          "valuePreview": 5,
+          "notes": "",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Track order",
+          "status": "supported",
+          "evidence": "Order preserved from song.tracks / returnTracks / mainTrack",
+          "valuePreview": [
+            "1-MIDI",
+            "2-Dexed",
+            "A-Reverb",
+            "B-Delay",
+            "Main"
+          ],
+          "notes": "",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Track name",
+          "status": "supported",
+          "evidence": "Read from first 5 tracks",
+          "valuePreview": [
+            "1-MIDI",
+            "2-Dexed",
+            "A-Reverb",
+            "B-Delay",
+            "Main"
+          ],
+          "notes": "",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Track type audio/midi/return/master",
+          "status": "supported",
+          "evidence": "Derived from SDK track classes and role",
+          "valuePreview": [
+            "midi",
+            "midi",
+            "return",
+            "return",
+            "master"
+          ],
+          "notes": "",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Track color",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Track color is not exposed by the current SDK scan.",
+          "durationMs": 15,
+          "risk": "low"
+        },
+        {
+          "capability": "Mute",
+          "status": "supported",
+          "evidence": "Read via mute",
+          "valuePreview": false,
+          "notes": "",
+          "durationMs": 15,
+          "risk": "low"
+        },
+        {
+          "capability": "Solo",
+          "status": "supported",
+          "evidence": "Read via solo",
+          "valuePreview": false,
+          "notes": "",
+          "durationMs": 8,
+          "risk": "low"
+        },
+        {
+          "capability": "Arm",
+          "status": "supported",
+          "evidence": "Read via arm",
+          "valuePreview": false,
+          "notes": "",
+          "durationMs": 15,
+          "risk": "low"
+        },
+        {
+          "capability": "Fold",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Fold information is not consistently exposed.",
+          "durationMs": 15,
+          "risk": "low"
+        },
+        {
+          "capability": "Group membership",
+          "status": "partial",
+          "evidence": "groupTrack property visible on 5/5 sampled tracks",
+          "valuePreview": {
+            "groupedTracks": 0
+          },
+          "notes": "Only parent-link visibility is tested here.",
+          "durationMs": 0,
+          "risk": "medium"
+        },
+        {
+          "capability": "Parent group",
+          "status": "unavailable",
+          "evidence": "No parent group value returned on sampled tracks",
+          "valuePreview": null,
+          "notes": "",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Child tracks",
+          "status": "unavailable",
+          "evidence": "No direct child tracks collection found",
+          "valuePreview": null,
+          "notes": "",
+          "durationMs": 0,
+          "risk": "low"
+        }
+      ]
+    },
+    {
+      "name": "Mixer",
+      "items": [
+        {
+          "capability": "Volume",
+          "status": "supported",
+          "evidence": "Read via volume",
+          "valuePreview": {
+            "objectType": "DeviceParameter",
+            "name": "Track Volume"
+          },
+          "notes": "",
+          "durationMs": 2,
+          "risk": "low"
+        },
+        {
+          "capability": "Pan",
+          "status": "supported",
+          "evidence": "Read via panning",
+          "valuePreview": {
+            "objectType": "DeviceParameter",
+            "name": "Track Panning"
+          },
+          "notes": "",
+          "durationMs": 16,
+          "risk": "low"
+        },
+        {
+          "capability": "Sends count",
+          "status": "unavailable",
+          "evidence": "Read from first sampled track",
+          "valuePreview": null,
+          "notes": "",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Send names",
+          "status": "unknown",
+          "evidence": "Probe failed",
+          "valuePreview": null,
+          "notes": "Cannot read properties of undefined (reading 'map')",
+          "durationMs": 1,
+          "risk": "medium"
+        },
+        {
+          "capability": "Send values",
+          "status": "unknown",
+          "evidence": "Probe failed",
+          "valuePreview": null,
+          "notes": "Cannot read properties of undefined (reading 'map')",
+          "durationMs": 1,
+          "risk": "medium"
+        },
+        {
+          "capability": "Return tracks",
+          "status": "supported",
+          "evidence": "Read from song.returnTracks",
+          "valuePreview": 2,
+          "notes": "",
+          "durationMs": 2,
+          "risk": "low"
+        },
+        {
+          "capability": "Master track",
+          "status": "supported",
+          "evidence": "Read from song.mainTrack",
+          "valuePreview": {
+            "objectType": "MidiTrack",
+            "name": "Main"
+          },
+          "notes": "",
+          "durationMs": 2,
+          "risk": "low"
+        }
+      ]
+    },
+    {
+      "name": "Routing I/O",
+      "items": [
+        {
+          "capability": "Audio From",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Not exposed by current SDK scan",
+          "durationMs": 18,
+          "risk": "low"
+        },
+        {
+          "capability": "Audio To",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Not exposed by current SDK scan",
+          "durationMs": 18,
+          "risk": "low"
+        },
+        {
+          "capability": "MIDI From",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Not exposed by current SDK scan",
+          "durationMs": 18,
+          "risk": "low"
+        },
+        {
+          "capability": "MIDI To",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Not exposed by current SDK scan",
+          "durationMs": 18,
+          "risk": "low"
+        },
+        {
+          "capability": "External In",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Not exposed by current SDK scan",
+          "durationMs": 18,
+          "risk": "low"
+        },
+        {
+          "capability": "External Out",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Not exposed by current SDK scan",
+          "durationMs": 18,
+          "risk": "low"
+        },
+        {
+          "capability": "Monitor mode",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Monitor mode is not exposed by the sampled tracks.",
+          "durationMs": 17,
+          "risk": "low"
+        },
+        {
+          "capability": "Sidechain source",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Sidechain source is not exposed by current SDK scan",
+          "durationMs": 18,
+          "risk": "low"
+        },
+        {
+          "capability": "Sidechain enabled",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Sidechain enabled state is not exposed by current SDK scan",
+          "durationMs": 17,
+          "risk": "low"
+        },
+        {
+          "capability": "Group routing",
+          "status": "partial",
+          "evidence": "Property exists (groupTrack) but no stable value was returned",
+          "valuePreview": null,
+          "notes": "Group routing is not directly exposed.",
+          "durationMs": 18,
+          "risk": "medium"
+        },
+        {
+          "capability": "Return routing",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Return routing is not exposed by current SDK scan",
+          "durationMs": 17,
+          "risk": "low"
+        },
+        {
+          "capability": "Master routing",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Master routing is not exposed by current SDK scan",
+          "durationMs": 17,
+          "risk": "low"
+        }
+      ]
+    },
+    {
+      "name": "Devices",
+      "items": [
+        {
+          "capability": "Device list",
+          "status": "supported",
+          "evidence": "Read from 5 sampled tracks",
+          "valuePreview": 4,
+          "notes": "",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Device order",
+          "status": "supported",
+          "evidence": "Order preserved from track.devices",
+          "valuePreview": [
+            "Producer_Pal",
+            "Dexed",
+            "Reverb",
+            "Delay"
+          ],
+          "notes": "",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Device name",
+          "status": "supported",
+          "evidence": "Read from 4 sampled devices",
+          "valuePreview": [
+            "Producer_Pal",
+            "Dexed",
+            "Reverb",
+            "Delay"
+          ],
+          "notes": "",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Device type/class",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Device class/type is not stably exposed on sampled devices.",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Is rack",
+          "status": "partial",
+          "evidence": "Derived from RackDevice instances and object type names",
+          "valuePreview": [],
+          "notes": "",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Device enabled",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Device enabled state is not consistently exposed.",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Device parameters",
+          "status": "supported",
+          "evidence": "Read from up to 200 sampled parameters",
+          "valuePreview": 193,
+          "notes": "",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Parameter name",
+          "status": "supported",
+          "evidence": "Read via name",
+          "valuePreview": "Device On",
+          "notes": "",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Parameter value",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Parameter values are not exposed on sampled parameters.",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Parameter min/max",
+          "status": "supported",
+          "evidence": "Read via min",
+          "valuePreview": 0,
+          "notes": "",
+          "durationMs": 2,
+          "risk": "low"
+        },
+        {
+          "capability": "Parameter automation state",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Automation state is not exposed on sampled parameters.",
+          "durationMs": 2,
+          "risk": "low"
+        }
+      ]
+    },
+    {
+      "name": "Racks",
+      "items": [
+        {
+          "capability": "Rack detection",
+          "status": "partial",
+          "evidence": "Rack-like devices detected from sampled device list",
+          "valuePreview": [],
+          "notes": "",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Rack chains count",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Chains are not exposed on sampled racks.",
+          "durationMs": 6,
+          "risk": "low"
+        },
+        {
+          "capability": "Chain names",
+          "status": "unavailable",
+          "evidence": "No racks sampled",
+          "valuePreview": null,
+          "notes": "",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Chain devices",
+          "status": "unsafe",
+          "evidence": "Disabled in diagnostic mode to protect Live stability",
+          "valuePreview": null,
+          "notes": "Deep chain-device recursion is intentionally disabled because earlier scans could stall or freeze Live.",
+          "durationMs": 0,
+          "risk": "high"
+        },
+        {
+          "capability": "Nested racks",
+          "status": "unsafe",
+          "evidence": "Disabled in diagnostic mode to protect Live stability",
+          "valuePreview": null,
+          "notes": "Nested rack recursion remains disabled in capability-matrix mode.",
+          "durationMs": 0,
+          "risk": "high"
+        },
+        {
+          "capability": "Drum rack pads",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Pad collections are not exposed on sampled racks.",
+          "durationMs": 6,
+          "risk": "low"
+        },
+        {
+          "capability": "Pad names",
+          "status": "unavailable",
+          "evidence": "No racks sampled",
+          "valuePreview": null,
+          "notes": "",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Pad chains",
+          "status": "unsafe",
+          "evidence": "Disabled in diagnostic mode to protect Live stability",
+          "valuePreview": null,
+          "notes": "Per-pad chain traversal is intentionally skipped in shallow capability mode.",
+          "durationMs": 0,
+          "risk": "high"
+        },
+        {
+          "capability": "Macro controls",
+          "status": "unavailable",
+          "evidence": "No racks sampled",
+          "valuePreview": [],
+          "notes": "Only visible macro-like parameter names are counted here.",
+          "durationMs": 0,
+          "risk": "medium"
+        },
+        {
+          "capability": "Rack variations",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Rack variations are not exposed on sampled racks.",
+          "durationMs": 6,
+          "risk": "low"
+        }
+      ]
+    },
+    {
+      "name": "Clips",
+      "items": [
+        {
+          "capability": "Session clips",
+          "status": "unavailable",
+          "evidence": "No clipSlots collection found on sampled scenes",
+          "valuePreview": null,
+          "notes": "",
+          "durationMs": 2,
+          "risk": "low"
+        },
+        {
+          "capability": "Clip slots",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Clip-slot collections are not exposed on sampled scenes.",
+          "durationMs": 2,
+          "risk": "low"
+        },
+        {
+          "capability": "Clip names",
+          "status": "not-tested",
+          "evidence": "Skipped in shallow capability mode",
+          "valuePreview": null,
+          "notes": "Clip object traversal is skipped by default to avoid context-dependent scans.",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Clip colors",
+          "status": "not-tested",
+          "evidence": "Skipped in shallow capability mode",
+          "valuePreview": null,
+          "notes": "Clip color probing is skipped in shallow capability mode.",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "MIDI clip notes",
+          "status": "not-tested",
+          "evidence": "Skipped in shallow capability mode",
+          "valuePreview": null,
+          "notes": "Reading note lists can be expensive and is not part of the default capability scan.",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Audio clip metadata",
+          "status": "not-tested",
+          "evidence": "Skipped in shallow capability mode",
+          "valuePreview": null,
+          "notes": "Audio clip metadata remains untested in shallow capability mode.",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Arrangement clips",
+          "status": "not-tested",
+          "evidence": "Skipped in shallow capability mode",
+          "valuePreview": null,
+          "notes": "Arrangement clip traversal is not enabled by default.",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Clip start/end",
+          "status": "not-tested",
+          "evidence": "Skipped in shallow capability mode",
+          "valuePreview": null,
+          "notes": "Clip timing fields are not traversed in the default safe scan.",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Loop start/end",
+          "status": "not-tested",
+          "evidence": "Skipped in shallow capability mode",
+          "valuePreview": null,
+          "notes": "Loop timing fields are not traversed in the default safe scan.",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Warp info",
+          "status": "not-tested",
+          "evidence": "Skipped in shallow capability mode",
+          "valuePreview": null,
+          "notes": "Warp-related clip probing remains disabled by default.",
+          "durationMs": 0,
+          "risk": "low"
+        }
+      ]
+    },
+    {
+      "name": "Arrangement",
+      "items": [
+        {
+          "capability": "Arrangement locators",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Arrangement locators are not exposed on the current song object.",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Arrangement clips",
+          "status": "not-tested",
+          "evidence": "Skipped in shallow capability mode",
+          "valuePreview": null,
+          "notes": "Arrangement clip traversal remains disabled in capability-matrix mode.",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Automation lanes",
+          "status": "not-tested",
+          "evidence": "Skipped in shallow capability mode",
+          "valuePreview": null,
+          "notes": "Automation-lane probing remains disabled in capability-matrix mode.",
+          "durationMs": 0,
+          "risk": "low"
+        },
+        {
+          "capability": "Selected arrangement region",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Arrangement selection is not exposed on the current song object.",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Current song position",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Current song position is not exposed on the current song object.",
+          "durationMs": 1,
+          "risk": "low"
+        }
+      ]
+    },
+    {
+      "name": "Browser / Files",
+      "items": [
+        {
+          "capability": "Project path",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Project path is not exposed on the current song object.",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Set path",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Set path is not exposed on the current song object.",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Sample references",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Sample references are not exposed on the current song object.",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Missing media",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Missing media is not exposed on the current song object.",
+          "durationMs": 1,
+          "risk": "low"
+        },
+        {
+          "capability": "Device preset paths",
+          "status": "unavailable",
+          "evidence": "Not exposed by current SDK scan",
+          "valuePreview": null,
+          "notes": "Device preset paths are not exposed on the current song object.",
+          "durationMs": 1,
+          "risk": "low"
+        }
+      ]
+    }
+  ]
+}

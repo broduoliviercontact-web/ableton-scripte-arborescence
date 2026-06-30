@@ -30,7 +30,9 @@
     "open:diagram:kanban": "open exports/session-map-kanban.svg",
     "open:diagram:session-grid": "open exports/session-map-session-grid.html",
     "open:diagrams": "open exports/session-map-diagrams.html",
-    "preview": "npm run generate:html && open exports/session-map.html"
+    "preview": "npm run generate:html && open exports/session-map.html",
+    "generate:internal-viewer-preview": "tsx internal-viewer-preview/generate.ts",
+    "preview:internal-viewer": "npm run generate:internal-viewer-preview && open internal-viewer-preview/index.html"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^11.12.0",

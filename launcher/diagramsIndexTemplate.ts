@@ -155,6 +155,9 @@ async function buildCards(rootDirectory: string): Promise<string> {
     "session-map-kanban.png",
     "session-map-kanban.mmd",
     "session-map.json",
+    "sdk-capability-matrix.html",
+    "sdk-capability-matrix.json",
+    "sdk-capability-matrix.md",
   ];
 
   const existence = new Map<string, boolean>();
@@ -226,6 +229,17 @@ async function buildCards(rootDirectory: string): Promise<string> {
         { label: "Open exports folder", fileName: `file://${exportsDirectory}`, exists: true },
       ],
       missingHint: "npm run export:diagram:all",
+    },
+    {
+      title: "SDK Capability Matrix",
+      description: "Diagnostic dev des capacités réellement exposées par le SDK.",
+      accentClass: "accent-report",
+      actions: [
+        { label: "Open HTML", fileName: "sdk-capability-matrix.html", exists: existence.get("sdk-capability-matrix.html") === true },
+        { label: "Open JSON", fileName: "sdk-capability-matrix.json", exists: existence.get("sdk-capability-matrix.json") === true },
+        { label: "Open Markdown", fileName: "sdk-capability-matrix.md", exists: existence.get("sdk-capability-matrix.md") === true },
+      ],
+      missingHint: "ENABLE_CAPABILITY_MATRIX=true npm start",
     },
   ];
 

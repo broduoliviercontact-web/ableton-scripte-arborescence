@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { promisify } from "node:util";
 import type { ExtensionContext } from "@ableton-extensions/sdk";
 import type { RackDiagnostic } from "./scanRackDiagnostic.js";
+import type { CapabilityMatrix } from "./scanCapabilityMatrix.js";
 import type { SdkDiagnostic } from "./scanDiagnostic.js";
 import { safeGet, type SessionMap } from "./types.js";
 
@@ -18,6 +19,9 @@ export interface ExportLocations {
   sessionMapDiagramsPath: string;
   sdkDiagnosticPath: string;
   rackDiagnosticPath: string;
+  sdkCapabilityMatrixJsonPath: string;
+  sdkCapabilityMatrixHtmlPath: string;
+  sdkCapabilityMatrixMarkdownPath: string;
 }
 
 export interface SessionExportPaths {
@@ -25,6 +29,15 @@ export interface SessionExportPaths {
   archiveJsonPath: string;
   latestHtmlPath: string;
   archiveHtmlPath: string;
+}
+
+export interface CapabilityMatrixExportPaths {
+  latestJsonPath: string;
+  archiveJsonPath: string;
+  latestHtmlPath: string;
+  archiveHtmlPath: string;
+  latestMarkdownPath: string;
+  archiveMarkdownPath: string;
 }
 
 export async function resolveExportLocations(
@@ -49,6 +62,9 @@ export async function resolveExportLocations(
     sessionMapDiagramsPath: join(exportDirectory, "session-map-diagrams.html"),
     sdkDiagnosticPath: join(exportDirectory, "sdk-diagnostic.json"),
     rackDiagnosticPath: join(exportDirectory, "rack-diagnostic.json"),
+    sdkCapabilityMatrixJsonPath: join(exportDirectory, "sdk-capability-matrix.json"),
+    sdkCapabilityMatrixHtmlPath: join(exportDirectory, "sdk-capability-matrix.html"),
+    sdkCapabilityMatrixMarkdownPath: join(exportDirectory, "sdk-capability-matrix.md"),
   };
 }
 
@@ -129,6 +145,39 @@ async function reserveArchiveStem(
   throw new Error("Unable to reserve a unique archive filename.");
 }
 
+async function reserveGenericArchiveStem(
+  exportDirectory: string,
+  baseName: string,
+  generatedAt: string,
+  extensions: string[],
+): Promise<string> {
+  const minuteStamp = formatArchiveTimestamp(generatedAt, false);
+  const secondStamp = formatArchiveTimestamp(generatedAt, true);
+  const candidates = [`${baseName}_${minuteStamp}`, `${baseName}_${secondStamp}`];
+
+  const candidateAvailable = async (candidate: string): Promise<boolean> => {
+    for (const extension of extensions) {
+      if (await pathExists(join(exportDirectory, `${candidate}.${extension}`))) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  for (const candidate of candidates) {
+    if (await candidateAvailable(candidate)) return candidate;
+  }
+
+  let suffix = 2;
+  while (suffix < 10_000) {
+    const candidate = `${baseName}_${secondStamp}-${suffix}`;
+    if (await candidateAvailable(candidate)) return candidate;
+    suffix += 1;
+  }
+
+  throw new Error(`Unable to reserve a unique archive filename for ${baseName}.`);
+}
+
 export async function resolveSessionExportPaths(
   context: ExtensionContext<"1.0.0">,
   sessionMap: SessionMap,
@@ -141,6 +190,28 @@ export async function resolveSessionExportPaths(
     archiveJsonPath: join(locations.exportDirectory, `${archiveStem}.json`),
     latestHtmlPath: locations.sessionMapHtmlPath,
     archiveHtmlPath: join(locations.exportDirectory, `${archiveStem}.html`),
+  };
+}
+
+export async function resolveCapabilityMatrixExportPaths(
+  context: ExtensionContext<"1.0.0">,
+  matrix: CapabilityMatrix,
+): Promise<CapabilityMatrixExportPaths> {
+  const locations = await resolveExportLocations(context);
+  await mkdir(locations.exportDirectory, { recursive: true });
+  const archiveStem = await reserveGenericArchiveStem(
+    locations.exportDirectory,
+    "sdk-capability-matrix",
+    matrix.generatedAt,
+    ["json", "html", "md"],
+  );
+  return {
+    latestJsonPath: locations.sdkCapabilityMatrixJsonPath,
+    archiveJsonPath: join(locations.exportDirectory, `${archiveStem}.json`),
+    latestHtmlPath: locations.sdkCapabilityMatrixHtmlPath,
+    archiveHtmlPath: join(locations.exportDirectory, `${archiveStem}.html`),
+    latestMarkdownPath: locations.sdkCapabilityMatrixMarkdownPath,
+    archiveMarkdownPath: join(locations.exportDirectory, `${archiveStem}.md`),
   };
 }
 
@@ -325,4 +396,22 @@ export async function exportRackDiagnosticJson(
   await mkdir(locations.exportDirectory, { recursive: true });
   await writeFile(locations.rackDiagnosticPath, `${JSON.stringify(diagnostic, null, 2)}\n`, "utf8");
   return locations.rackDiagnosticPath;
+}
+
+export async function exportCapabilityMatrixArtifacts(
+  paths: CapabilityMatrixExportPaths,
+  matrix: CapabilityMatrix,
+  html: string,
+  markdown: string,
+): Promise<CapabilityMatrixExportPaths> {
+  await writeFile(paths.latestJsonPath, `${JSON.stringify(matrix, null, 2)}\n`, "utf8");
+  await writeFile(paths.archiveJsonPath, `${JSON.stringify(matrix, null, 2)}\n`, "utf8");
+  console.log(`[Ableton Session Mapper] Write capability matrix JSON completed: ${paths.latestJsonPath}`);
+  await writeFile(paths.latestHtmlPath, html, "utf8");
+  await writeFile(paths.archiveHtmlPath, html, "utf8");
+  console.log(`[Ableton Session Mapper] Write capability matrix HTML completed: ${paths.latestHtmlPath}`);
+  await writeFile(paths.latestMarkdownPath, markdown, "utf8");
+  await writeFile(paths.archiveMarkdownPath, markdown, "utf8");
+  console.log(`[Ableton Session Mapper] Write capability matrix Markdown completed: ${paths.latestMarkdownPath}`);
+  return paths;
 }
