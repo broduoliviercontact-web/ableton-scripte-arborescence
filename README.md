@@ -481,7 +481,10 @@ Ce launcher visuel reste entièrement externe au navigateur :
 - report HTML et Session Grid générés à chaque export ;
 - Mermaid Flow / Git / Kanban HTML + .mmd régénérés à l’export par défaut ;
 - Mermaid SVG / PNG laissés en rendu manuel ;
-- statuts `Current / Outdated / Missing` visibles pour chaque fichier suivi.
+- launcher compact par défaut ;
+- vues principales visibles immédiatement ;
+- exports secondaires rangés sous **More** ;
+- diagnostics et commandes repliés par défaut.
 
 Commandes utiles :
 
@@ -497,9 +500,10 @@ Workflow recommandé :
 
 1. Dans Ableton : **Export Session Map**
 2. La modale intégrée s’ouvre
-3. Le launcher externe permet d’ouvrir les vues HTML à jour
-4. Pour remettre à jour tous les SVG/PNG : `npm run export:diagram:all`
-5. Pour rouvrir le launcher : `npm run open:diagrams`
+3. Le launcher externe permet d’ouvrir rapidement les vues principales
+4. Les exports secondaires SVG / PNG / .mmd restent accessibles via **More**
+5. Pour remettre à jour tous les SVG/PNG : `npm run export:diagram:all`
+6. Pour rouvrir le launcher : `npm run open:diagrams`
 
 ## Known limitations
 

@@ -7,10 +7,10 @@
   <style>
     :root {
       --live-bg: #b7b7b7;
-      --live-panel: #cdcdcd;
+      --live-panel: #cbcbcb;
       --live-panel-light: #d8d8d8;
       --live-border: #8f8f8f;
-      --live-border-soft: rgba(0,0,0,0.1);
+      --live-border-soft: rgba(0,0,0,0.12);
       --live-grid: rgba(0,0,0,0.035);
       --live-text: #202020;
       --live-muted: #5e5e5e;
@@ -20,7 +20,7 @@
       --live-magenta: #cb67ba;
       --ok: #407a40;
       --warn: #b67814;
-      --neutral: #676767;
+      --neutral: #5a6d7d;
       --missing: #7a655a;
       --matrix: #49a97f;
     }
@@ -39,23 +39,29 @@
     .shell {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 18px;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
     }
-    .hero, .metrics, .workflow, .launcher-card, .launcher-section {
+    .panel {
       background: var(--live-panel);
       border: 1px solid var(--live-border);
       border-radius: 6px;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
     }
-    .hero {
+    .header {
       display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
-      gap: 14px;
-      padding: 16px;
-      margin-bottom: 12px;
+      gap: 10px;
+      padding: 12px 14px;
     }
-    .eyebrow, .section-kicker {
-      margin: 0 0 4px;
+    .header-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+    }
+    .eyebrow {
+      margin: 0 0 2px;
       font-size: 10px;
       line-height: 1;
       letter-spacing: 0.12em;
@@ -65,284 +71,142 @@
     }
     h1 {
       margin: 0;
-      font-size: 24px;
-      line-height: 1.1;
+      font-size: 21px;
+      line-height: 1.05;
     }
-    .subtitle {
-      margin: 8px 0 0;
-      max-width: 52rem;
+    .header-line {
+      margin: 4px 0 0;
       color: var(--live-muted);
-      font-size: 13px;
-      line-height: 1.55;
-    }
-    .hero-side {
-      display: grid;
-      gap: 10px;
-      align-content: start;
-    }
-    .meta-label {
-      margin: 0 0 2px;
-      font-size: 10px;
-      line-height: 1;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--live-muted);
-      font-weight: 700;
-    }
-    .meta-value {
-      margin: 0;
-      font-size: 13px;
+      font-size: 12px;
       line-height: 1.4;
     }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      justify-content: flex-end;
+      font-size: 11px;
+      color: var(--live-muted);
+    }
+    .meta strong { color: var(--live-text); font-weight: 700; }
     .metrics {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
-      margin-bottom: 12px;
       overflow: hidden;
+      border-top: 1px solid var(--live-border-soft);
+      padding-top: 10px;
+      gap: 8px;
     }
     .metric {
-      padding: 14px;
-      border-right: 1px solid var(--live-border);
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      padding: 6px 8px;
+      border: 1px solid var(--live-border-soft);
+      border-radius: 4px;
+      background: rgba(255,255,255,0.14);
+      display: grid;
+      gap: 2px;
+      text-align: center;
     }
-    .metric:last-child { border-right: 0; }
     .metric strong {
-      display: block;
-      font-size: 24px;
+      font-size: 18px;
       line-height: 1;
-      margin-bottom: 4px;
     }
     .metric span {
+      font-size: 10px;
+      color: var(--live-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .note-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      color: var(--live-muted);
       font-size: 11px;
-      color: var(--live-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
     }
-    .workflow {
-      padding: 14px 16px;
-      margin-bottom: 12px;
+    .note-chip {
+      padding: 5px 8px;
+      border: 1px solid var(--live-border-soft);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.15);
     }
-    .workflow h2 {
-      margin: 0 0 8px;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-    .workflow-grid {
+    .primary-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 16px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
     }
-    .workflow p, .workflow li {
-      margin: 0;
-      font-size: 12px;
-      line-height: 1.55;
-    }
-    .workflow ul, .workflow ol {
-      margin: 0;
-      padding-left: 18px;
-    }
-    .note {
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 4px;
-      background: rgba(255,255,255,0.16);
-      border: 1px solid rgba(0,0,0,0.08);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-    .note.is-warning {
-      background: rgba(245,166,35,0.14);
-      border-color: rgba(182,120,20,0.24);
-    }
-    .note.is-neutral {
-      background: rgba(255,255,255,0.18);
-      border-color: rgba(0,0,0,0.08);
-    }
-    .note.is-matrix {
-      background: rgba(73,169,127,0.12);
-      border-color: rgba(73,169,127,0.24);
-    }
-    .note a {
-      color: #1f4c73;
-      font-weight: 700;
-      text-decoration: none;
-    }
-    .launcher-section {
-      margin-top: 12px;
-      padding: 14px;
-    }
-    .section-head {
+    .view-card {
+      padding: 12px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.9fr);
-      gap: 12px;
-      align-items: start;
-      margin-bottom: 12px;
-    }
-    .section-head h2 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.15;
-    }
-    .section-head p {
-      margin: 0;
-      color: var(--live-muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 12px;
-    }
-    .launcher-card {
-      padding: 14px;
-      display: grid;
-      gap: 12px;
+      gap: 8px;
       background: var(--live-panel-light);
+      border: 1px solid var(--live-border);
+      border-left-width: 4px;
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.22);
     }
-    .accent-grid { border-left: 4px solid #8477ff; }
-    .accent-report { border-left: 4px solid var(--live-orange); }
-    .accent-flow { border-left: 4px solid #6ba7ff; }
-    .accent-git { border-left: 4px solid var(--live-cyan); }
-    .accent-kanban { border-left: 4px solid var(--live-magenta); }
-    .accent-raw { border-left: 4px solid #6e6e6e; }
-    .accent-matrix { border-left: 4px solid var(--matrix); }
-    .card-head {
+    .accent-grid { border-left-color: #8477ff; }
+    .accent-report { border-left-color: var(--live-orange); }
+    .accent-flow { border-left-color: #6ba7ff; }
+    .accent-git { border-left-color: var(--live-cyan); }
+    .accent-kanban { border-left-color: var(--live-magenta); }
+    .view-head {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 8px;
       align-items: start;
     }
-    .card-head h3 {
-      margin: 0 0 4px;
-      font-size: 16px;
-      line-height: 1.2;
+    .view-copy h2 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.15;
     }
-    .card-head p {
+    .view-copy p {
+      margin: 3px 0 0;
+      color: var(--live-muted);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 21px;
+      padding: 0 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.12);
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      background: rgba(255,255,255,0.16);
+    }
+    .status-ok { color: #1f4d1f; background: rgba(76,141,76,0.18); }
+    .status-warn { color: #8a5600; background: rgba(198,134,25,0.18); }
+    .status-neutral { color: #35556d; background: rgba(99,144,176,0.16); }
+    .status-missing { color: #6f5645; background: rgba(139,111,95,0.18); }
+    .status-note {
       margin: 0;
       color: var(--live-muted);
-      font-size: 12px;
-      line-height: 1.45;
-    }
-    .card-summary {
-      flex: 0 0 auto;
-      font-size: 10px;
-      line-height: 1;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--live-muted);
-      padding: 7px 8px;
-      background: rgba(255,255,255,0.22);
-      border: 1px solid var(--live-border-soft);
-      border-radius: 4px;
-      white-space: nowrap;
-    }
-    .primary-action {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: center;
-      padding: 11px 12px;
-      border: 1px solid var(--live-border-soft);
-      border-radius: 4px;
-      background: rgba(255,255,255,0.2);
-    }
-    .primary-copy {
-      display: grid;
-      gap: 2px;
-      min-width: 0;
-    }
-    .primary-copy strong {
-      font-size: 13px;
-      line-height: 1.25;
-    }
-    .primary-copy small,
-    .primary-label {
       font-size: 11px;
-      line-height: 1.4;
-      color: var(--live-muted);
-    }
-    .primary-label {
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-    }
-    .primary-actions {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .artifact-list {
-      display: grid;
-      gap: 8px;
-    }
-    .artifact-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: center;
-      padding: 9px 10px;
-      border: 1px solid var(--live-border-soft);
-      background: rgba(255,255,255,0.14);
-      border-radius: 4px;
-    }
-    .artifact-meta {
-      min-width: 0;
-      display: grid;
-      gap: 2px;
-    }
-    .artifact-meta strong {
-      font-size: 12px;
       line-height: 1.25;
+      min-height: 14px;
     }
-    .artifact-meta span,
-    .artifact-meta small {
-      font-size: 11px;
-      color: var(--live-muted);
-      line-height: 1.35;
-      word-break: break-word;
+    .view-actions {
+      display: grid;
+      gap: 6px;
+      align-items: start;
     }
-    .artifact-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    .status-pill {
+    .open-button,
+    .mini-button {
       display: inline-flex;
       align-items: center;
-      min-height: 24px;
-      padding: 0 8px;
-      border-radius: 999px;
-      font-size: 10px;
-      line-height: 1;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border: 1px solid rgba(0,0,0,0.12);
-      background: rgba(255,255,255,0.14);
-    }
-    .status-current.role-primary,
-    .status-current.role-data { color: #1f4d1f; background: rgba(76,141,76,0.18); }
-    .status-outdated.role-primary,
-    .status-outdated.role-data { color: #8a5600; background: rgba(198,134,25,0.18); }
-    .status-missing.role-primary,
-    .status-missing.role-data { color: #6f5645; background: rgba(139,111,95,0.18); }
-    .status-current.role-render { color: #1e4667; background: rgba(63,194,215,0.16); }
-    .status-outdated.role-render { color: #705216; background: rgba(233,195,117,0.18); }
-    .status-missing.role-render { color: #676767; background: rgba(120,120,120,0.12); }
-    .primary-button,
-    .secondary-button {
-      display: inline-flex;
-      align-items: center;
+      justify-content: center;
       min-height: 28px;
       padding: 0 10px;
       border-radius: 4px;
-      border: 1px solid #8b8b8b;
+      border: 1px solid #8d8d8d;
       background: linear-gradient(180deg, #eeeeee, #cfcfcf);
       color: #1a1a1a;
       text-decoration: none;
@@ -350,103 +214,164 @@
       font-weight: 700;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
     }
-    .primary-button {
+    .open-button {
       background: linear-gradient(180deg, var(--live-orange), var(--live-orange-dark));
       border-color: #9a6200;
       color: #181204;
+      width: 100%;
     }
-    .secondary-button.is-warning {
-      background: linear-gradient(180deg, #ffd48a, #eab255);
-      border-color: #a97000;
-    }
-    .primary-button.is-disabled,
-    .secondary-button.is-disabled {
+    .mini-button.is-disabled {
       opacity: 0.5;
-      background: linear-gradient(180deg, #dddddd, #c4c4c4);
       color: #6a6a6a;
       cursor: default;
     }
-    .card-footnote {
+    .more-exports {
+      border: 1px solid var(--live-border-soft);
+      border-radius: 4px;
+      background: rgba(255,255,255,0.12);
+      overflow: hidden;
+    }
+    .more-exports summary,
+    .fold summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 8px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--live-text);
+    }
+    .more-exports summary::-webkit-details-marker,
+    .fold summary::-webkit-details-marker {
+      display: none;
+    }
+    .more-exports summary::after,
+    .fold summary::after {
+      content: "▸";
+      float: right;
+      color: var(--live-muted);
+    }
+    .more-exports[open] summary::after,
+    .fold[open] summary::after {
+      content: "▾";
+    }
+    .more-list,
+    .fold-body {
+      padding: 0 8px 8px;
+      display: grid;
+      gap: 6px;
+    }
+    .more-row,
+    .compact-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--live-border-soft);
+      background: rgba(255,255,255,0.12);
+    }
+    .more-copy,
+    .compact-copy {
+      display: grid;
+      gap: 1px;
+      min-width: 0;
+    }
+    .more-copy strong,
+    .compact-copy strong {
+      font-size: 11px;
+      line-height: 1.2;
+    }
+    .more-copy small,
+    .compact-copy small {
+      color: var(--live-muted);
+      font-size: 10px;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+    .more-actions,
+    .compact-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .view-foot {
+      margin: 0;
+      color: var(--live-muted);
+      font-size: 10px;
+      line-height: 1.25;
+    }
+    .fold {
+      background: var(--live-panel);
+      border: 1px solid var(--live-border);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
+    }
+    .fold p {
       margin: 0;
       color: var(--live-muted);
       font-size: 11px;
-      line-height: 1.45;
+      line-height: 1.4;
+    }
+    .commands {
+      display: grid;
+      gap: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+    }
+    .command {
+      padding: 7px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--live-border-soft);
+      background: rgba(255,255,255,0.12);
+      color: var(--live-text);
     }
     .footer {
       display: flex;
       justify-content: space-between;
       gap: 10px;
       align-items: center;
-      margin-top: 12px;
-      padding: 12px 4px 0;
+      padding: 0 4px;
       color: var(--live-muted);
-      font-size: 11px;
+      font-size: 10px;
     }
     .footer a {
-      color: var(--live-muted);
+      color: inherit;
       text-decoration: none;
     }
-    .footer a:hover {
-      color: var(--live-orange-dark);
+    @media (max-width: 900px) {
+      .header-top { grid-template-columns: 1fr; }
+      .meta { justify-content: flex-start; }
+      .metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
-    @media (max-width: 980px) {
-      .hero,
-      .workflow-grid,
-      .section-head {
-        grid-template-columns: 1fr;
-      }
-      .metrics {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-    @media (max-width: 720px) {
-      .artifact-row,
-      .card-head,
-      .primary-action,
-      .footer {
-        display: grid;
-        grid-template-columns: 1fr;
-      }
-      .artifact-actions,
-      .primary-actions {
-        justify-content: start;
-      }
-      .metrics {
-        grid-template-columns: 1fr 1fr;
-      }
+    @media (max-width: 640px) {
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .more-row,
+      .compact-row,
+      .footer { grid-template-columns: 1fr; display: grid; }
+      .more-actions,
+      .compact-actions { justify-content: start; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
-    <section class="hero">
-      <div>
-        <p class="eyebrow">Session Mapper / External Launcher</p>
-        <h1>Session Mapper</h1>
-        <p class="subtitle">Live-like external launcher aligned with the integrated modal. HTML and Mermaid source files stay current on export. SVG/PNG remain optional manual renders for sharing, print or static review.</p>
+    <section class="panel header">
+      <div class="header-top">
+        <div>
+          <p class="eyebrow">Session Mapper / External Launcher</p>
+          <h1>Session Mapper</h1>
+          <p class="header-line">Set: <strong>Ableton Live Set</strong> · Export: <strong>1 juil. 2026, 08:31</strong> · Mode: <strong>ultra-safe</strong></p>
+        </div>
+        <div class="meta">
+          <span><strong>JSON</strong> session-map.json</span>
+        </div>
       </div>
-      <aside class="hero-side">
-        <div>
-          <p class="meta-label">Set</p>
-          <p class="meta-value">Ableton Live Set</p>
-        </div>
-        <div>
-          <p class="meta-label">Export date</p>
-          <p class="meta-value">1 juil. 2026, 08:31</p>
-        </div>
-        <div>
-          <p class="meta-label">Mode</p>
-          <p class="meta-value">ultra-safe</p>
-        </div>
-        <div>
-          <p class="meta-label">Latest JSON</p>
-          <p class="meta-value">session-map.json</p>
-        </div>
-      </aside>
-    </section>
 
-    <section class="metrics" aria-label="Session metrics">
-      <article class="metric">
+      <section class="metrics" aria-label="Session metrics">
+        <article class="metric">
         <strong>4</strong>
         <span>Tracks</span>
       </article>
@@ -466,368 +391,319 @@
         <strong>12</strong>
         <span>Sends</span>
       </article>
-    </section>
+      </section>
 
-    <section class="workflow">
-      <h2>Stable workflow</h2>
-      <div class="workflow-grid">
-        <div>
-          <ol>
-            <li>Dans Live : <strong>Export Session Map</strong></li>
-            <li>Les vues HTML et Mermaid source sont remises à jour</li>
-            <li>Utilise ce launcher pour ouvrir la vue adaptée</li>
-          </ol>
-        </div>
-        <div>
-          <ul>
-            <li><strong>Current on export:</strong> HTML Report, Session Grid, Mermaid HTML, .mmd</li>
-            <li><strong>Manual renders:</strong> SVG/PNG with <strong>npm run export:diagram:all</strong></li>
-            <li><strong>SDK Matrix:</strong> separate Live diagnostic, refreshed independently</li>
-          </ul>
-        </div>
-      </div>
-      
-      <div class="note is-neutral">Primary views are current. Some SVG/PNG files are older manual renders, which is fine unless you need fresh static renders.</div>
-      
-      <div class="note is-matrix">SDK Capability Matrix is a separate diagnostic report and may be older than the latest export. Refresh it from Live with ENABLE_CAPABILITY_MATRIX=true.</div>
-      <div class="note">
-        <strong>Open without CORS issues</strong><br>
-        If a Mermaid HTML page does not render from <code>file://</code>: run <strong>npm run serve:exports</strong> then open
-        <a href="http://localhost:5177/exports/session-map-diagrams.html">http://localhost:5177/exports/session-map-diagrams.html</a>
+      <div class="note-strip">
+        <span class="note-chip">HTML views are current on export</span>
+        <span class="note-chip">SVG/PNG are optional manual renders</span>
+        
+        <span class="note-chip">Some older renders</span>
+        
       </div>
     </section>
 
-    <section class="launcher-section">
-    <div class="section-head">
-      <div>
-        <p class="section-kicker">Core Views</p>
-        <h2>Core Views</h2>
+    <section class="primary-grid" aria-label="Primary views">
+      <article class="view-card accent-grid">
+    <div class="view-head">
+      <div class="view-copy">
+        <h2>Session Grid</h2>
+        <p>Live-like overview</p>
       </div>
-      <p>The fastest readable views refreshed directly by the Live export workflow.</p>
-    </div>
-    <div class="cards">
-      <section class="launcher-card accent-grid">
-    <div class="card-head">
-      <div>
-        <h3>Session Grid</h3>
-        <p>Session-style overview with tracks kept in Live order.</p>
-      </div>
-      <span class="card-summary">Primary views current</span>
-    </div>
-
-    <div class="primary-action">
-      <div class="primary-copy">
-        <span class="primary-label">Primary view</span>
-        <strong>Open Session Grid</strong>
-        <small>session-map-session-grid.html</small>
-      </div>
-      <div class="primary-actions">
-        <span class="status-pill status-current role-primary">Current</span>
-        <a class="primary-button" href="session-map-session-grid.html">Open Session Grid</a>
-      </div>
+      <span class="status-badge status-ok">Current</span>
     </div>
 
     
-    <p class="card-footnote">Generated on export. Best quick read when you want a Session View feel.</p>
-  </section>
-<section class="launcher-card accent-report">
-    <div class="card-head">
-      <div>
-        <h3>HTML Report</h3>
-        <p>Detailed report with tracks, devices, sends and rack summaries.</p>
-      </div>
-      <span class="card-summary">Primary views current</span>
-    </div>
 
-    <div class="primary-action">
-      <div class="primary-copy">
-        <span class="primary-label">Primary view</span>
-        <strong>Open HTML Report</strong>
-        <small>session-map.html</small>
-      </div>
-      <div class="primary-actions">
-        <span class="status-pill status-current role-primary">Current</span>
-        <a class="primary-button" href="session-map.html">Open HTML Report</a>
-      </div>
+    <div class="view-actions">
+      <a class="open-button" href="session-map-session-grid.html">Open</a>
+      
     </div>
 
     
-    <p class="card-footnote">Generated on export. Best when you want the full readable report.</p>
-  </section>
-    </div>
-  </section>
-<section class="launcher-section">
-    <div class="section-head">
-      <div>
-        <p class="section-kicker">Mermaid Views</p>
-        <h2>Mermaid Views</h2>
+  </article>
+<article class="view-card accent-report">
+    <div class="view-head">
+      <div class="view-copy">
+        <h2>HTML Report</h2>
+        <p>Detailed report</p>
       </div>
-      <p>Diagram profiles generated from the same stable session-map export.</p>
-    </div>
-    <div class="cards">
-      <section class="launcher-card accent-flow">
-    <div class="card-head">
-      <div>
-        <h3>Flow</h3>
-        <p>Technical tree of tracks, devices and rack summaries.</p>
-      </div>
-      <span class="card-summary">Primary views current · 2 older renders</span>
+      <span class="status-badge status-ok">Current</span>
     </div>
 
-    <div class="primary-action">
-      <div class="primary-copy">
-        <span class="primary-label">Primary view</span>
-        <strong>Open Flow HTML</strong>
-        <small>session-map-mermaid-flow.html</small>
-      </div>
-      <div class="primary-actions">
-        <span class="status-pill status-current role-primary">Current</span>
-        <a class="primary-button" href="session-map-mermaid-flow.html">Open Flow HTML</a>
-      </div>
-    </div>
+    
 
-    <div class="artifact-list">
-      <div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open .mmd</strong>
-      <span>session-map-flow.mmd</span>
+    <div class="view-actions">
+      <a class="open-button" href="session-map.html">Open</a>
       
     </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-current role-primary">Current</span>
-      <a class="secondary-button" href="session-map-flow.mmd">Open .mmd</a>
+
+    
+  </article>
+<article class="view-card accent-git">
+    <div class="view-head">
+      <div class="view-copy">
+        <h2>Git / Metro</h2>
+        <p>Track/device metro map</p>
+      </div>
+      <span class="status-badge status-ok">Current</span>
     </div>
-  </div><div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open SVG</strong>
-      <span>session-map-flow.svg</span>
-      <small>Manual SVG/PNG render older than the latest export.</small>
+
+    
+
+    <div class="view-actions">
+      <a class="open-button" href="session-map-mermaid-git.html">Open</a>
+      <details class="more-exports">
+        <summary>More</summary>
+        <div class="more-list">
+          <div class="more-row">
+            <div class="more-copy">
+              <strong>Open SVG</strong>
+              <small>Manual render available.</small>
+            </div>
+            <div class="more-actions">
+              <span class="status-badge status-neutral">Current</span>
+              <a class="mini-button" href="session-map-git.svg">Open SVG</a>
+            </div>
+          </div>
+<div class="more-row">
+            <div class="more-copy">
+              <strong>Open PNG</strong>
+              <small>Manual render available.</small>
+            </div>
+            <div class="more-actions">
+              <span class="status-badge status-neutral">Current</span>
+              <a class="mini-button" href="session-map-git.png">Open PNG</a>
+            </div>
+          </div>
+<div class="more-row">
+            <div class="more-copy">
+              <strong>Open .mmd</strong>
+              <small>session-map-git.mmd</small>
+            </div>
+            <div class="more-actions">
+              <span class="status-badge status-ok">Current</span>
+              <a class="mini-button" href="session-map-git.mmd">Open .mmd</a>
+            </div>
+          </div>
+        </div>
+      </details>
     </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-outdated role-render">Older render</span>
-      <a class="secondary-button" href="session-map-flow.svg">Open SVG</a>
+
+    <p class="view-foot">Custom Metro is canonical.</p>
+  </article>
+<article class="view-card accent-flow">
+    <div class="view-head">
+      <div class="view-copy">
+        <h2>Flow</h2>
+        <p>Technical tree</p>
+      </div>
+      <span class="status-badge status-ok">Current</span>
     </div>
-  </div><div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open PNG</strong>
-      <span>session-map-flow.png</span>
-      <small>Manual SVG/PNG render older than the latest export.</small>
+
+    <p class="status-note">Some older renders</p>
+
+    <div class="view-actions">
+      <a class="open-button" href="session-map-mermaid-flow.html">Open</a>
+      <details class="more-exports">
+        <summary>More</summary>
+        <div class="more-list">
+          <div class="more-row">
+            <div class="more-copy">
+              <strong>Open SVG</strong>
+              <small>Older manual render.</small>
+            </div>
+            <div class="more-actions">
+              <span class="status-badge status-neutral">Older render</span>
+              <a class="mini-button" href="session-map-flow.svg">Open SVG</a>
+            </div>
+          </div>
+<div class="more-row">
+            <div class="more-copy">
+              <strong>Open PNG</strong>
+              <small>Older manual render.</small>
+            </div>
+            <div class="more-actions">
+              <span class="status-badge status-neutral">Older render</span>
+              <a class="mini-button" href="session-map-flow.png">Open PNG</a>
+            </div>
+          </div>
+<div class="more-row">
+            <div class="more-copy">
+              <strong>Open .mmd</strong>
+              <small>session-map-flow.mmd</small>
+            </div>
+            <div class="more-actions">
+              <span class="status-badge status-ok">Current</span>
+              <a class="mini-button" href="session-map-flow.mmd">Open .mmd</a>
+            </div>
+          </div>
+        </div>
+      </details>
     </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-outdated role-render">Older render</span>
-      <a class="secondary-button" href="session-map-flow.png">Open PNG</a>
+
+    
+  </article>
+<article class="view-card accent-kanban">
+    <div class="view-head">
+      <div class="view-copy">
+        <h2>Kanban</h2>
+        <p>External column view</p>
+      </div>
+      <span class="status-badge status-ok">Current</span>
+    </div>
+
+    <p class="status-note">Some older renders</p>
+
+    <div class="view-actions">
+      <a class="open-button" href="session-map-mermaid-kanban.html">Open</a>
+      <details class="more-exports">
+        <summary>More</summary>
+        <div class="more-list">
+          <div class="more-row">
+            <div class="more-copy">
+              <strong>Open SVG</strong>
+              <small>Older manual render.</small>
+            </div>
+            <div class="more-actions">
+              <span class="status-badge status-neutral">Older render</span>
+              <a class="mini-button" href="session-map-kanban.svg">Open SVG</a>
+            </div>
+          </div>
+<div class="more-row">
+            <div class="more-copy">
+              <strong>Open PNG</strong>
+              <small>Older manual render.</small>
+            </div>
+            <div class="more-actions">
+              <span class="status-badge status-neutral">Older render</span>
+              <a class="mini-button" href="session-map-kanban.png">Open PNG</a>
+            </div>
+          </div>
+<div class="more-row">
+            <div class="more-copy">
+              <strong>Open .mmd</strong>
+              <small>session-map-kanban.mmd</small>
+            </div>
+            <div class="more-actions">
+              <span class="status-badge status-ok">Current</span>
+              <a class="mini-button" href="session-map-kanban.mmd">Open .mmd</a>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    
+  </article>
+    </section>
+
+    <details class="fold">
+      <summary>Advanced exports</summary>
+      <div class="fold-body">
+        <p>Raw data, exports folder, Mermaid sources, and quick access to archived outputs.</p>
+        <div class="compact-row">
+    <div class="compact-copy">
+      <strong>session-map.json</strong>
+      <small>session-map.json</small>
+    </div>
+    <div class="compact-actions">
+      <span class="status-badge status-ok">Current</span>
+      <a class="mini-button" href="session-map.json">session-map.json</a>
     </div>
   </div>
+<div class="compact-row">
+    <div class="compact-copy">
+      <strong>Exports folder</strong>
+      <small>Open latest files and archives.</small>
     </div>
-    <p class="card-footnote">HTML + .mmd stay current on export. SVG/PNG remain optional manual renders.</p>
-  </section>
-<section class="launcher-card accent-git">
-    <div class="card-head">
-      <div>
-        <h3>Git / Metro</h3>
-        <p>Metro-style track/device map.</p>
-      </div>
-      <span class="card-summary">Primary views current</span>
-    </div>
-
-    <div class="primary-action">
-      <div class="primary-copy">
-        <span class="primary-label">Primary view</span>
-        <strong>Open Custom Metro</strong>
-        <small>Canonical Git / Metro HTML view generated from session-map.json.</small>
-      </div>
-      <div class="primary-actions">
-        <span class="status-pill status-current role-primary">Current</span>
-        <a class="primary-button" href="session-map-mermaid-git.html">Open Custom Metro</a>
-      </div>
-    </div>
-
-    <div class="artifact-list">
-      <div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open Custom Metro SVG</strong>
-      <span>session-map-git.svg</span>
-      <small>Canonical Git / Metro SVG render.</small>
-    </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-current role-primary">Current</span>
-      <a class="secondary-button" href="session-map-git.svg">Open Custom Metro SVG</a>
-    </div>
-  </div><div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open Custom Metro PNG</strong>
-      <span>session-map-git.png</span>
-      <small>Canonical Git / Metro PNG render.</small>
-    </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-current role-primary">Current</span>
-      <a class="secondary-button" href="session-map-git.png">Open Custom Metro PNG</a>
-    </div>
-  </div><div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open Mermaid gitGraph source</strong>
-      <span>session-map-git.mmd</span>
-      <small>Secondary Mermaid source with layout limitations.</small>
-    </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-current role-data">Current</span>
-      <a class="secondary-button" href="session-map-git.mmd">Open Mermaid gitGraph source</a>
+    <div class="compact-actions">
+      <span class="status-badge status-ok">Current</span>
+      <a class="mini-button" href="file:///Users/jeanclaude/Documents/ableton scripte arborescence/exports">Exports folder</a>
     </div>
   </div>
+<div class="compact-row">
+    <div class="compact-copy">
+      <strong>Flow .mmd</strong>
+      <small>session-map-flow.mmd</small>
     </div>
-    <p class="card-footnote">Canonical layout = custom HTML/SVG/PNG. Mermaid .mmd remains a secondary gitGraph source.</p>
-  </section>
-<section class="launcher-card accent-kanban">
-    <div class="card-head">
-      <div>
-        <h3>Kanban</h3>
-        <p>Session-order columns with devices under each track. External only.</p>
-      </div>
-      <span class="card-summary">Primary views current · 2 older renders</span>
-    </div>
-
-    <div class="primary-action">
-      <div class="primary-copy">
-        <span class="primary-label">Primary view</span>
-        <strong>Open Kanban HTML</strong>
-        <small>session-map-mermaid-kanban.html</small>
-      </div>
-      <div class="primary-actions">
-        <span class="status-pill status-current role-primary">Current</span>
-        <a class="primary-button" href="session-map-mermaid-kanban.html">Open Kanban HTML</a>
-      </div>
-    </div>
-
-    <div class="artifact-list">
-      <div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open .mmd</strong>
-      <span>session-map-kanban.mmd</span>
-      
-    </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-current role-primary">Current</span>
-      <a class="secondary-button" href="session-map-kanban.mmd">Open .mmd</a>
-    </div>
-  </div><div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open SVG</strong>
-      <span>session-map-kanban.svg</span>
-      <small>Manual SVG/PNG render older than the latest export.</small>
-    </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-outdated role-render">Older render</span>
-      <a class="secondary-button" href="session-map-kanban.svg">Open SVG</a>
-    </div>
-  </div><div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open PNG</strong>
-      <span>session-map-kanban.png</span>
-      <small>Manual SVG/PNG render older than the latest export.</small>
-    </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-outdated role-render">Older render</span>
-      <a class="secondary-button" href="session-map-kanban.png">Open PNG</a>
+    <div class="compact-actions">
+      <span class="status-badge status-ok">Current</span>
+      <a class="mini-button" href="session-map-flow.mmd">Flow .mmd</a>
     </div>
   </div>
+<div class="compact-row">
+    <div class="compact-copy">
+      <strong>Git / Metro .mmd</strong>
+      <small>session-map-git.mmd</small>
     </div>
-    <p class="card-footnote">Kanban stays fully external and keeps the exact Session View track order.</p>
-  </section>
-    </div>
-  </section>
-<section class="launcher-section">
-    <div class="section-head">
-      <div>
-        <p class="section-kicker">Data / Diagnostics</p>
-        <h2>Data / Diagnostics</h2>
-      </div>
-      <p>Raw files and SDK diagnostics kept separate from the visual views.</p>
-    </div>
-    <div class="cards">
-      <section class="launcher-card accent-raw">
-    <div class="card-head">
-      <div>
-        <h3>Raw Data</h3>
-        <p>Latest JSON export plus direct access to the exports folder.</p>
-      </div>
-      <span class="card-summary">1 current · 0 older · 0 missing</span>
-    </div>
-
-    <div class="primary-action">
-      <div class="primary-copy">
-        <span class="primary-label">Primary view</span>
-        <strong>Open session-map.json</strong>
-        <small>session-map.json</small>
-      </div>
-      <div class="primary-actions">
-        <span class="status-pill status-current role-data">Current</span>
-        <a class="primary-button" href="session-map.json">Open session-map.json</a>
-      </div>
-    </div>
-
-    <div class="artifact-list">
-      <div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open exports folder</strong>
-      <span>exports/</span>
-      <small>Open latest files and archives directly from Finder.</small>
-    </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-current role-data">Current</span>
-      <a class="secondary-button" href="file:///Users/jeanclaude/Documents/ableton scripte arborescence/exports">Open exports folder</a>
+    <div class="compact-actions">
+      <span class="status-badge status-ok">Current</span>
+      <a class="mini-button" href="session-map-git.mmd">Git / Metro .mmd</a>
     </div>
   </div>
+<div class="compact-row">
+    <div class="compact-copy">
+      <strong>Kanban .mmd</strong>
+      <small>session-map-kanban.mmd</small>
     </div>
-    <p class="card-footnote">Best when you need raw data or archived exports.</p>
-  </section>
-<section class="launcher-card accent-matrix">
-    <div class="card-head">
-      <div>
-        <h3>SDK Capability Matrix</h3>
-        <p>Separate Live diagnostic about what the SDK exposes.</p>
-      </div>
-      <span class="card-summary">0 current · 3 older · 0 missing</span>
-    </div>
-
-    <div class="primary-action">
-      <div class="primary-copy">
-        <span class="primary-label">Primary view</span>
-        <strong>Open HTML</strong>
-        <small>Separate Live diagnostic, not refreshed by diagram exports.</small>
-      </div>
-      <div class="primary-actions">
-        <span class="status-pill status-outdated role-data">Older</span>
-        <a class="primary-button" href="sdk-capability-matrix.html">Open HTML</a>
-      </div>
-    </div>
-
-    <div class="artifact-list">
-      <div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open JSON</strong>
-      <span>sdk-capability-matrix.json</span>
-      <small>Separate Live diagnostic, not refreshed by diagram exports.</small>
-    </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-outdated role-data">Older</span>
-      <a class="secondary-button is-warning" href="sdk-capability-matrix.json">Open JSON</a>
-    </div>
-  </div><div class="artifact-row">
-    <div class="artifact-meta">
-      <strong>Open Markdown</strong>
-      <span>sdk-capability-matrix.md</span>
-      <small>Separate Live diagnostic, not refreshed by diagram exports.</small>
-    </div>
-    <div class="artifact-actions">
-      <span class="status-pill status-outdated role-data">Older</span>
-      <a class="secondary-button is-warning" href="sdk-capability-matrix.md">Open Markdown</a>
+    <div class="compact-actions">
+      <span class="status-badge status-ok">Current</span>
+      <a class="mini-button" href="session-map-kanban.mmd">Kanban .mmd</a>
     </div>
   </div>
+      </div>
+    </details>
+
+    <details class="fold">
+      <summary>Diagnostics</summary>
+      <div class="fold-body">
+        <p>SDK Capability Matrix is a separate Live diagnostic.</p>
+        <p>Current launcher views may be up to date even if the Capability Matrix is older.</p>
+        <div class="compact-row">
+    <div class="compact-copy">
+      <strong>Capability Matrix HTML</strong>
+      <small>Separate Live diagnostic.</small>
     </div>
-    <p class="card-footnote">Refresh from Live with ENABLE_CAPABILITY_MATRIX=true.</p>
-  </section>
+    <div class="compact-actions">
+      <span class="status-badge status-warn">Older</span>
+      <a class="mini-button" href="sdk-capability-matrix.html">Capability Matrix HTML</a>
     </div>
-  </section>
+  </div>
+<div class="compact-row">
+    <div class="compact-copy">
+      <strong>Capability Matrix JSON</strong>
+      <small>Separate Live diagnostic.</small>
+    </div>
+    <div class="compact-actions">
+      <span class="status-badge status-warn">Older</span>
+      <a class="mini-button" href="sdk-capability-matrix.json">Capability Matrix JSON</a>
+    </div>
+  </div>
+<div class="compact-row">
+    <div class="compact-copy">
+      <strong>Capability Matrix Markdown</strong>
+      <small>Separate Live diagnostic.</small>
+    </div>
+    <div class="compact-actions">
+      <span class="status-badge status-warn">Older</span>
+      <a class="mini-button" href="sdk-capability-matrix.md">Capability Matrix Markdown</a>
+    </div>
+  </div>
+      </div>
+    </details>
+
+    <details class="fold">
+      <summary>Commands</summary>
+      <div class="fold-body">
+        <p>Use these only when you want manual renders or localhost preview.</p>
+        <div class="commands">
+          <div class="command">npm run export:diagram:all</div>
+          <div class="command">npm run serve:exports</div>
+          <div class="command">npm run open:diagrams:http</div>
+        </div>
+        <p>Localhost preview: <a href="http://localhost:5177/exports/session-map-diagrams.html">http://localhost:5177/exports/session-map-diagrams.html</a></p>
+      </div>
+    </details>
 
     <footer class="footer">
       <span>Exports folder: /Users/jeanclaude/Documents/ableton scripte arborescence/exports</span>
