@@ -1,182 +1,3 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ableton Session Mapper — Git / Metro</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --live-bg: #b7b7b7;
-      --live-panel: #cbcbcb;
-      --live-border: #8f8f8f;
-      --live-text: #202020;
-      --live-muted: #5e5e5e;
-      --live-orange: #f5a623;
-      --live-orange-dark: #d88900;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.16), transparent 22%),
-        repeating-linear-gradient(0deg, rgba(0,0,0,0.035) 0 1px, transparent 1px 24px),
-        repeating-linear-gradient(90deg, rgba(0,0,0,0.035) 0 1px, transparent 1px 24px),
-        var(--live-bg);
-      color: var(--live-text);
-      font-family: "Avenir Next", "SF Pro Text", "Segoe UI", sans-serif;
-    }
-    .shell { max-width: 1520px; margin: 0 auto; padding: 18px; }
-    .panel {
-      background: var(--live-panel);
-      border: 1px solid var(--live-border);
-      border-radius: 6px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
-    }
-    .toolbar {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 12px;
-      align-items: start;
-      margin-bottom: 12px;
-      padding: 14px;
-    }
-    .eyebrow {
-      margin: 0 0 4px;
-      font-size: 10px;
-      line-height: 1;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      font-weight: 700;
-      color: var(--live-orange-dark);
-    }
-    h1 { margin: 0; font-size: 22px; line-height: 1.1; }
-    .subline {
-      margin: 6px 0 0;
-      color: var(--live-muted);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-    .links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: flex-end;
-    }
-    a {
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      min-height: 30px;
-      padding: 0 10px;
-      border-radius: 4px;
-      border: 1px solid #8d8d8d;
-      background: linear-gradient(180deg, #ededed, #cfcfcf);
-      color: #1d1d1d;
-      font-size: 11px;
-      font-weight: 700;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
-    }
-    .links a:first-child {
-      background: linear-gradient(180deg, var(--live-orange), var(--live-orange-dark));
-      border-color: #9a6200;
-      color: #111;
-    }
-    .meta-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .legend, .support { padding: 12px 14px; }
-    .legend h2, .support strong {
-      margin: 0 0 6px;
-      font-size: 13px;
-      line-height: 1.2;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-    .legend ul {
-      margin: 0;
-      padding-left: 18px;
-      color: var(--live-muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-    .support p {
-      margin: 0;
-      color: var(--live-muted);
-      font-size: 12px;
-      line-height: 1.45;
-    }
-    .diagram {
-      overflow: auto;
-      border: 1px solid #6d6d6d;
-      border-radius: 6px;
-      background: #0f1318;
-      padding: 14px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
-    }
-    .diagram svg {
-      width: max-content;
-      min-width: 100%;
-      height: auto;
-      display: block;
-    }
-    .caption {
-      margin-top: 10px;
-      color: var(--live-muted);
-      font-size: 11px;
-    }
-    footer { margin-top: 10px; text-align: right; }
-    footer a {
-      font-size: 11px;
-      color: var(--live-muted);
-      background: transparent;
-      border: 0;
-      padding: 0;
-      min-height: unset;
-      box-shadow: none;
-    }
-    @media (max-width: 980px) {
-      .toolbar, .meta-grid { grid-template-columns: 1fr; }
-      .links { justify-content: flex-start; }
-    }
-  </style>
-</head>
-<body>
-  <div class="shell">
-    <div class="toolbar panel">
-      <div>
-        <p class="eyebrow">Session Mapper / Custom Metro</p>
-        <h1>Git / Metro</h1>
-        <p class="subline">Custom metro-style track/device map.</p>
-      </div>
-      <div class="links">
-        <a href="session-map-git.svg">Open Custom Metro SVG</a>
-        <a href="session-map-git.png">Open Custom Metro PNG</a>
-        <a href="session-map-git.mmd">Open Mermaid gitGraph source</a>
-      </div>
-    </div>
-
-    <section class="meta-grid">
-      <article class="legend panel">
-        <h2>Reading guide</h2>
-        <ul>
-          <li>Regular tracks stay above returns, with Main as the final line at the bottom.</li>
-          <li>Returns also flow toward Main.</li>
-          <li>Git / Metro focuses on tracks and devices. Detailed routing/sends are available in Outputs.</li>
-        </ul>
-      </article>
-      <article class="support panel">
-        <strong>Canonical Git / Metro view</strong>
-        <p>This custom Metro view is generated from session-map.json.</p>
-        <p>The Mermaid .mmd file remains available as a secondary gitGraph export with Mermaid layout limitations.</p>
-      </article>
-    </section>
-
-    <div class="diagram">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 660" width="880" height="660" role="img" aria-label="Git Metro custom session map">
     <defs>
       <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -200,10 +21,16 @@
     
       <g class="metro-row metro-row-midi">
         <text x="28" y="76" class="track-name" fill="#f3f5f8">1-5ths Glass Motion Pad</text>
-        <text x="28" y="98" class="track-meta" fill="#95a1b3">MIDI · dev:2</text>
+        <text x="28" y="98" class="track-meta" fill="#95a1b3">MIDI · dev:2 · sends:2</text>
         <line x1="252" y1="84" x2="692" y2="84" stroke="#8a7dff" stroke-width="4" stroke-linecap="round" />
         <circle cx="252" cy="84" r="4" fill="#8a7dff" />
     
+
+        <g class="metro-stop metro-summary">
+          <circle cx="306" cy="84" r="7" fill="#0f1318" stroke="#8a7dff" stroke-width="2.25" />
+          <text x="306" y="71" class="stop-caption" fill="#aeb9c7">sends:2</text>
+        </g>
+      
 
         <g class="metro-stop metro-device">
           <circle cx="392" cy="84" r="8" fill="#0f1318" stroke="#f5f7fa" stroke-width="2.1" />
@@ -228,10 +55,16 @@
 
       <g class="metro-row metro-row-midi">
         <text x="28" y="148" class="track-name" fill="#f3f5f8">2-E-Piano Faceplant</text>
-        <text x="28" y="170" class="track-meta" fill="#95a1b3">MIDI · dev:2 · racks:2</text>
+        <text x="28" y="170" class="track-meta" fill="#95a1b3">MIDI · dev:2 · sends:2 · racks:2</text>
         <line x1="252" y1="156" x2="692" y2="156" stroke="#b08cff" stroke-width="4" stroke-linecap="round" />
         <circle cx="252" cy="156" r="4" fill="#b08cff" />
     
+
+        <g class="metro-stop metro-summary">
+          <circle cx="306" cy="156" r="7" fill="#0f1318" stroke="#b08cff" stroke-width="2.25" />
+          <text x="306" y="143" class="stop-caption" fill="#aeb9c7">sends:2</text>
+        </g>
+      
 
         <g class="metro-stop metro-device">
           <circle cx="392" cy="156" r="8" fill="#0f1318" stroke="#f2c26a" stroke-width="2.1" />
@@ -256,10 +89,16 @@
 
       <g class="metro-row metro-row-midi">
         <text x="28" y="220" class="track-name" fill="#f3f5f8">3-DS Clap</text>
-        <text x="28" y="242" class="track-meta" fill="#95a1b3">MIDI · dev:1</text>
+        <text x="28" y="242" class="track-meta" fill="#95a1b3">MIDI · dev:1 · sends:2</text>
         <line x1="252" y1="228" x2="692" y2="228" stroke="#73a9ff" stroke-width="4" stroke-linecap="round" />
         <circle cx="252" cy="228" r="4" fill="#73a9ff" />
     
+
+        <g class="metro-stop metro-summary">
+          <circle cx="306" cy="228" r="7" fill="#0f1318" stroke="#73a9ff" stroke-width="2.25" />
+          <text x="306" y="215" class="stop-caption" fill="#aeb9c7">sends:2</text>
+        </g>
+      
 
         <g class="metro-stop metro-device">
           <circle cx="392" cy="228" r="8" fill="#0f1318" stroke="#f5f7fa" stroke-width="2.1" />
@@ -277,10 +116,16 @@
 
       <g class="metro-row metro-row-midi">
         <text x="28" y="292" class="track-name" fill="#f3f5f8">4-5ths Detuned Pad</text>
-        <text x="28" y="314" class="track-meta" fill="#95a1b3">MIDI · dev:3 · racks:2</text>
+        <text x="28" y="314" class="track-meta" fill="#95a1b3">MIDI · dev:3 · sends:2 · racks:2</text>
         <line x1="252" y1="300" x2="692" y2="300" stroke="#7d8fff" stroke-width="4" stroke-linecap="round" />
         <circle cx="252" cy="300" r="4" fill="#7d8fff" />
     
+
+        <g class="metro-stop metro-summary">
+          <circle cx="306" cy="300" r="7" fill="#0f1318" stroke="#7d8fff" stroke-width="2.25" />
+          <text x="306" y="287" class="stop-caption" fill="#aeb9c7">sends:2</text>
+        </g>
+      
 
         <g class="metro-stop metro-device">
           <circle cx="392" cy="300" r="8" fill="#0f1318" stroke="#f5f7fa" stroke-width="2.1" />
@@ -312,10 +157,16 @@
 
       <g class="metro-row metro-row-return">
         <text x="28" y="364" class="track-name" fill="#f3f5f8">A-Reverb</text>
-        <text x="28" y="386" class="track-meta" fill="#95a1b3">Return · dev:2 · racks:1</text>
+        <text x="28" y="386" class="track-meta" fill="#95a1b3">Return · dev:2 · sends:2 · racks:1</text>
         <line x1="252" y1="372" x2="692" y2="372" stroke="#3fc2d7" stroke-width="4.5" stroke-linecap="round" />
         <circle cx="252" cy="372" r="4" fill="#3fc2d7" />
     
+
+        <g class="metro-stop metro-summary">
+          <circle cx="306" cy="372" r="7" fill="#0f1318" stroke="#3fc2d7" stroke-width="2.25" />
+          <text x="306" y="359" class="stop-caption" fill="#aeb9c7">sends:2</text>
+        </g>
+      
 
         <g class="metro-stop metro-device">
           <circle cx="392" cy="372" r="8" fill="#0f1318" stroke="#f5f7fa" stroke-width="2.1" />
@@ -340,10 +191,16 @@
 
       <g class="metro-row metro-row-return">
         <text x="28" y="436" class="track-name" fill="#f3f5f8">B-Delay</text>
-        <text x="28" y="458" class="track-meta" fill="#95a1b3">Return · dev:1</text>
+        <text x="28" y="458" class="track-meta" fill="#95a1b3">Return · dev:1 · sends:2</text>
         <line x1="252" y1="444" x2="692" y2="444" stroke="#5bc7d8" stroke-width="4.5" stroke-linecap="round" />
         <circle cx="252" cy="444" r="4" fill="#5bc7d8" />
     
+
+        <g class="metro-stop metro-summary">
+          <circle cx="306" cy="444" r="7" fill="#0f1318" stroke="#5bc7d8" stroke-width="2.25" />
+          <text x="306" y="431" class="stop-caption" fill="#aeb9c7">sends:2</text>
+        </g>
+      
 
         <g class="metro-stop metro-device">
           <circle cx="392" cy="444" r="8" fill="#0f1318" stroke="#f5f7fa" stroke-width="2.1" />
@@ -365,6 +222,12 @@
         <line x1="252" y1="516" x2="692" y2="516" stroke="#f5a623" stroke-width="6" stroke-linecap="round" />
         <circle cx="252" cy="516" r="5" fill="#f5a623" />
     
+
+        <g class="metro-stop metro-summary">
+          <circle cx="306" cy="516" r="7" fill="#0f1318" stroke="#f5a623" stroke-width="2.25" />
+          <text x="306" y="503" class="stop-caption" fill="#aeb9c7">racks:2</text>
+        </g>
+      
 
         <g class="metro-stop metro-device">
           <circle cx="392" cy="516" r="8" fill="#0f1318" stroke="#f2c26a" stroke-width="2.1" />
@@ -389,11 +252,3 @@
         <text x="754" y="498" class="stop-caption stop-caption-main" fill="#ffd18c">Main sink</text>
       
   </svg>
-    </div>
-    <p class="caption">This custom Metro view is generated from session-map.json. The Mermaid .mmd file remains available as a secondary gitGraph export with Mermaid layout limitations.</p>
-    <footer>
-      <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a>
-    </footer>
-  </div>
-</body>
-</html>

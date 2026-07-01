@@ -444,17 +444,33 @@ export async function buildDiagramsIndexHtml(
       description: "Metro-style track/device map.",
       accentClass: "accent-git",
       artifacts: [
-        buildArtifact("session-map-mermaid-git.html", "Open Git / Metro HTML", metadataMap, jsonMtimeMs, "primary"),
-        buildArtifact("session-map-git.mmd", "Open .mmd", metadataMap, jsonMtimeMs, "primary"),
-        buildArtifact("session-map-git.svg", "Open SVG", metadataMap, jsonMtimeMs, "render"),
-        buildArtifact("session-map-git.png", "Open PNG", metadataMap, jsonMtimeMs, "render"),
+        (() => {
+          const artifact = buildArtifact("session-map-mermaid-git.html", "Open Custom Metro", metadataMap, jsonMtimeMs, "primary");
+          artifact.note = "Canonical Git / Metro HTML view generated from session-map.json.";
+          return artifact;
+        })(),
+        (() => {
+          const artifact = buildArtifact("session-map-git.svg", "Open Custom Metro SVG", metadataMap, jsonMtimeMs, "primary");
+          artifact.note = "Canonical Git / Metro SVG render.";
+          return artifact;
+        })(),
+        (() => {
+          const artifact = buildArtifact("session-map-git.png", "Open Custom Metro PNG", metadataMap, jsonMtimeMs, "primary");
+          artifact.note = "Canonical Git / Metro PNG render.";
+          return artifact;
+        })(),
+        (() => {
+          const artifact = buildArtifact("session-map-git.mmd", "Open Mermaid gitGraph source", metadataMap, jsonMtimeMs, "data");
+          artifact.note = "Secondary Mermaid source with layout limitations.";
+          return artifact;
+        })(),
       ],
-      footerNote: "Stylized metro view of tracks and devices, not an exact audio routing graph.",
+      footerNote: "Canonical layout = custom HTML/SVG/PNG. Mermaid .mmd remains a secondary gitGraph source.",
       summary: buildCardSummary([
-        buildArtifact("session-map-mermaid-git.html", "Open Git / Metro HTML", metadataMap, jsonMtimeMs, "primary"),
-        buildArtifact("session-map-git.mmd", "Open .mmd", metadataMap, jsonMtimeMs, "primary"),
-        buildArtifact("session-map-git.svg", "Open SVG", metadataMap, jsonMtimeMs, "render"),
-        buildArtifact("session-map-git.png", "Open PNG", metadataMap, jsonMtimeMs, "render"),
+        buildArtifact("session-map-mermaid-git.html", "Open Custom Metro", metadataMap, jsonMtimeMs, "primary"),
+        buildArtifact("session-map-git.svg", "Open Custom Metro SVG", metadataMap, jsonMtimeMs, "primary"),
+        buildArtifact("session-map-git.png", "Open Custom Metro PNG", metadataMap, jsonMtimeMs, "primary"),
+        buildArtifact("session-map-git.mmd", "Open Mermaid gitGraph source", metadataMap, jsonMtimeMs, "data"),
       ]),
     },
     {

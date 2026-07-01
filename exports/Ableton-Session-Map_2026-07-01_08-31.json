@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "exportedAt": "2026-07-01T06:31:51.199Z",
+  "exportedAt": "2026-07-01T06:31:25.314Z",
   "set": {
     "name": null,
     "tempo": 120
@@ -12,7 +12,7 @@
     "scanNestedRacks": false,
     "partial": false,
     "warnings": [],
-    "totalScannedDevices": 13,
+    "totalScannedDevices": 10,
     "maxTotalScannedDevices": 500
   },
   "tracks": [
@@ -220,7 +220,7 @@
         {
           "id": "8711698321702164709864327824950984936783995",
           "index": 0,
-          "name": "A-Reverb | Basic Lead Guitar Amp",
+          "name": "A-Reverb",
           "value": 0
         },
         {
@@ -571,7 +571,7 @@
         {
           "id": "72826340767477706241779517858815024266477691",
           "index": 0,
-          "name": "A-Reverb | Basic Lead Guitar Amp",
+          "name": "A-Reverb",
           "value": 0
         },
         {
@@ -691,7 +691,7 @@
         {
           "id": "92687941959919042477209766945392471232741499",
           "index": 0,
-          "name": "A-Reverb | Basic Lead Guitar Amp",
+          "name": "A-Reverb",
           "value": 0
         },
         {
@@ -1170,7 +1170,7 @@
         {
           "id": "113943339727268542658985998424010440793129083",
           "index": 0,
-          "name": "A-Reverb | Basic Lead Guitar Amp",
+          "name": "A-Reverb",
           "value": 0
         },
         {
@@ -1196,7 +1196,7 @@
     {
       "id": "24043460645691968119670134137396733472145531",
       "index": 0,
-      "name": "A-Reverb | Basic Lead Guitar Amp",
+      "name": "A-Reverb",
       "kind": "return",
       "color": null,
       "isMuted": false,
@@ -1346,159 +1346,13 @@
           "scanWarning": null,
           "chainsSummary": null,
           "padsSummary": null
-        },
-        {
-          "id": "682960791433526473754733309974553789844160635",
-          "index": 1,
-          "name": "Basic Lead Guitar Amp",
-          "type": "RackDevice",
-          "enabled": true,
-          "parameters": [
-            {
-              "id": "686445282870796883620598265954655096329470075",
-              "index": 9,
-              "name": "Macro 9",
-              "value": 0,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": true
-            },
-            {
-              "id": "686793732014523924607184761552665226978001019",
-              "index": 10,
-              "name": "Macro 10",
-              "value": 0,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": true
-            },
-            {
-              "id": "687142181158250965593771257150675357626531963",
-              "index": 11,
-              "name": "Macro 11",
-              "value": 0,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": true
-            },
-            {
-              "id": "687490630301978006580357752748685488275062907",
-              "index": 12,
-              "name": "Macro 12",
-              "value": 0,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": true
-            },
-            {
-              "id": "687839079445705047566944248346695618923593851",
-              "index": 13,
-              "name": "Macro 13",
-              "value": 0,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": true
-            },
-            {
-              "id": "688187528589432088553530743944705749572124795",
-              "index": 14,
-              "name": "Macro 14",
-              "value": 0,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": true
-            },
-            {
-              "id": "688535977733159129540117239542715880220655739",
-              "index": 15,
-              "name": "Macro 15",
-              "value": 0,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": true
-            },
-            {
-              "id": "688884426876886170526703735140726010869186683",
-              "index": 16,
-              "name": "Macro 16",
-              "value": 62.48400115966797,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": true
-            },
-            {
-              "id": "683657689720980555727906301170574051141222523",
-              "index": 1,
-              "name": "Amp Gain",
-              "value": 86,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": false
-            },
-            {
-              "id": "684006138864707596714492796768584181789753467",
-              "index": 2,
-              "name": "Amp Bass",
-              "value": 34.290000915527344,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": false
-            },
-            {
-              "id": "684354588008434637701079292366594312438284411",
-              "index": 3,
-              "name": "Amp Middle",
-              "value": 62.48400115966797,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": false
-            },
-            {
-              "id": "684703037152161678687665787964604443086815355",
-              "index": 4,
-              "name": "Amp Treble",
-              "value": 92.70999908447266,
-              "min": 0,
-              "max": 127,
-              "isQuantized": false,
-              "isMacro": false
-            }
-          ],
-          "chains": [],
-          "pads": [],
-          "scanStatus": "summary",
-          "scanWarning": null,
-          "chainsSummary": {
-            "count": 1,
-            "items": [
-              {
-                "index": 0,
-                "name": "Chain 01",
-                "note": null,
-                "receivingNote": null,
-                "deviceCount": 3
-              }
-            ]
-          },
-          "padsSummary": null
         }
       ],
       "sends": [
         {
           "id": "36239180676138402650197480067751306170728571",
           "index": 0,
-          "name": "A-Reverb | Basic Lead Guitar Amp",
+          "name": "A-Reverb",
           "value": 0
         },
         {
@@ -1509,14 +1363,14 @@
         }
       ],
       "routing": {
-        "source": "none",
-        "audioFrom": null,
+        "source": "manual",
+        "audioFrom": "Sends",
         "audioTo": null,
         "midiFrom": null,
         "midiTo": null,
         "monitor": null,
         "group": null,
-        "notes": ""
+        "notes": "Fill manually from Ableton I/O"
       }
     },
     {
@@ -1678,7 +1532,7 @@
         {
           "id": "50177146425220042113657303988156532111966331",
           "index": 0,
-          "name": "A-Reverb | Basic Lead Guitar Amp",
+          "name": "A-Reverb",
           "value": 0
         },
         {
@@ -1718,314 +1572,7 @@
       "type": null,
       "channel": null
     },
-    "devices": [
-      {
-        "id": "573199311159508562979987196601362635556913275",
-        "index": 0,
-        "name": "Alien Ice Cream",
-        "type": "RackDevice",
-        "enabled": true,
-        "parameters": [
-          {
-            "id": "575290006021870808899506170189423419448098939",
-            "index": 5,
-            "name": "Macro 5",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "575638455165597849886092665787433550096629883",
-            "index": 6,
-            "name": "Macro 6",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "575986904309324890872679161385443680745160827",
-            "index": 7,
-            "name": "Macro 7",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "576335353453051931859265656983453811393691771",
-            "index": 8,
-            "name": "Macro 8",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "576683802596778972845852152581463942042222715",
-            "index": 9,
-            "name": "Macro 9",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "577032251740506013832438648179474072690753659",
-            "index": 10,
-            "name": "Macro 10",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "577380700884233054819025143777484203339284603",
-            "index": 11,
-            "name": "Macro 11",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "577729150027960095805611639375494333987815547",
-            "index": 12,
-            "name": "Macro 12",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "578077599171687136792198134973504464636346491",
-            "index": 13,
-            "name": "Macro 13",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "578426048315414177778784630571514595284877435",
-            "index": 14,
-            "name": "Macro 14",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "578774497459141218765371126169524725933408379",
-            "index": 15,
-            "name": "Macro 15",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "579122946602868259751957621767534856581939323",
-            "index": 16,
-            "name": "Macro 16",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          }
-        ],
-        "chains": [],
-        "pads": [],
-        "scanStatus": "summary",
-        "scanWarning": null,
-        "chainsSummary": {
-          "count": 1,
-          "items": [
-            {
-              "index": 0,
-              "name": "Chain 01",
-              "note": null,
-              "receivingNote": null,
-              "deviceCount": 3
-            }
-          ]
-        },
-        "padsSummary": null
-      },
-      {
-        "id": "716411909231322408467036887383526332103131259",
-        "index": 1,
-        "name": "Ample Space Delay",
-        "type": "RackDevice",
-        "enabled": true,
-        "parameters": [
-          {
-            "id": "719896400668592818332901843363627638588440699",
-            "index": 9,
-            "name": "Macro 9",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "720244849812319859319488338961637769236971643",
-            "index": 10,
-            "name": "Macro 10",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "720593298956046900306074834559647899885502587",
-            "index": 11,
-            "name": "Macro 11",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "720941748099773941292661330157658030534033531",
-            "index": 12,
-            "name": "Macro 12",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "721290197243500982279247825755668161182564475",
-            "index": 13,
-            "name": "Macro 13",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "721638646387228023265834321353678291831095419",
-            "index": 14,
-            "name": "Macro 14",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "721987095530955064252420816951688422479626363",
-            "index": 15,
-            "name": "Macro 15",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "722335544674682105239007312549698553128157307",
-            "index": 16,
-            "name": "Macro 16",
-            "value": 0,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": true
-          },
-          {
-            "id": "717108807518776490440209878579546593400193147",
-            "index": 1,
-            "name": "Delay Time",
-            "value": 3.47265625,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": false
-          },
-          {
-            "id": "717457256662503531426796374177556724048724091",
-            "index": 2,
-            "name": "Delay Feedbck",
-            "value": 16.8671875,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": false
-          },
-          {
-            "id": "717805705806230572413382869775566854697255035",
-            "index": 3,
-            "name": "Chorus Rate",
-            "value": 28.22222137451172,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": false
-          },
-          {
-            "id": "718154154949957613399969365373576985345785979",
-            "index": 4,
-            "name": "Chorus Feedbck",
-            "value": 22.30059814453125,
-            "min": 0,
-            "max": 127,
-            "isQuantized": false,
-            "isMacro": false
-          }
-        ],
-        "chains": [],
-        "pads": [],
-        "scanStatus": "summary",
-        "scanWarning": null,
-        "chainsSummary": {
-          "count": 3,
-          "items": [
-            {
-              "index": 0,
-              "name": "Chain 01",
-              "note": null,
-              "receivingNote": null,
-              "deviceCount": 2
-            },
-            {
-              "index": 1,
-              "name": "Chain 02",
-              "note": null,
-              "receivingNote": null,
-              "deviceCount": 2
-            },
-            {
-              "index": 2,
-              "name": "Chain 03",
-              "note": null,
-              "receivingNote": null,
-              "deviceCount": 0
-            }
-          ]
-        },
-        "padsSummary": null
-      }
-    ],
+    "devices": [],
     "sends": [],
     "routing": {
       "source": "manual",
@@ -2044,7 +1591,7 @@
     "setMatch": false,
     "sourcePath": "/Users/jeanclaude/Documents/ableton scripte arborescence/exports/routing-overrides.json",
     "sourceModifiedAt": "2026-06-30T12:08:07.267Z",
-    "sessionMapModifiedAt": "2026-07-01T06:31:25.336Z",
+    "sessionMapModifiedAt": "2026-07-01T06:27:48.470Z",
     "currentTrackCount": 7,
     "overrideTrackCount": 9,
     "missingFromCurrent": [
@@ -2053,15 +1600,13 @@
       "3-Group",
       "4-Beastly Kit",
       "5-909 Core Kit",
-      "6-Basic Fine Line Bass",
-      "A-Reverb"
+      "6-Basic Fine Line Bass"
     ],
     "missingFromOverrides": [
       "1-5ths Glass Motion Pad",
       "2-E-Piano Faceplant",
       "3-DS Clap",
-      "4-5ths Detuned Pad",
-      "A-Reverb | Basic Lead Guitar Amp"
+      "4-5ths Detuned Pad"
     ],
     "warnings": [
       "Manual routing override references missing track: 1 Drift",
@@ -2070,8 +1615,7 @@
       "Manual routing override references missing track: 4-Beastly Kit",
       "Manual routing override references missing track: 5-909 Core Kit",
       "Manual routing override references missing track: 6-Basic Fine Line Bass",
-      "Manual routing override references missing track: A-Reverb",
-      "Current Set has tracks missing from routing-overrides.json: 1-5ths Glass Motion Pad, 2-E-Piano Faceplant, 3-DS Clap, 4-5ths Detuned Pad, A-Reverb | Basic Lead Guitar Amp",
+      "Current Set has tracks missing from routing-overrides.json: 1-5ths Glass Motion Pad, 2-E-Piano Faceplant, 3-DS Clap, 4-5ths Detuned Pad",
       "routing-overrides.json is older than session-map.json. Run npm run refresh:routing-overrides."
     ],
     "tracks": {

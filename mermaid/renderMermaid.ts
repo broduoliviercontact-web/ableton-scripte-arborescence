@@ -4,6 +4,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { writeDiagramsIndex } from "../launcher/diagramsIndexTemplate.js";
+import { buildMetroModel, renderMetroHtml, renderMetroSvg, type MetroSessionMap } from "../metro/generateMetroView.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -114,6 +115,8 @@ const latestHtmlPath = resolve(
 );
 const mermaidCliPath = resolve(rootDirectory, "node_modules/@mermaid-js/mermaid-cli/src/cli.js");
 const mermaidConfigPath = resolve(rootDirectory, "mermaid/mermaid.config.json");
+const rsvgConvertPath = "/opt/homebrew/bin/rsvg-convert";
+const sipsPath = "/usr/bin/sips";
 const logPrefix = profileFileSuffix
   ? `[mermaid:${profileFileSuffix}]`
   : profile === "flow"
@@ -179,6 +182,15 @@ async function resolveRenderPaths(): Promise<RenderPaths> {
 }
 
 async function ensureRendererInstalled(): Promise<void> {
+  if (profile === "git") {
+    if ((await pathExists(rsvgConvertPath)) || (await pathExists(sipsPath))) {
+      return;
+    }
+    throw new Error(
+      "Custom Metro PNG conversion is unavailable. Install librsvg (`rsvg-convert`) or use macOS `sips`.",
+    );
+  }
+
   if (!(await pathExists(mermaidCliPath))) {
     throw new Error(
       "Mermaid CLI is not installed. Run `npm install` at the project root, then retry the render command.",
@@ -189,6 +201,28 @@ async function ensureRendererInstalled(): Promise<void> {
       "Missing Mermaid config file at mermaid/mermaid.config.json.",
     );
   }
+}
+
+async function renderSvgToPng(inputPath: string, outputPath: string): Promise<void> {
+  if (await pathExists(rsvgConvertPath)) {
+    await execFileAsync(
+      rsvgConvertPath,
+      ["--format", "png", "--output", outputPath, inputPath],
+      { cwd: rootDirectory },
+    );
+    return;
+  }
+
+  if (await pathExists(sipsPath)) {
+    await execFileAsync(
+      sipsPath,
+      ["-s", "format", "png", inputPath, "--out", outputPath],
+      { cwd: rootDirectory },
+    );
+    return;
+  }
+
+  throw new Error("No SVG to PNG converter available for the custom Metro renderer.");
 }
 
 async function renderWithMermaidCli(
@@ -976,6 +1010,45 @@ async function main(): Promise<void> {
 
   console.log(`${logPrefix} Render Mermaid started`);
 
+  if (profile === "git") {
+    const sessionMap = JSON.parse(
+      await readFile(resolve(rootDirectory, "exports/session-map.json"), "utf8"),
+    ) as MetroSessionMap;
+    const metroModel = buildMetroModel(sessionMap);
+
+    console.log(`${logPrefix} Render SVG started`);
+    const customSvg = renderMetroSvg(metroModel);
+    await writeFile(paths.latestSvgPath, customSvg, "utf8");
+    await writeFile(paths.archiveSvgPath, customSvg, "utf8");
+    console.log(`${logPrefix} Render SVG completed: ${logPath(paths.latestSvgPath)}`);
+    console.log(`${logPrefix} SVG archive completed: ${logPath(paths.archiveSvgPath)}`);
+
+    console.log(`${logPrefix} Render PNG started`);
+    await renderSvgToPng(paths.latestSvgPath, paths.latestPngPath);
+    const latestPng = await readFile(paths.latestPngPath);
+    await writeFile(paths.archivePngPath, latestPng);
+    console.log(`${logPrefix} Render PNG completed: ${logPath(paths.latestPngPath)}`);
+    console.log(`${logPrefix} PNG archive completed: ${logPath(paths.archivePngPath)}`);
+
+    const html = renderMetroHtml(metroModel, {
+      mmdFileName: relativeName(paths.latestMmdPath),
+      svgFileName: relativeName(paths.latestSvgPath),
+      pngFileName: relativeName(paths.latestPngPath),
+    });
+    await writeFile(paths.latestHtmlPath, html, "utf8");
+    console.log(`${logPrefix} Mermaid HTML completed: ${logPath(paths.latestHtmlPath)}`);
+
+    const indexHtmlPath = resolve(rootDirectory, "exports/session-map-diagrams.html");
+    await writeDiagramsIndex({
+      jsonPath: resolve(rootDirectory, "exports/session-map.json"),
+      outputPath: indexHtmlPath,
+      rootDirectory,
+    });
+    console.log(`${logPrefix} Diagram index completed: ${logPath(indexHtmlPath)}`);
+    console.log(`${logPrefix} Render Mermaid completed`);
+    return;
+  }
+
   console.log(`${logPrefix} Render SVG started`);
   await renderWithMermaidCli(paths.latestMmdPath, paths.latestSvgPath, "svg");
   const latestSvg = await readFile(paths.latestSvgPath, "utf8");
@@ -990,13 +1063,7 @@ async function main(): Promise<void> {
   console.log(`${logPrefix} Render PNG completed: ${logPath(paths.latestPngPath)}`);
   console.log(`${logPrefix} PNG archive completed: ${logPath(paths.archivePngPath)}`);
 
-  const html = profile === "git"
-    ? buildGitMetroHtmlPage(
-      JSON.parse(
-        await readFile(resolve(rootDirectory, "exports/session-map.json"), "utf8"),
-      ) as SessionMap,
-    )
-    : buildHtmlPage(latestSvg);
+  const html = buildHtmlPage(latestSvg);
   await writeFile(paths.latestHtmlPath, html, "utf8");
   console.log(`${logPrefix} Mermaid HTML completed: ${logPath(paths.latestHtmlPath)}`);
   const indexHtmlPath = resolve(rootDirectory, "exports/session-map-diagrams.html");
