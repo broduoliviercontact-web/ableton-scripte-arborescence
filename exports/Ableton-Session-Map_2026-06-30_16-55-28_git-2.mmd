@@ -1,0 +1,34 @@
+flowchart LR
+  metro_main["Main<br/>Master<br/>dev:0"]
+  metro_return_0["A-Reverb<br/>Return<br/>dev:1<br/>sends:2"]
+  metro_return_0 -->|main| metro_main
+  metro_return_0_device_0["Reverb<br/>Device"]
+  metro_return_0 -->|devices| metro_return_0_device_0
+  metro_return_1["B-Delay<br/>Return<br/>dev:1<br/>sends:2"]
+  metro_return_1 -->|main| metro_main
+  metro_return_1_device_0["Delay<br/>Device"]
+  metro_return_1 -->|devices| metro_return_1_device_0
+  metro_track_0["1-DS HH<br/>MIDI<br/>dev:4<br/>sends:2"]
+  metro_track_0 -->|main| metro_main
+  metro_track_0_device_0["Note Echo<br/>Device"]
+  metro_track_0 -->|devices| metro_track_0_device_0
+  metro_track_0_device_1["STING!64<br/>Device"]
+  metro_track_0 --> metro_track_0_device_1
+  metro_track_0_device_2["DS HH<br/>Device"]
+  metro_track_0 --> metro_track_0_device_2
+  metro_track_0_device_3["LFO<br/>Device"]
+  metro_track_0 --> metro_track_0_device_3
+  metro_track_0 -.->|send A-Reverb 0.6599999070167542| metro_return_0
+
+classDef track fill:#1a2330,stroke:#7e91aa,color:#f5f7fa
+classDef return fill:#10252c,stroke:#4fc6e6,color:#eefcff
+classDef master fill:#2b1c14,stroke:#f5a623,color:#fff5e9
+classDef device fill:#181d26,stroke:#76849a,color:#eef3f9
+classDef rack fill:#2b2216,stroke:#d8a24a,color:#fff6e4
+
+class metro_main master;
+class metro_return_0,metro_return_1 return;
+class metro_return_0_device_0,metro_return_1_device_0,metro_track_0_device_0,metro_track_0_device_1,metro_track_0_device_2,metro_track_0_device_3 device;
+class metro_track_0 track;
+linkStyle 9 stroke:#5bc7d8,stroke-width:1.35px,stroke-dasharray:6 5,opacity:0.78;
+

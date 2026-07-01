@@ -1,0 +1,43 @@
+flowchart TD
+  set["Ableton Live Set<br/>120 BPM<br/>JSON 1.0.0"]
+  section_tracks["Tracks<br/>1 normal tracks"]
+  section_returns["Return Tracks<br/>2 return tracks"]
+  section_master["Master Track<br/>1 master track"]
+  set --> section_tracks
+  set --> section_returns
+  set --> section_master
+  track_0["1-DS HH<br/>MIDI Track<br/>devices: 4<br/>sends: A-Reverb, B-Delay"]
+  section_tracks --> track_0
+  track_0_device_0["Note Echo<br/>Device"]
+  track_0 --> track_0_device_0
+  track_0_device_1["STING!64<br/>Device"]
+  track_0 --> track_0_device_1
+  track_0_device_2["DS HH<br/>Device"]
+  track_0 --> track_0_device_2
+  track_0_device_3["LFO<br/>Device"]
+  track_0 --> track_0_device_3
+  return_0["A-Reverb<br/>Return Track<br/>devices: 1<br/>sends: A-Reverb, B-Delay"]
+  section_returns --> return_0
+  return_0_device_0["Reverb<br/>Device"]
+  return_0 --> return_0_device_0
+  return_1["B-Delay<br/>Return Track<br/>devices: 1<br/>sends: A-Reverb, B-Delay"]
+  section_returns --> return_1
+  return_1_device_0["Delay<br/>Device"]
+  return_1 --> return_1_device_0
+  master_0["Main<br/>Master Track<br/>devices: 0"]
+  section_master --> master_0
+
+classDef set fill:#111,stroke:#f5a623,color:#fff
+classDef track fill:#1b1b1b,stroke:#666,color:#fff
+classDef return fill:#1b1b1b,stroke:#4aa3ff,color:#fff
+classDef master fill:#1b1b1b,stroke:#ff4a4a,color:#fff
+classDef device fill:#242424,stroke:#999,color:#fff
+classDef rack fill:#2b2114,stroke:#f5a623,color:#fff
+classDef chain fill:#141f2b,stroke:#4aa3ff,color:#fff
+
+class set set;
+class section_tracks,track_0 track;
+class section_returns,return_0,return_1 return;
+class section_master,master_0 master;
+class track_0_device_0,track_0_device_1,track_0_device_2,track_0_device_3,return_0_device_0,return_1_device_0 device;
+

@@ -9,6 +9,45 @@ const execFileAsync = promisify(execFile);
 
 type MermaidProfile = "flow" | "git" | "kanban";
 
+type TrackKind = "audio" | "midi" | "group" | "return" | "master" | "unknown";
+
+interface DeviceInfo {
+  id: string;
+  index: number;
+  name: string;
+  type: string;
+  chainsSummary?: { count: number } | null;
+  padsSummary?: { count: number } | null;
+}
+
+interface SendInfo {
+  id: string;
+  index: number;
+  name: string;
+  value: number | null;
+}
+
+interface TrackInfo {
+  id: string;
+  index: number;
+  name: string;
+  kind: TrackKind;
+  devices: DeviceInfo[];
+  sends: SendInfo[];
+}
+
+interface SessionMap {
+  version: string;
+  exportedAt: string;
+  set: {
+    name: string | null;
+    tempo: number | null;
+  };
+  tracks: TrackInfo[];
+  returnTracks: TrackInfo[];
+  masterTrack: TrackInfo | null;
+}
+
 interface RenderPaths {
   latestMmdPath: string;
   archiveMmdPath: string;
@@ -200,6 +239,139 @@ function relativeName(path: string): string {
   return basename(path);
 }
 
+function escapeHtml(value: string): string {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function truncateLabel(value: string, maxLength: number): string {
+  return value.length <= maxLength ? value : `${value.slice(0, maxLength - 1)}…`;
+}
+
+function compactTrackName(track: TrackInfo): string {
+  const primaryName = (track.name || `Track ${track.index + 1}`).split("|")[0]?.trim()
+    || track.name
+    || `Track ${track.index + 1}`;
+  return truncateLabel(primaryName.replace(/\s+/g, " ").trim(), 24);
+}
+
+function compactDeviceName(device: DeviceInfo): string {
+  return truncateLabel(
+    (device.name || `Device ${device.index + 1}`)
+      .replace(/_/g, " ")
+      .replace(/\s+/g, " ")
+      .trim(),
+    18,
+  );
+}
+
+function isRackDevice(device: DeviceInfo): boolean {
+  return (
+    device.type.toLowerCase().includes("rack") ||
+    Boolean(device.chainsSummary?.count) ||
+    Boolean(device.padsSummary?.count)
+  );
+}
+
+function returnTrackAliases(track: TrackInfo): string[] {
+  const aliases = new Set<string>();
+  const rawName = (track.name || `Return ${track.index + 1}`).trim();
+  const primaryName = rawName.split("|")[0]?.trim() || rawName;
+  const normalized = (value: string) => value.trim().toLowerCase().replace(/\s+/g, " ");
+
+  aliases.add(normalized(rawName));
+  aliases.add(normalized(primaryName));
+
+  const letterMatch = primaryName.match(/^([A-Za-z])\s*[-|]/);
+  if (letterMatch) {
+    aliases.add(letterMatch[1].toLowerCase());
+    aliases.add(normalized(`${letterMatch[1]} send`));
+    aliases.add(normalized(`send ${letterMatch[1]}`));
+  }
+
+  return [...aliases].filter(Boolean);
+}
+
+function kindLabel(kind: TrackKind): string {
+  switch (kind) {
+    case "midi":
+      return "MIDI";
+    case "audio":
+      return "Audio";
+    case "group":
+      return "Group";
+    case "return":
+      return "Return";
+    case "master":
+      return "Main";
+    default:
+      return "Track";
+  }
+}
+
+function rowColor(kind: TrackKind, index: number): string {
+  switch (kind) {
+    case "midi":
+      return ["#8a7dff", "#b08cff", "#73a9ff", "#7d8fff"][index % 4]!;
+    case "audio":
+      return ["#66b4ff", "#63d3cf", "#6da2ff", "#59c0ff"][index % 4]!;
+    case "return":
+      return index % 2 === 0 ? "#3fc2d7" : "#5bc7d8";
+    case "master":
+      return "#f5a623";
+    case "group":
+      return "#b78cff";
+    default:
+      return "#9aa3b2";
+  }
+}
+
+function profileDescription(): string {
+  switch (profile) {
+    case "git":
+      return "Metro-style track/device map generated from the latest session-map.json.";
+    case "kanban":
+      return "Session-style kanban generated from the latest session-map.json.";
+    default:
+      return "Technical flow generated from the latest session-map.json.";
+  }
+}
+
+function profileLegendTitle(): string {
+  switch (profile) {
+    case "git":
+      return "Reading guide";
+    default:
+      return "Reading guide";
+  }
+}
+
+function profileLegendItems(): string[] {
+  switch (profile) {
+    case "git":
+      return [
+        "Git / Metro is a stylized track/device map, not an exact audio routing graph.",
+        "Each branch acts like a metro line for one track or return.",
+        "Devices appear as stations along the line, with short summary stops like sends or racks when useful.",
+      ];
+    case "kanban":
+      return [
+        "Columns follow the exact Session View track order.",
+        "Devices stay under their owning track.",
+        "Returns come after regular tracks, then Main.",
+      ];
+    default:
+      return [
+        "Tracks, devices and rack summaries are shown as a technical tree.",
+        "Chains and pads stay summarized to preserve the ultra-safe export.",
+      ];
+  }
+}
+
 function buildProfileEnhancerScript(): string {
   if (profile !== "kanban") {
     return "";
@@ -265,7 +437,142 @@ function buildProfileEnhancerScript(): string {
     </script>`;
 }
 
-function buildHtmlPage(svgMarkup: string): string {
+function buildGitMetroDiagram(sessionMap: SessionMap): string {
+  const orderedTracks: TrackInfo[] = [
+    ...sessionMap.tracks,
+    ...sessionMap.returnTracks,
+    ...(sessionMap.masterTrack ? [sessionMap.masterTrack] : []),
+  ];
+
+  const hasMaster = Boolean(sessionMap.masterTrack);
+  const rowSpacing = 86;
+  const startY = 84;
+  const labelX = 28;
+  const lineStartX = 260;
+  const sinkX = 1360;
+  const lineEndX = sinkX - 42;
+  const width = 1480;
+  const height = Math.max(420, startY + orderedTracks.length * rowSpacing + 60);
+  const masterIndex = hasMaster ? orderedTracks.length - 1 : -1;
+  const masterY = masterIndex >= 0 ? startY + masterIndex * rowSpacing : startY + orderedTracks.length * rowSpacing;
+
+  const returnTargets = new Map<string, { y: number; x: number; track: TrackInfo }>();
+  const sendLinks: string[] = [];
+  const rows: string[] = [];
+
+  orderedTracks.forEach((track, index) => {
+    if (track.kind !== "return") return;
+    const y = startY + index * rowSpacing;
+    const targetX = lineStartX + 48;
+    returnTrackAliases(track).forEach((alias) => {
+      returnTargets.set(alias, { y, x: targetX, track });
+    });
+  });
+
+  orderedTracks.forEach((track, index) => {
+    const y = startY + index * rowSpacing;
+    const color = rowColor(track.kind, index);
+    const isMaster = track.kind === "master";
+    const strokeWidth = isMaster ? 6 : track.kind === "return" ? 4.5 : 4;
+    const endCircleRadius = isMaster ? 9 : 6;
+    const lineLength = lineEndX - lineStartX;
+    const trackLabel = compactTrackName(track);
+    const typeLabel = kindLabel(track.kind);
+    const summaryLabel = `dev:${track.devices.length}${track.sends.length > 0 ? ` · sends:${track.sends.length}` : ""}`;
+    const rackCount = track.devices.filter((device) => isRackDevice(device)).length;
+    const summaryExtra = rackCount > 0 ? ` · racks:${rackCount}` : "";
+
+    rows.push(`
+      <g class="metro-row metro-row-${escapeHtml(track.kind)}">
+        <text x="${labelX}" y="${y - 8}" class="track-name" fill="#f3f5f8">${escapeHtml(trackLabel)}</text>
+        <text x="${labelX}" y="${y + 14}" class="track-meta" fill="#95a1b3">${escapeHtml(typeLabel)} · ${escapeHtml(summaryLabel + summaryExtra)}</text>
+        <line x1="${lineStartX}" y1="${y}" x2="${lineEndX}" y2="${y}" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" />
+        <circle cx="${lineStartX}" cy="${y}" r="${isMaster ? 5 : 4}" fill="${color}" />
+    `);
+
+    const summaryStopX = lineStartX + 54;
+    if (track.sends.length > 0 || rackCount > 0) {
+      rows.push(`
+        <g class="metro-stop metro-summary">
+          <circle cx="${summaryStopX}" cy="${y}" r="7" fill="#0f1318" stroke="${color}" stroke-width="2.25" />
+          <text x="${summaryStopX}" y="${y - 13}" class="stop-caption" fill="#aeb9c7">${escapeHtml(track.sends.length > 0 ? `sends:${track.sends.length}` : `racks:${rackCount}`)}</text>
+        </g>
+      `);
+    }
+
+    const deviceStep = track.devices.length > 0 ? Math.min(132, lineLength / (track.devices.length + 2)) : 132;
+    track.devices.forEach((device, deviceIndex) => {
+      const x = lineStartX + 140 + deviceIndex * deviceStep;
+      const ringColor = isRackDevice(device) ? "#f2c26a" : "#f5f7fa";
+      rows.push(`
+        <g class="metro-stop metro-device">
+          <circle cx="${x}" cy="${y}" r="8" fill="#0f1318" stroke="${ringColor}" stroke-width="2.1" />
+          <text x="${x}" y="${y - 14}" class="stop-caption" fill="#dbe3ed">${escapeHtml(compactDeviceName(device))}</text>
+        </g>
+      `);
+    });
+
+    rows.push(`
+        <circle cx="${lineEndX}" cy="${y}" r="${endCircleRadius}" fill="${color}" />
+      </g>
+    `);
+
+    if (!isMaster) {
+      const trunkStroke = track.kind === "return" ? 2.2 : 2;
+      rows.push(`
+        <path d="M ${lineEndX} ${y} L ${sinkX} ${y} L ${sinkX} ${masterY}" fill="none" stroke="${color}" stroke-width="${trunkStroke}" stroke-linecap="round" stroke-opacity="${track.kind === "return" ? "0.9" : "0.5"}" />
+      `);
+    } else {
+      rows.push(`
+        <line x1="${lineEndX}" y1="${y}" x2="${sinkX}" y2="${y}" stroke="${color}" stroke-width="6" stroke-linecap="round" />
+        <circle cx="${sinkX}" cy="${y}" r="11" fill="#0f1318" stroke="${color}" stroke-width="4" />
+        <text x="${sinkX - 6}" y="${y - 18}" class="stop-caption stop-caption-main" fill="#ffd18c">Main sink</text>
+      `);
+    }
+
+    if (track.kind !== "return" && track.kind !== "master") {
+      const sendSourceX = summaryStopX;
+      track.sends
+        .filter((send) => typeof send.value === "number" && send.value > 0)
+        .forEach((send, sendIndex) => {
+          const normalized = send.name.trim().toLowerCase().replace(/\s+/g, " ");
+          const target =
+            returnTargets.get(normalized) ??
+            returnTargets.get(normalized.split(" ")[0] ?? "") ??
+            null;
+          if (!target) return;
+
+          const midX = sendSourceX + 120 + sendIndex * 22;
+          const controlY = (y + target.y) / 2;
+          sendLinks.push(`
+            <path d="M ${sendSourceX} ${y} Q ${midX} ${controlY}, ${target.x} ${target.y}" fill="none" stroke="#7de2f0" stroke-width="1.5" stroke-dasharray="6 5" stroke-linecap="round" stroke-opacity="0.82" />
+            <text x="${midX - 12}" y="${controlY - 8}" class="send-label" fill="#9fe9f5">${escapeHtml(`send ${send.name}`)}</text>
+          `);
+        });
+    }
+  });
+
+  return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Git Metro custom session map">
+    <defs>
+      <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="2.2" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <rect x="0" y="0" width="${width}" height="${height}" fill="#0f1318" rx="8" />
+    <line x1="${sinkX}" y1="${startY}" x2="${sinkX}" y2="${masterY}" stroke="#f5a623" stroke-width="2.5" stroke-opacity="0.35" filter="url(#glow)" />
+    ${sendLinks.join("\n")}
+    ${rows.join("\n")}
+  </svg>`;
+}
+
+function buildGitMetroHtmlPage(sessionMap: SessionMap): string {
+  const legendItems = profileLegendItems().map((item) => `<li>${item}</li>`).join("");
+  const diagramMarkup = buildGitMetroDiagram(sessionMap);
+
   return `<!doctype html>
 <html lang="fr">
 <head>
@@ -273,55 +580,321 @@ function buildHtmlPage(svgMarkup: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${htmlTitle()}</title>
   <style>
-    :root { color-scheme: dark; }
+    :root {
+      color-scheme: dark;
+      --live-bg: #b7b7b7;
+      --live-panel: #cbcbcb;
+      --live-border: #8f8f8f;
+      --live-text: #202020;
+      --live-muted: #5e5e5e;
+      --live-orange: #f5a623;
+      --live-orange-dark: #d88900;
+    }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      background: #0f1115;
-      color: #f2f2f2;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.16), transparent 22%),
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.035) 0 1px, transparent 1px 24px),
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.035) 0 1px, transparent 1px 24px),
+        var(--live-bg);
+      color: var(--live-text);
+      font-family: "Avenir Next", "SF Pro Text", "Segoe UI", sans-serif;
     }
-    .shell {
-      max-width: 1800px;
-      margin: 0 auto;
-      padding: 24px;
+    .shell { max-width: 1520px; margin: 0 auto; padding: 18px; }
+    .panel {
+      background: var(--live-panel);
+      border: 1px solid var(--live-border);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
     }
     .toolbar {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
       gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
+      align-items: start;
+      margin-bottom: 12px;
+      padding: 14px;
     }
-    h1 {
-      margin: 0;
-      font-size: 20px;
+    .eyebrow {
+      margin: 0 0 4px;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
       font-weight: 700;
+      color: var(--live-orange-dark);
+    }
+    h1 { margin: 0; font-size: 22px; line-height: 1.1; }
+    .subline {
+      margin: 6px 0 0;
+      color: var(--live-muted);
+      font-size: 13px;
+      line-height: 1.45;
     }
     .links {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
+      justify-content: flex-end;
     }
     a {
-      color: #f5a623;
       text-decoration: none;
-      border: 1px solid rgba(245, 166, 35, 0.35);
-      border-radius: 999px;
-      padding: 8px 12px;
-      background: rgba(245, 166, 35, 0.08);
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 4px;
+      border: 1px solid #8d8d8d;
+      background: linear-gradient(180deg, #ededed, #cfcfcf);
+      color: #1d1d1d;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
     }
-    a:hover {
-      background: rgba(245, 166, 35, 0.16);
+    .links a:first-child {
+      background: linear-gradient(180deg, var(--live-orange), var(--live-orange-dark));
+      border-color: #9a6200;
+      color: #111;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .legend, .support { padding: 12px 14px; }
+    .legend h2, .support strong {
+      margin: 0 0 6px;
+      font-size: 13px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .legend ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .support p {
+      margin: 0;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.45;
     }
     .diagram {
       overflow: auto;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      background: #111318;
-      padding: 16px;
+      border: 1px solid #6d6d6d;
+      border-radius: 6px;
+      background: #0f1318;
+      padding: 14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .diagram svg {
+      width: max-content;
+      min-width: 100%;
+      height: auto;
+      display: block;
+    }
+    .track-name { font-size: 15px; font-weight: 700; }
+    .track-meta, .stop-caption, .send-label { font-size: 11px; font-weight: 500; }
+    .stop-caption-main { font-size: 12px; font-weight: 700; }
+    .caption {
+      margin-top: 10px;
+      color: var(--live-muted);
+      font-size: 11px;
+    }
+    footer { margin-top: 10px; text-align: right; }
+    footer a {
+      font-size: 11px;
+      color: var(--live-muted);
+      background: transparent;
+      border: 0;
+      padding: 0;
+      min-height: unset;
+      box-shadow: none;
+    }
+    @media (max-width: 980px) {
+      .toolbar, .meta-grid { grid-template-columns: 1fr; }
+      .links { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="toolbar panel">
+      <div>
+        <p class="eyebrow">Session Mapper / Mermaid Render</p>
+        <h1>${htmlTitle()}</h1>
+        <p class="subline">${profileDescription()} SVG/PNG remain optional manual renders alongside the latest HTML and .mmd views.</p>
+      </div>
+      <div class="links">
+        <a href="${relativeName(latestMmdPath)}">Open .mmd</a>
+        <a href="${relativeName(latestSvgPath)}">Open SVG</a>
+        <a href="${relativeName(latestPngPath)}">Open PNG</a>
+      </div>
+    </div>
+
+    <section class="meta-grid">
+      <article class="legend panel">
+        <h2>${profileLegendTitle()}</h2>
+        <ul>${legendItems}</ul>
+      </article>
+      <article class="support panel">
+        <strong>External render</strong>
+        <p>This page stays fully external. No Ableton WebView is used.</p>
+        <p>Use it for larger static review, sharing, or export snapshots.</p>
+      </article>
+    </section>
+
+    <div class="diagram">
+${diagramMarkup}
+    </div>
+    <p class="caption">Metro view is a stylized track/device map. Main is shown as the final destination line. Send links to returns are secondary visual hints, not exact audio routing.</p>
+    <footer>
+      <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a>
+    </footer>
+  </div>
+</body>
+</html>`;
+}
+
+function buildHtmlPage(svgMarkup: string): string {
+  const legendItems = profileLegendItems().map((item) => `<li>${item}</li>`).join("");
+  return `<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${htmlTitle()}</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --live-bg: #b7b7b7;
+      --live-panel: #cbcbcb;
+      --live-border: #8f8f8f;
+      --live-text: #202020;
+      --live-muted: #5e5e5e;
+      --live-orange: #f5a623;
+      --live-orange-dark: #d88900;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.16), transparent 22%),
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.035) 0 1px, transparent 1px 24px),
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.035) 0 1px, transparent 1px 24px),
+        var(--live-bg);
+      color: var(--live-text);
+      font-family: "Avenir Next", "SF Pro Text", "Segoe UI", sans-serif;
+    }
+    .shell {
+      max-width: 1520px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+    .panel {
+      background: var(--live-panel);
+      border: 1px solid var(--live-border);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 12px;
+      padding: 14px;
+    }
+    .eyebrow {
+      margin: 0 0 4px;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--live-orange-dark);
+    }
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.1;
+    }
+    .subline {
+      margin: 6px 0 0;
+      color: var(--live-muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    a {
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 4px;
+      border: 1px solid #8d8d8d;
+      background: linear-gradient(180deg, #ededed, #cfcfcf);
+      color: #1d1d1d;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+    }
+    .links a:first-child {
+      background: linear-gradient(180deg, var(--live-orange), var(--live-orange-dark));
+      border-color: #9a6200;
+      color: #111;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .legend,
+    .support {
+      padding: 12px 14px;
+    }
+    .legend h2,
+    .support strong {
+      margin: 0 0 6px;
+      font-size: 13px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .legend ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .support p {
+      margin: 0;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .diagram {
+      overflow: auto;
+      border: 1px solid #6d6d6d;
+      border-radius: 6px;
+      background: #0f1318;
+      padding: 14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
     }
     .diagram svg {
       width: max-content;
@@ -330,42 +903,63 @@ function buildHtmlPage(svgMarkup: string): string {
       display: block;
     }
     .caption {
-      margin-top: 12px;
-      color: #9ca3af;
-      font-size: 13px;
+      margin-top: 10px;
+      color: var(--live-muted);
+      font-size: 11px;
     }
     footer {
-      margin-top: 18px;
-      display: flex;
-      justify-content: flex-end;
+      margin-top: 10px;
+      text-align: right;
     }
     footer a {
-      font-size: 12px;
-      color: #7c8799;
+      font-size: 11px;
+      color: var(--live-muted);
       background: transparent;
       border: 0;
       padding: 0;
+      min-height: unset;
+      box-shadow: none;
     }
-    footer a:hover {
-      color: #f5a623;
-      background: transparent;
+    @media (max-width: 980px) {
+      .toolbar,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+      .links { justify-content: flex-start; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
-    <div class="toolbar">
-      <h1>${htmlTitle()}</h1>
+    <div class="toolbar panel">
+      <div>
+        <p class="eyebrow">Session Mapper / Mermaid Render</p>
+        <h1>${htmlTitle()}</h1>
+        <p class="subline">${profileDescription()} SVG/PNG remain optional manual renders alongside the latest HTML and .mmd views.</p>
+      </div>
       <div class="links">
         <a href="${relativeName(latestMmdPath)}">Open .mmd</a>
         <a href="${relativeName(latestSvgPath)}">Open SVG</a>
         <a href="${relativeName(latestPngPath)}">Open PNG</a>
       </div>
     </div>
+
+    <section class="meta-grid">
+      <article class="legend panel">
+        <h2>${profileLegendTitle()}</h2>
+        <ul>${legendItems}</ul>
+      </article>
+      <article class="support panel">
+        <strong>External render</strong>
+        <p>This page stays fully external. No Ableton WebView is used.</p>
+        <p>Use it for larger static review, sharing, or export snapshots.</p>
+      </article>
+    </section>
+
     <div class="diagram">
 ${svgMarkup}
     </div>
-    <p class="caption">Rendered externally from Mermaid. No Ableton WebView used.</p>
+    <p class="caption">Rendered externally from Mermaid. Main views stay current on export; SVG/PNG are optional manual renders.</p>
     <footer>
       <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a>
     </footer>
@@ -396,7 +990,13 @@ async function main(): Promise<void> {
   console.log(`${logPrefix} Render PNG completed: ${logPath(paths.latestPngPath)}`);
   console.log(`${logPrefix} PNG archive completed: ${logPath(paths.archivePngPath)}`);
 
-  const html = buildHtmlPage(latestSvg);
+  const html = profile === "git"
+    ? buildGitMetroHtmlPage(
+      JSON.parse(
+        await readFile(resolve(rootDirectory, "exports/session-map.json"), "utf8"),
+      ) as SessionMap,
+    )
+    : buildHtmlPage(latestSvg);
   await writeFile(paths.latestHtmlPath, html, "utf8");
   console.log(`${logPrefix} Mermaid HTML completed: ${logPath(paths.latestHtmlPath)}`);
   const indexHtmlPath = resolve(rootDirectory, "exports/session-map-diagrams.html");

@@ -30,9 +30,15 @@
       font-family: "Avenir Next", "SF Pro Text", "Segoe UI", sans-serif;
     }
     .shell {
-      max-width: 1600px;
+      max-width: 1520px;
       margin: 0 auto;
       padding: 18px;
+    }
+    .panel {
+      background: var(--live-panel);
+      border: 1px solid var(--live-border);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
     }
     .toolbar {
       display: grid;
@@ -41,10 +47,6 @@
       align-items: start;
       margin-bottom: 12px;
       padding: 14px;
-      background: var(--live-panel);
-      border: 1px solid var(--live-border);
-      border-radius: 6px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
     }
     .eyebrow {
       margin: 0 0 4px;
@@ -90,6 +92,46 @@
       border-color: #9a6200;
       color: #111;
     }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .legend {
+      padding: 12px 14px;
+    }
+    .legend h2 {
+      margin: 0 0 6px;
+      font-size: 13px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .legend ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .support {
+      padding: 12px 14px;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+    .support strong {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .support p {
+      margin: 0;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
     .diagram-shell {
       overflow: auto;
       padding: 14px;
@@ -103,14 +145,28 @@
     }
     .caption {
       margin: 10px 0 0;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--live-muted);
+    }
+    .footer {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--live-muted);
+      text-align: right;
+    }
+    .footer a { color: inherit; text-decoration: none; }
+    @media (max-width: 980px) {
+      .toolbar,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+      .actions { justify-content: flex-start; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
-    <section class="toolbar">
+    <section class="toolbar panel">
       <div>
         <p class="eyebrow">Session Mapper / Mermaid HTML</p>
         <h1>Flow</h1>
@@ -120,10 +176,24 @@
         <a class="button is-accent" href="session-map-flow.mmd">Open .mmd</a>
       </div>
     </section>
+
+    <section class="meta-grid">
+      <article class="legend panel">
+        <h2>Reading guide</h2>
+        <ul><li>Tracks, devices and rack summaries are shown as a technical tree.</li><li>Chains and pads stay summarized to preserve the ultra-safe export.</li></ul>
+      </article>
+      <article class="support panel">
+        <strong>Local preview</strong>
+        <p>These Mermaid HTML pages stay external. No Ableton WebView is used.</p>
+        <p>If your browser still blocks local scripts, run <strong>npm run serve:exports</strong> and reopen through localhost.</p>
+      </article>
+    </section>
+
     <section class="diagram-shell">
       <div id="diagram" class="mermaid"></div>
     </section>
-    <p class="caption">Rendered externally from Mermaid source. No Ableton WebView used. If your browser still blocks local scripts, run <strong>npm run serve:exports</strong>.</p>
+    <p class="caption">Rendered externally from Mermaid source. HTML and .mmd are the main export-time views; SVG/PNG remain optional manual renders.</p>
+    <p class="footer"><a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a></p>
   </div>
   <script>
     (() => {
@@ -134,7 +204,7 @@
   </script>
   <script>
     window.addEventListener("DOMContentLoaded", async () => {
-      const source = "flowchart TD\n  set[\"Ableton Live Set\u003cbr/\u003e120 BPM\u003cbr/\u003eJSON 1.0.0\"]\n  section_tracks[\"Tracks\u003cbr/\u003e2 normal tracks\"]\n  section_returns[\"Return Tracks\u003cbr/\u003e2 return tracks\"]\n  section_master[\"Master Track\u003cbr/\u003e1 master track\"]\n  set --\u003e section_tracks\n  set --\u003e section_returns\n  set --\u003e section_master\n  track_0[\"1-MIDI\u003cbr/\u003eMIDI Track\u003cbr/\u003edevices: 1\u003cbr/\u003esends: A-Reverb, B-Delay\"]\n  section_tracks --\u003e track_0\n  track_0_device_0[\"Producer_Pal\u003cbr/\u003eDevice\"]\n  track_0 --\u003e track_0_device_0\n  track_1[\"2-DS HH\u003cbr/\u003eMIDI Track\u003cbr/\u003edevices: 1\u003cbr/\u003esends: A-Reverb, B-Delay\"]\n  section_tracks --\u003e track_1\n  track_1_device_0[\"DS HH\u003cbr/\u003eDevice\"]\n  track_1 --\u003e track_1_device_0\n  return_0[\"A-Reverb\u003cbr/\u003eReturn Track\u003cbr/\u003edevices: 1\u003cbr/\u003esends: A-Reverb, B-Delay\"]\n  section_returns --\u003e return_0\n  return_0_device_0[\"Reverb\u003cbr/\u003eDevice\"]\n  return_0 --\u003e return_0_device_0\n  return_1[\"B-Delay\u003cbr/\u003eReturn Track\u003cbr/\u003edevices: 1\u003cbr/\u003esends: A-Reverb, B-Delay\"]\n  section_returns --\u003e return_1\n  return_1_device_0[\"Delay\u003cbr/\u003eDevice\"]\n  return_1 --\u003e return_1_device_0\n  master_0[\"Main\u003cbr/\u003eMaster Track\u003cbr/\u003edevices: 0\"]\n  section_master --\u003e master_0\n\nclassDef set fill:#111,stroke:#f5a623,color:#fff\nclassDef track fill:#1b1b1b,stroke:#666,color:#fff\nclassDef return fill:#1b1b1b,stroke:#4aa3ff,color:#fff\nclassDef master fill:#1b1b1b,stroke:#ff4a4a,color:#fff\nclassDef device fill:#242424,stroke:#999,color:#fff\nclassDef rack fill:#2b2114,stroke:#f5a623,color:#fff\nclassDef chain fill:#141f2b,stroke:#4aa3ff,color:#fff\n\nclass set set;\nclass section_tracks,track_0,track_1 track;\nclass section_returns,return_0,return_1 return;\nclass section_master,master_0 master;\nclass track_0_device_0,track_1_device_0,return_0_device_0,return_1_device_0 device;\n\n";
+      const source = "flowchart TD\n  set[\"Ableton Live Set\u003cbr/\u003e120 BPM\u003cbr/\u003eJSON 1.0.0\"]\n  section_tracks[\"Tracks\u003cbr/\u003e5 normal tracks\"]\n  section_returns[\"Return Tracks\u003cbr/\u003e2 return tracks\"]\n  section_master[\"Master Track\u003cbr/\u003e1 master track\"]\n  set --\u003e section_tracks\n  set --\u003e section_returns\n  set --\u003e section_master\n  track_0[\"1-DS HH\u003cbr/\u003eMIDI Track\u003cbr/\u003edevices: 4\u003cbr/\u003esends: A-Reverb, B-Delay\"]\n  section_tracks --\u003e track_0\n  track_0_device_0[\"Note Echo\u003cbr/\u003eDevice\"]\n  track_0 --\u003e track_0_device_0\n  track_0_device_1[\"STING!64\u003cbr/\u003eDevice\"]\n  track_0 --\u003e track_0_device_1\n  track_0_device_2[\"DS HH\u003cbr/\u003eDevice\"]\n  track_0 --\u003e track_0_device_2\n  track_0_device_3[\"LFO\u003cbr/\u003eDevice\"]\n  track_0 --\u003e track_0_device_3\n  track_1[\"2-Audio\u003cbr/\u003eAudio Track\u003cbr/\u003edevices: 1\u003cbr/\u003esends: A-Reverb, B-Delay\"]\n  section_tracks --\u003e track_1\n  track_1_device_0[\"Jittery Swells\u003cbr/\u003eRackDevice\u003cbr/\u003echains: 1\"]\n  track_1 --\u003e track_1_device_0\n  track_1_device_0_chain_0[\"Chain 01\u003cbr/\u003edevices: 5\"]\n  track_1_device_0 --\u003e track_1_device_0_chain_0\n  track_2[\"3-Audio\u003cbr/\u003eAudio Track\u003cbr/\u003edevices: 1\u003cbr/\u003esends: A-Reverb, B-Delay\"]\n  section_tracks --\u003e track_2\n  track_2_device_0[\"Harmonic Tremolo\u003cbr/\u003eRackDevice\u003cbr/\u003echains: 1\"]\n  track_2 --\u003e track_2_device_0\n  track_2_device_0_chain_0[\"Chain 01\u003cbr/\u003edevices: 2\"]\n  track_2_device_0 --\u003e track_2_device_0_chain_0\n  track_3[\"4-BNYX Boot Kit\u003cbr/\u003eMIDI Track\u003cbr/\u003edevices: 1\u003cbr/\u003esends: A-Reverb, B-Delay\"]\n  section_tracks --\u003e track_3\n  track_3_device_0[\"BNYX Boot Kit\u003cbr/\u003eRackDevice\u003cbr/\u003echains: 1\"]\n  track_3 --\u003e track_3_device_0\n  track_3_device_0_chain_0[\"Chain 01\u003cbr/\u003edevices: 2\"]\n  track_3_device_0 --\u003e track_3_device_0_chain_0\n  track_4[\"5-Balafon Bright\u003cbr/\u003eMIDI Track\u003cbr/\u003edevices: 1\u003cbr/\u003esends: A-Reverb, B-Delay\"]\n  section_tracks --\u003e track_4\n  track_4_device_0[\"Balafon Bright\u003cbr/\u003eDevice\"]\n  track_4 --\u003e track_4_device_0\n  return_0[\"A-Reverb\u003cbr/\u003eReturn Track\u003cbr/\u003edevices: 1\u003cbr/\u003esends: A-Reverb, B-Delay\"]\n  section_returns --\u003e return_0\n  return_0_device_0[\"Reverb\u003cbr/\u003eDevice\"]\n  return_0 --\u003e return_0_device_0\n  return_1[\"B-Delay\u003cbr/\u003eReturn Track\u003cbr/\u003edevices: 1\u003cbr/\u003esends: A-Reverb, B-Delay\"]\n  section_returns --\u003e return_1\n  return_1_device_0[\"Delay\u003cbr/\u003eDevice\"]\n  return_1 --\u003e return_1_device_0\n  master_0[\"Main\u003cbr/\u003eMaster Track\u003cbr/\u003edevices: 2\"]\n  section_master --\u003e master_0\n  master_0_device_0[\"Major Wah\u003cbr/\u003eRackDevice\u003cbr/\u003echains: 2\"]\n  master_0 --\u003e master_0_device_0\n  master_0_device_0_chain_0[\"Chain 01\u003cbr/\u003edevices: 3\"]\n  master_0_device_0 --\u003e master_0_device_0_chain_0\n  master_0_device_0_chain_1[\"Chain 02\u003cbr/\u003edevices: 0\"]\n  master_0_device_0 --\u003e master_0_device_0_chain_1\n  master_0_device_1[\"Master Bright \u0026amp; Edgy\u003cbr/\u003eRackDevice\u003cbr/\u003echains: 1\"]\n  master_0 --\u003e master_0_device_1\n  master_0_device_1_chain_0[\"Chain 01\u003cbr/\u003edevices: 4\"]\n  master_0_device_1 --\u003e master_0_device_1_chain_0\n\nclassDef set fill:#111,stroke:#f5a623,color:#fff\nclassDef track fill:#1b1b1b,stroke:#666,color:#fff\nclassDef return fill:#1b1b1b,stroke:#4aa3ff,color:#fff\nclassDef master fill:#1b1b1b,stroke:#ff4a4a,color:#fff\nclassDef device fill:#242424,stroke:#999,color:#fff\nclassDef rack fill:#2b2114,stroke:#f5a623,color:#fff\nclassDef chain fill:#141f2b,stroke:#4aa3ff,color:#fff\n\nclass set set;\nclass section_tracks,track_0,track_1,track_2,track_3,track_4 track;\nclass section_returns,return_0,return_1 return;\nclass section_master,master_0 master;\nclass track_0_device_0,track_0_device_1,track_0_device_2,track_0_device_3,track_4_device_0,return_0_device_0,return_1_device_0 device;\nclass track_1_device_0,track_2_device_0,track_3_device_0,master_0_device_0,master_0_device_1 rack;\nclass track_1_device_0_chain_0,track_2_device_0_chain_0,track_3_device_0_chain_0,master_0_device_0_chain_0,master_0_device_0_chain_1,master_0_device_1_chain_0 chain;\n\n";
       if (!window.mermaid) {
         const target = document.getElementById("diagram");
         target.innerHTML = "<p style=\"color:#f5a623;font:12px sans-serif;\">Mermaid runtime unavailable in file:// mode. Run npm run serve:exports and open via http://localhost:5177/exports/…</p>";

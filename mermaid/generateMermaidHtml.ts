@@ -74,11 +74,44 @@ function profileTitle(): string {
 function profileDescription(): string {
   switch (profile) {
     case "git":
-      return "Metro view generated from the latest session-map.json.";
+      return "Metro-style track/device map generated from the latest session-map.json.";
     case "kanban":
       return "Session-style kanban generated from the latest session-map.json.";
     default:
       return "Technical flow generated from the latest session-map.json.";
+  }
+}
+
+function profileLegendTitle(): string {
+  switch (profile) {
+    case "git":
+      return "Reading guide";
+    case "kanban":
+      return "Reading guide";
+    default:
+      return "Reading guide";
+  }
+}
+
+function profileLegendItems(): string[] {
+  switch (profile) {
+    case "git":
+      return [
+        "Git / Metro is a stylized track/device map, not an exact audio routing graph.",
+        "Each branch acts like a metro line for one track or return.",
+        "Devices appear as stations along the line, with short summary stops like sends or racks when useful.",
+      ];
+    case "kanban":
+      return [
+        "Columns follow the exact Session View track order.",
+        "Devices stay under their owning track.",
+        "Returns come after regular tracks, then Main.",
+      ];
+    default:
+      return [
+        "Tracks, devices and rack summaries are shown as a technical tree.",
+        "Chains and pads stay summarized to preserve the ultra-safe export.",
+      ];
   }
 }
 
@@ -88,6 +121,9 @@ function buildHtml(mermaidSource: string): string {
   const mermaidRuntime = safeJsonForScript(
     `\n${readFileSyncMermaidMin()}\n`,
   );
+  const legendItems = profileLegendItems()
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join("");
 
   return `<!doctype html>
 <html lang="fr">
@@ -121,9 +157,15 @@ function buildHtml(mermaidSource: string): string {
       font-family: "Avenir Next", "SF Pro Text", "Segoe UI", sans-serif;
     }
     .shell {
-      max-width: 1600px;
+      max-width: 1520px;
       margin: 0 auto;
       padding: 18px;
+    }
+    .panel {
+      background: var(--live-panel);
+      border: 1px solid var(--live-border);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
     }
     .toolbar {
       display: grid;
@@ -132,10 +174,6 @@ function buildHtml(mermaidSource: string): string {
       align-items: start;
       margin-bottom: 12px;
       padding: 14px;
-      background: var(--live-panel);
-      border: 1px solid var(--live-border);
-      border-radius: 6px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
     }
     .eyebrow {
       margin: 0 0 4px;
@@ -181,6 +219,46 @@ function buildHtml(mermaidSource: string): string {
       border-color: #9a6200;
       color: #111;
     }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .legend {
+      padding: 12px 14px;
+    }
+    .legend h2 {
+      margin: 0 0 6px;
+      font-size: 13px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .legend ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .support {
+      padding: 12px 14px;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+    .support strong {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .support p {
+      margin: 0;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
     .diagram-shell {
       overflow: auto;
       padding: 14px;
@@ -194,14 +272,28 @@ function buildHtml(mermaidSource: string): string {
     }
     .caption {
       margin: 10px 0 0;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--live-muted);
+    }
+    .footer {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--live-muted);
+      text-align: right;
+    }
+    .footer a { color: inherit; text-decoration: none; }
+    @media (max-width: 980px) {
+      .toolbar,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+      .actions { justify-content: flex-start; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
-    <section class="toolbar">
+    <section class="toolbar panel">
       <div>
         <p class="eyebrow">Session Mapper / Mermaid HTML</p>
         <h1>${escapeHtml(title)}</h1>
@@ -211,10 +303,24 @@ function buildHtml(mermaidSource: string): string {
         <a class="button is-accent" href="${escapeHtml(basename(inputPath))}">Open .mmd</a>
       </div>
     </section>
+
+    <section class="meta-grid">
+      <article class="legend panel">
+        <h2>${escapeHtml(profileLegendTitle())}</h2>
+        <ul>${legendItems}</ul>
+      </article>
+      <article class="support panel">
+        <strong>Local preview</strong>
+        <p>These Mermaid HTML pages stay external. No Ableton WebView is used.</p>
+        <p>If your browser still blocks local scripts, run <strong>npm run serve:exports</strong> and reopen through localhost.</p>
+      </article>
+    </section>
+
     <section class="diagram-shell">
       <div id="diagram" class="mermaid"></div>
     </section>
-    <p class="caption">Rendered externally from Mermaid source. No Ableton WebView used. If your browser still blocks local scripts, run <strong>npm run serve:exports</strong>.</p>
+    <p class="caption">Rendered externally from Mermaid source. HTML and .mmd are the main export-time views; SVG/PNG remain optional manual renders.</p>
+    <p class="footer"><a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a></p>
   </div>
   <script>
     (() => {

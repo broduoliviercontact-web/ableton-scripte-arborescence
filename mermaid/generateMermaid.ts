@@ -612,22 +612,26 @@ function gitDiagram(sessionMap: SessionMap): string {
   const renderBranch = (
     branchCommandName: string,
     track: TrackInfo,
+    branchOrder: number,
   ) => {
-    lines.push(`  branch "${branchCommandName}"`);
+    lines.push(`  branch "${branchCommandName}" order:${branchOrder}`);
     lines.push(`  checkout "${branchCommandName}"`);
     pushGitCommit(lines, gitCommitLabelForTrack(track));
+
     for (const summaryCommit of gitTrackSummaryCommits(track)) {
       pushGitCommit(lines, summaryCommit);
     }
     if (track.devices.length === 0) {
       pushGitCommit(lines, "no-dev");
     }
+
     for (const device of track.devices) {
       pushGitCommit(lines, gitCommitLabelForDevice(device));
       for (const summaryCommit of gitDeviceSummaryCommits(device)) {
         pushGitCommit(lines, summaryCommit);
       }
     }
+
     lines.push("  checkout main");
   };
 
@@ -637,6 +641,7 @@ function gitDiagram(sessionMap: SessionMap): string {
         reserveUniqueBranchLabel(usedBranchLabels, compactTrackName(track), "T", index),
       ),
       track,
+      index + 1,
     );
   });
 
@@ -646,6 +651,7 @@ function gitDiagram(sessionMap: SessionMap): string {
         reserveUniqueBranchLabel(usedBranchLabels, compactTrackName(track), "R", index),
       ),
       track,
+      sessionMap.tracks.length + index + 1,
     );
   });
 

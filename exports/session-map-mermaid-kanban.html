@@ -30,9 +30,15 @@
       font-family: "Avenir Next", "SF Pro Text", "Segoe UI", sans-serif;
     }
     .shell {
-      max-width: 1600px;
+      max-width: 1520px;
       margin: 0 auto;
       padding: 18px;
+    }
+    .panel {
+      background: var(--live-panel);
+      border: 1px solid var(--live-border);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
     }
     .toolbar {
       display: grid;
@@ -41,10 +47,6 @@
       align-items: start;
       margin-bottom: 12px;
       padding: 14px;
-      background: var(--live-panel);
-      border: 1px solid var(--live-border);
-      border-radius: 6px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
     }
     .eyebrow {
       margin: 0 0 4px;
@@ -90,6 +92,46 @@
       border-color: #9a6200;
       color: #111;
     }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .legend {
+      padding: 12px 14px;
+    }
+    .legend h2 {
+      margin: 0 0 6px;
+      font-size: 13px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .legend ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .support {
+      padding: 12px 14px;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+    .support strong {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .support p {
+      margin: 0;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
     .diagram-shell {
       overflow: auto;
       padding: 14px;
@@ -103,14 +145,28 @@
     }
     .caption {
       margin: 10px 0 0;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--live-muted);
+    }
+    .footer {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--live-muted);
+      text-align: right;
+    }
+    .footer a { color: inherit; text-decoration: none; }
+    @media (max-width: 980px) {
+      .toolbar,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+      .actions { justify-content: flex-start; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
-    <section class="toolbar">
+    <section class="toolbar panel">
       <div>
         <p class="eyebrow">Session Mapper / Mermaid HTML</p>
         <h1>Kanban</h1>
@@ -120,10 +176,24 @@
         <a class="button is-accent" href="session-map-kanban.mmd">Open .mmd</a>
       </div>
     </section>
+
+    <section class="meta-grid">
+      <article class="legend panel">
+        <h2>Reading guide</h2>
+        <ul><li>Columns follow the exact Session View track order.</li><li>Devices stay under their owning track.</li><li>Returns come after regular tracks, then Main.</li></ul>
+      </article>
+      <article class="support panel">
+        <strong>Local preview</strong>
+        <p>These Mermaid HTML pages stay external. No Ableton WebView is used.</p>
+        <p>If your browser still blocks local scripts, run <strong>npm run serve:exports</strong> and reopen through localhost.</p>
+      </article>
+    </section>
+
     <section class="diagram-shell">
       <div id="diagram" class="mermaid"></div>
     </section>
-    <p class="caption">Rendered externally from Mermaid source. No Ableton WebView used. If your browser still blocks local scripts, run <strong>npm run serve:exports</strong>.</p>
+    <p class="caption">Rendered externally from Mermaid source. HTML and .mmd are the main export-time views; SVG/PNG remain optional manual renders.</p>
+    <p class="footer"><a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a></p>
   </div>
   <script>
     (() => {
@@ -134,7 +204,7 @@
   </script>
   <script>
     window.addEventListener("DOMContentLoaded", async () => {
-      const source = "kanban\n  1-MIDI\n    [MIDI 1-MIDI · MIDI · dev:1 · sends:2]\n    [DEV Producer_Pal · Device]\n  2-DS HH\n    [MIDI 2-DS HH · MIDI · dev:1 · sends:2]\n    [DEV DS HH · Device]\n  A-Reverb\n    [RET A-Reverb · Return · dev:1 · sends:2]\n    [DEV Reverb · Device]\n  B-Delay\n    [RET B-Delay · Return · dev:1 · sends:2]\n    [DEV Delay · Device]\n  Main\n    [MAIN Main · Master · dev:0 · sends:0]\n\n";
+      const source = "kanban\n  1-DS HH\n    [MIDI 1-DS HH · MIDI · dev:4 · sends:2]\n    [DEV Note Echo · Device]\n    [DEV STING!64 · Device]\n    [DEV DS HH · Device]\n    [DEV LFO · Device]\n  2-Audio\n    [AUD 2-Audio · Audio · dev:1 · sends:2 · racks:1]\n    [RACK Jittery Swells · Rack · chains:1]\n  3-Audio\n    [AUD 3-Audio · Audio · dev:1 · sends:2 · racks:1]\n    [RACK Harmonic Tremolo · Rack · chains:1]\n  4-BNYX Boot Kit\n    [MIDI 4-BNYX Boot Kit · MIDI · dev:1 · sends:2 · racks:1]\n    [RACK BNYX Boot Kit · Rack · chains:1]\n  5-Balafon Bright\n    [MIDI 5-Balafon Bright · MIDI · dev:1 · sends:2]\n    [DEV Balafon Bright · Device]\n  A-Reverb\n    [RET A-Reverb · Return · dev:1 · sends:2]\n    [DEV Reverb · Device]\n  B-Delay\n    [RET B-Delay · Return · dev:1 · sends:2]\n    [DEV Delay · Device]\n  Main\n    [MAIN Main · Master · dev:2 · sends:0 · racks:2]\n    [RACK Major Wah · Rack · chains:2]\n    [RACK Master Bright \u0026 Edgy · Rack · chains:1]\n\n";
       if (!window.mermaid) {
         const target = document.getElementById("diagram");
         target.innerHTML = "<p style=\"color:#f5a623;font:12px sans-serif;\">Mermaid runtime unavailable in file:// mode. Run npm run serve:exports and open via http://localhost:5177/exports/…</p>";

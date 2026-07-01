@@ -30,9 +30,15 @@
       font-family: "Avenir Next", "SF Pro Text", "Segoe UI", sans-serif;
     }
     .shell {
-      max-width: 1600px;
+      max-width: 1520px;
       margin: 0 auto;
       padding: 18px;
+    }
+    .panel {
+      background: var(--live-panel);
+      border: 1px solid var(--live-border);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
     }
     .toolbar {
       display: grid;
@@ -41,10 +47,6 @@
       align-items: start;
       margin-bottom: 12px;
       padding: 14px;
-      background: var(--live-panel);
-      border: 1px solid var(--live-border);
-      border-radius: 6px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
     }
     .eyebrow {
       margin: 0 0 4px;
@@ -90,6 +92,46 @@
       border-color: #9a6200;
       color: #111;
     }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .legend {
+      padding: 12px 14px;
+    }
+    .legend h2 {
+      margin: 0 0 6px;
+      font-size: 13px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .legend ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .support {
+      padding: 12px 14px;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+    .support strong {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .support p {
+      margin: 0;
+      color: var(--live-muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
     .diagram-shell {
       overflow: auto;
       padding: 14px;
@@ -103,27 +145,55 @@
     }
     .caption {
       margin: 10px 0 0;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--live-muted);
+    }
+    .footer {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--live-muted);
+      text-align: right;
+    }
+    .footer a { color: inherit; text-decoration: none; }
+    @media (max-width: 980px) {
+      .toolbar,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+      .actions { justify-content: flex-start; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
-    <section class="toolbar">
+    <section class="toolbar panel">
       <div>
         <p class="eyebrow">Session Mapper / Mermaid HTML</p>
         <h1>Git / Metro</h1>
-        <p class="subline">Metro view generated from the latest session-map.json. SVG/PNG remain optional and can be refreshed manually.</p>
+        <p class="subline">Metro-style track/device map generated from the latest session-map.json. SVG/PNG remain optional and can be refreshed manually.</p>
       </div>
       <div class="actions">
         <a class="button is-accent" href="session-map-git.mmd">Open .mmd</a>
       </div>
     </section>
+
+    <section class="meta-grid">
+      <article class="legend panel">
+        <h2>Reading guide</h2>
+        <ul><li>Git / Metro is a stylized track/device map, not an exact audio routing graph.</li><li>Each branch acts like a metro line for one track or return.</li><li>Devices appear as stations along the line, with short summary stops like sends or racks when useful.</li></ul>
+      </article>
+      <article class="support panel">
+        <strong>Local preview</strong>
+        <p>These Mermaid HTML pages stay external. No Ableton WebView is used.</p>
+        <p>If your browser still blocks local scripts, run <strong>npm run serve:exports</strong> and reopen through localhost.</p>
+      </article>
+    </section>
+
     <section class="diagram-shell">
       <div id="diagram" class="mermaid"></div>
     </section>
-    <p class="caption">Rendered externally from Mermaid source. No Ableton WebView used. If your browser still blocks local scripts, run <strong>npm run serve:exports</strong>.</p>
+    <p class="caption">Rendered externally from Mermaid source. HTML and .mmd are the main export-time views; SVG/PNG remain optional manual renders.</p>
+    <p class="footer"><a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer">Created By Deerflow</a></p>
   </div>
   <script>
     (() => {
@@ -134,7 +204,7 @@
   </script>
   <script>
     window.addEventListener("DOMContentLoaded", async () => {
-      const source = "gitGraph\n  commit id:\"Live Set\"\n  branch \"1-MIDI\"\n  checkout \"1-MIDI\"\n  commit id:\"1-MIDI\"\n  commit id:\"dev:1\"\n  commit id:\"sends:2\"\n  commit id:\"Producer Pal\"\n  checkout main\n  branch \"2-DS HH\"\n  checkout \"2-DS HH\"\n  commit id:\"2-DS HH\"\n  commit id:\"dev:1\"\n  commit id:\"sends:2\"\n  commit id:\"DS HH\"\n  checkout main\n  branch \"A-Reverb\"\n  checkout \"A-Reverb\"\n  commit id:\"A-Reverb\"\n  commit id:\"dev:1\"\n  commit id:\"sends:2\"\n  commit id:\"Reverb\"\n  checkout main\n  branch \"B-Delay\"\n  checkout \"B-Delay\"\n  commit id:\"B-Delay\"\n  commit id:\"dev:1\"\n  commit id:\"sends:2\"\n  commit id:\"Delay\"\n  checkout main\n  commit id:\"Main\"\n  commit id:\"dev:0\"\n\n";
+      const source = "gitGraph\n  commit id:\"Live Set\"\n  branch \"1-DS HH\" order:1\n  checkout \"1-DS HH\"\n  commit id:\"1-DS HH\"\n  commit id:\"dev:4\"\n  commit id:\"sends:2\"\n  commit id:\"Note Echo\"\n  commit id:\"STING!64\"\n  commit id:\"DS HH\"\n  commit id:\"LFO\"\n  checkout main\n  branch \"2-Audio\" order:2\n  checkout \"2-Audio\"\n  commit id:\"2-Audio\"\n  commit id:\"dev:1\"\n  commit id:\"sends:2\"\n  commit id:\"racks:1\"\n  commit id:\"Jittery Swells\"\n  commit id:\"chains:1\"\n  checkout main\n  branch \"3-Audio\" order:3\n  checkout \"3-Audio\"\n  commit id:\"3-Audio\"\n  commit id:\"dev:1\"\n  commit id:\"sends:2\"\n  commit id:\"racks:1\"\n  commit id:\"Harmonic Tremolo\"\n  commit id:\"chains:1\"\n  checkout main\n  branch \"4-BNYX Boot Kit\" order:4\n  checkout \"4-BNYX Boot Kit\"\n  commit id:\"4-BNYX Boot Kit\"\n  commit id:\"dev:1\"\n  commit id:\"sends:2\"\n  commit id:\"racks:1\"\n  commit id:\"BNYX Boot Kit\"\n  commit id:\"chains:1\"\n  checkout main\n  branch \"5-Balafon Bright\" order:5\n  checkout \"5-Balafon Bright\"\n  commit id:\"5-Balafon Bright\"\n  commit id:\"dev:1\"\n  commit id:\"sends:2\"\n  commit id:\"Balafon Bright\"\n  checkout main\n  branch \"A-Reverb\" order:6\n  checkout \"A-Reverb\"\n  commit id:\"A-Reverb\"\n  commit id:\"dev:1\"\n  commit id:\"sends:2\"\n  commit id:\"Reverb\"\n  checkout main\n  branch \"B-Delay\" order:7\n  checkout \"B-Delay\"\n  commit id:\"B-Delay\"\n  commit id:\"dev:1\"\n  commit id:\"sends:2\"\n  commit id:\"Delay\"\n  checkout main\n  commit id:\"Main\"\n  commit id:\"dev:2\"\n\n";
       if (!window.mermaid) {
         const target = document.getElementById("diagram");
         target.innerHTML = "<p style=\"color:#f5a623;font:12px sans-serif;\">Mermaid runtime unavailable in file:// mode. Run npm run serve:exports and open via http://localhost:5177/exports/…</p>";
