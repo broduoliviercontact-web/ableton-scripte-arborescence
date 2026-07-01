@@ -1,241 +1,212 @@
 # Ableton Session Mapper
 
-Version actuelle : `v1.3.0`
+<p align="center">
+  <strong>Export, inspect and visualize an Ableton Live Set with a clean integrated modal, external HTML views, and Mermaid-based diagrams.</strong>
+</p>
 
-## Preview statique de l’Internal Viewer
+<p align="center">
+  <img alt="Version" src="https://img.shields.io/badge/version-v1.3.0-f5a623">
+  <img alt="SDK" src="https://img.shields.io/badge/Ableton%20Extensions%20SDK-1.0.0--beta.0-7d8fff">
+  <img alt="Runtime" src="https://img.shields.io/badge/runtime-Node.js%2024%2B-5fa04e">
+  <img alt="Status" src="https://img.shields.io/badge/status-stable%20dev%20%2B%20installable-2d9d78">
+</p>
 
-Générer puis ouvrir la modale seule, cadrée en `1400x950`, avec des données de démonstration réalistes :
+---
 
-```bash
-npm run preview:internal-viewer
-```
+## What it does
 
-La vue affichée peut aussi être choisie directement dans l’URL :
+Ableton Session Mapper scans the current Live Set and produces a structured export of:
+
+- regular tracks in Live order
+- return tracks
+- master track
+- devices
+- rack summaries
+- chains / pads summaries
+- sends
+- manual routing overrides when provided
+
+It was designed with two goals:
+
+1. stay reliable inside Ableton Live with an ultra-safe scan mode
+2. generate views that are actually pleasant to browse outside Live
+
+---
+
+## Visual overview
+
+### Git / Metro
+
+<p align="center">
+  <img src="./exports/session-map-git.svg" alt="Git Metro view" width="90%">
+</p>
+
+### Flow
+
+<p align="center">
+  <img src="./exports/session-map-flow.svg" alt="Flow view" width="90%">
+</p>
+
+### Kanban
+
+<p align="center">
+  <img src="./exports/session-map-kanban.svg" alt="Kanban view" width="90%">
+</p>
+
+If SVG preview is limited by GitHub in your current context, the same exports also exist in [`exports/`](./exports/) as HTML / SVG / PNG / Mermaid source files.
+
+---
+
+## Main views
+
+### 1. Integrated Modal
+
+Inside Ableton Live:
+
+- Session
+- Git / Metro
+- Outputs
+- Devices
+- Files
+- Overview
+
+This is the primary in-Live UX.
+
+### 2. HTML Report
+
+A readable report view for:
+
+- track details
+- devices
+- sends
+- rack summaries
+- manual routing metadata
+
+### 3. Session Grid
+
+A simplified Session View-style layout:
+
+- one column per track
+- exact Live Set order
+- returns after tracks
+- master at the end
+
+### 4. Flow
+
+Technical tree view for the Set structure.
+
+### 5. Git / Metro
+
+Stylized metro-like map of tracks and devices.
+
+### 6. Kanban
+
+Column view preserving the exact track order from Session View.
+
+---
+
+## Project structure
 
 ```text
-internal-viewer-preview/index.html?view=session
-internal-viewer-preview/index.html?view=kanban
-internal-viewer-preview/index.html?view=metro
-internal-viewer-preview/index.html?view=outputs
-internal-viewer-preview/index.html?view=devices
-internal-viewer-preview/index.html?view=files
-internal-viewer-preview/index.html?view=overview
+extension/          Ableton extension runtime
+viewer-simple/      HTML report generator
+session-grid/       Session-grid generator
+launcher/           External launcher generator
+mermaid/            Mermaid .mmd / HTML / render scripts
+metro/              Custom Git / Metro view renderer
+scripts/            Packaging and helper scripts
+exports/            Generated outputs
+release/            Installable package output
 ```
 
-`npm run generate:internal-viewer-preview` régénère uniquement la page statique sans l’ouvrir. Cette preview réutilise le template de la modale et n’intervient pas dans le comportement de l’extension.
+---
 
-Extension TypeScript pour Ableton Live Extensions SDK. Elle analyse le Set
-courant et écrit une représentation JSON des pistes normales, groupes, retours,
-master, devices, racks, chains, macros lisibles et sends disponibles.
+## Stable workflow
 
-## Prérequis
+### In development
 
-- Une version d'Ableton Live compatible avec Extensions API `1.0.0`
-- Node.js 24.14.1+ recommandé par la doc SDK locale
-- Le SDK bêta décompressé dans
-  `/Users/jeanclaude/Downloads/extensions-sdk-1.0.0-beta.0`
-
-## Installation
-
-Depuis la racine du projet :
+From the project root:
 
 ```bash
 npm install
 npm run build
+npm start
 ```
 
-Le `package.json` racine installe les outils externes. Le `package.json`
-de `extension/` référence les archives SDK et CLI locales fournies. Si le SDK
-est déplacé, adaptez les dépendances `file:` avant `npm install`.
+Then in Ableton Live:
+
+1. right-click on a supported context
+2. choose `Export Session Map`
+3. the Set is scanned
+4. JSON + HTML outputs are generated
+5. the integrated modal opens
+6. external launcher / reports remain available
+
+Important: the click context is only the entry point. The export always scans the full Live Set.
+
+---
 
 ## Installable extension package
 
-Le SDK local confirme le format officiel :
+This repo now supports an installable Ableton package.
 
-- une extension distribuable est packagée en `.ablx` ;
-- l’archive doit contenir au minimum `manifest.json` et le fichier compilé
-  déclaré dans `manifest.json > entry` ;
-- `extensions-cli package` construit cette archive ;
-- l’utilisateur installe ensuite le `.ablx` par glisser-déposer dans
-  **Live Settings > Extensions**.
+The local SDK confirms the official distribution format:
 
-Pour produire le package installable :
+- package type: `.ablx`
+- required file: `manifest.json`
+- required entry: compiled JS file declared in `manifest.json > entry`
+- install flow: drag the `.ablx` file into **Live Settings > Extensions**
+
+Build the release package from the repo root:
 
 ```bash
 npm run package:extension
 ```
 
-Résultat :
+Generated artifacts:
 
-- dossier de staging : `release/Session Mapper/`
-- archive installable : `release/Ableton-Session-Mapper-v1.3.0.ablx`
-- archive zip de confort : `release/Session-Mapper-v1.3.0.zip`
+- [`release/Session Mapper/`](./release/Session%20Mapper)
+- [`release/Ableton-Session-Mapper-v1.3.0.ablx`](./release/Ableton-Session-Mapper-v1.3.0.ablx)
+- `release/Session-Mapper-v1.3.0.zip`
 
-Le package release inclut seulement ce qui est utile au runtime installé :
+Installed mode uses the SDK storage directory for exports instead of the repo `exports/` folder.
 
-- `manifest.json`
-- `dist/extension.js`
-- `README.md`
-- `assets/viewer-simple/styles.css`
-- `assets/vendor/mermaid.min.js`
-
-Il n’inclut pas `exports/`, `.tmp`, previews statiques, captures ou
-`node_modules` complet.
-
-## Usage
-
-1. Lancez `npm start` depuis la racine pour construire et charger l'extension en mode dev.
-2. Dans Live, faites un clic droit sur un contexte supporté : piste audio,
-   piste MIDI, clip audio, clip MIDI, clip slot, scène, ou sélection
-   d'arrangement sur piste audio/MIDI.
-3. Choisissez **Export Session Map**.
-4. En développement avec `npm start`, le fichier est écrit dans
-   `exports/session-map.json` à la racine de ce projet. Une extension installée
-   utilise le répertoire de stockage persistant attribué par Live. Le chemin
-   exact apparaît dans les logs de l'Extension Host.
-
-Le clic droit sert uniquement de point d'entrée : l'export couvre toujours le
-Set complet. Un exemple est fourni dans `exports/session-map.example.json`.
-
-En mode installé :
-
-- l’action visible reste **Export Session Map** ;
-- les exports sont écrits dans le storage persistant fourni par Live ;
-- la modale intégrée continue de fonctionner ;
-- le launcher externe, le HTML report, le Session Grid et le Git / Metro custom
-  HTML restent disponibles ;
-- les rendus Mermaid SVG/PNG restent optionnels et orientés workflow dev.
-
-## État actuel des vues (v1.3.0)
-
-Le projet fournit maintenant :
-
-- **Integrated Viewer · beta** dans Ableton : viewer principal léger, ouvert
-  automatiquement après **Export Session Map**.
-- **Visual Launcher** externe : page d'accueil qui centralise toutes les
-  sorties générées et sert de fallback.
-- **HTML Report** : rapport détaillé piste par piste, avec devices, sends,
-  racks et résumés de structure.
-- **Session Grid** : vue externe plus proche d'une Session View Ableton,
-  avec une colonne par piste dans l'ordre exact du Set.
-- **Flow** : arborescence technique du Live Set, utile pour lire la structure.
-- **Git / Metro** : visualisation stylisée façon métro, plus artistique,
-  pensée pour la lisibilité rapide des pistes et devices principaux.
-- **Kanban** : colonnes par piste avec les devices empilés dessous.
-
-## Stable workflow
-
-Depuis la racine du projet :
-
-```bash
-npm start
-```
-
-Puis dans Ableton Live :
-
-1. clic droit sur un contexte supporté ;
-2. choisir **Export Session Map** ;
-3. le Set est exporté en JSON, les vues HTML légères sont régénérées ;
-4. la modale **Session Mapper** s'ouvre directement dans Live ;
-5. utiliser les tabs :
-   - Session
-   - Kanban
-   - Git / Metro
-   - Outputs
-   - Devices
-   - Files
-   - Overview
-6. si besoin, cliquer **Open External Launcher** depuis la modale.
-
-### Integrated Ableton Modal UX (v1.1)
-
-La modale intégrée est maintenant l'UX principale, mais elle reste volontairement
-légère :
-
-- pas de Mermaid.js embarqué ;
-- pas de SVG/PNG lourds dans Live ;
-- pas de rendu diagramme complet dans la modale ;
-- les previews internes sont en HTML/CSS simple ;
-- le launcher externe reste disponible en fallback ou en ouverture manuelle.
-- la modale intégrée ne montre plus de health routing ni de warnings stale ;
-- elle se concentre sur les données réellement fiables exposées par le SDK.
-- la v1.2 aligne davantage son langage visuel sur une logique DAW / Live-like,
-  sans utiliser de logo ou branding officiel Ableton.
-- la v1.2.1 ajoute un code couleur des types de devices dans la modale
-  intégrée. Quand le SDK n’expose pas une classe stable, la catégorie peut être
-  inférée à partir du nom du device, du type de piste et de sa position dans la
-  chaîne.
-- la v1.2.2 ajoute un code couleur spécifique aux devices Max for Live et
-  retire l’onglet Kanban de la modale intégrée, tout en conservant les exports
-  Mermaid Kanban disponibles en externe.
-- la v1.2.3 affine la classification visuelle des devices : meilleure
-  reconnaissance des Max for Live, des MIDI FX natifs, des instruments drum /
-  synth et possibilité d’overrides manuels pour les patches custom.
-- la v1.2.4 masque les marqueurs `inferred` dans la modale intégrée pour
-  garder l’UI lisible ; les classifications `manual` et `unknown` restent
-  visibles.
-
-En usage normal, le menu **Extensions** n'affiche qu'une seule entrée :
-
-- **Export Session Map** : scanne le Live Set complet en mode `ultra-safe`,
-  écrit `exports/session-map.json`, génère le report HTML, le Session Grid,
-  l'index visuel `exports/session-map-diagrams.html`, crée les fichiers latest +
-  archivés, puis ouvre la modale intégrée. Si la modale échoue, l'extension
-  ouvre automatiquement le launcher externe.
-
-Depuis la racine du projet :
-
-```bash
-npm run build
-npm start
-npm run preview
-npm run generate:session-grid
-npm run create:routing-overrides
-npm run create:device-classification-overrides
-npm run refresh:routing-overrides
-npm run generate:diagrams-index
-npm run generate:mermaid
-npm run render:mermaid
-npm run export:diagram
-npm run generate:mermaid:flow
-npm run generate:mermaid:git
-npm run generate:mermaid:kanban
-npm run render:mermaid:flow
-npm run render:mermaid:git
-npm run render:mermaid:kanban
-npm run export:diagram:flow
-npm run export:diagram:git
-npm run export:diagram:kanban
-npm run export:diagram:all
-npm run open:diagrams
-npm run open:diagrams:http
-npm run serve:exports
-```
-
-`npm run preview` régénère puis ouvre le rapport dans le navigateur par défaut.
-`npm run open:diagrams` ouvre directement le launcher visuel latest.
-`npm run serve:exports` sert le projet sur `http://localhost:5177`.
+---
 
 ## Available commands
 
-Depuis la racine du projet :
+### Core
 
 ```bash
 npm run build
+npm start
 npm run package:extension
 npm run clean:release
+```
+
+### HTML views
+
+```bash
+npm run generate:html
 npm run generate:session-grid
 npm run generate:diagrams-index
+```
+
+### Mermaid
+
+```bash
 npm run generate:mermaid:flow
 npm run generate:mermaid:git
 npm run generate:mermaid:kanban
-npm run create:routing-overrides
-npm run create:device-classification-overrides
-npm run refresh:routing-overrides
 npm run export:diagram:flow
 npm run export:diagram:git
 npm run export:diagram:kanban
 npm run export:diagram:all
+```
+
+### Open helpers
+
+```bash
 npm run open:diagrams
 npm run open:diagram:flow
 npm run open:diagram:git
@@ -244,698 +215,92 @@ npm run open:diagrams:http
 npm run serve:exports
 ```
 
-En mode dev, `npm start` exporte vers le dossier `exports/` du repo parce que
-le script démarre l’Extension Host avec `--storage-directory ..` et
-`SESSION_MAPPER_RUNTIME_MODE=dev`.
-
-La modale intégrée est activée par défaut. Pour revenir au launcher externe
-comme UX principale :
-
-```bash
-OPEN_INTERNAL_MODAL_ON_EXPORT=false npm start
-```
-
-Le fallback externe reste recommandé :
-
-```bash
-FALLBACK_TO_EXTERNAL_LAUNCHER=true npm start
-```
-
-L'ouverture automatique externe seule peut aussi être désactivée explicitement :
-
-```bash
-ENABLE_OPEN_HTML=false npm start
-```
-
-Quand `OPEN_INTERNAL_MODAL_ON_EXPORT=true`, l'action **Export Session Map**
-ouvre d'abord la modale intégrée. Si cette modale échoue et que
-`FALLBACK_TO_EXTERNAL_LAUNCHER=true`, l'extension ouvre
-`exports/session-map-diagrams.html` dans le navigateur système.
-
-Par défaut, l'action Live ne lance pas les rendus Mermaid lourds. Pour les
-activer explicitement pendant l'export depuis Ableton :
-
-```bash
-GENERATE_DIAGRAMS_ON_EXPORT=true npm start
-```
-
-Si `GENERATE_DIAGRAMS_ON_EXPORT` reste absent ou différent de `true`, le
-launcher continue à marquer les artefacts Mermaid :
-
-- `Current`
-- `Outdated`
-- `Missing`
-
-Par défaut :
-
-- `GENERATE_MERMAID_HTML_ON_EXPORT=true`
-- les vues Mermaid **HTML + .mmd** sont régénérées à l’export ;
-- les rendus **SVG/PNG** restent manuels et optionnels.
-
-Pour désactiver la génération Mermaid HTML légère sur export :
-
-```bash
-GENERATE_MERMAID_HTML_ON_EXPORT=false npm start
-```
-
-### Opening Mermaid HTML safely
-
-Les HTML Mermaid sont maintenant générés en mode standalone pour mieux
-fonctionner en `file://`.
-
-Si un navigateur bloque encore l’exécution locale :
-
-1. lancer `npm run serve:exports`
-2. ouvrir `http://localhost:5177/exports/session-map-diagrams.html`
-
-URLs utiles :
-
-- [http://localhost:5177/exports/session-map-diagrams.html](http://localhost:5177/exports/session-map-diagrams.html)
-- [http://localhost:5177/exports/session-map-mermaid-flow.html](http://localhost:5177/exports/session-map-mermaid-flow.html)
-- [http://localhost:5177/exports/session-map-mermaid-git.html](http://localhost:5177/exports/session-map-mermaid-git.html)
-- [http://localhost:5177/exports/session-map-mermaid-kanban.html](http://localhost:5177/exports/session-map-mermaid-kanban.html)
-
-Chrome peut encore restreindre certains cas en `file://` selon sa politique
-locale. Le serveur HTTP local reste le fallback recommandé.
-
-### Difference between diagram renders and SDK Capability Matrix
-
-Le launcher distingue maintenant :
-
-- les **diagram renders** du Set courant ;
-- la **SDK Capability Matrix**, qui est un diagnostic séparé.
-
-`npm run export:diagram:all` remet à jour :
-
-- Flow
-- Git / Metro
-- Kanban
-- Session Grid
-- les rendus SVG/PNG associés
-
-Mais cette commande ne met **pas** à jour la Capability Matrix.
-
-Pour actualiser la SDK Capability Matrix :
-
-1. `cd extension`
-2. `ENABLE_CAPABILITY_MATRIX=true npm start`
-3. dans Live : **Generate SDK Capability Matrix**
-
-### Fichiers générés
-
-Chaque export produit désormais :
-
-- des fichiers `latest`, toujours écrasés :
-  - `exports/session-map.json`
-  - `exports/session-map.html`
-  - `exports/session-map-session-grid.html`
-  - `exports/session-map-diagrams.html`
-- des fichiers archivés datés :
-  - `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm.json`
-  - `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm.html`
-  - `exports/Ableton-Session-Grid_YYYY-MM-DD_HH-mm.html`
-
-Si un nom de Set est disponible via le SDK, il est utilisé comme préfixe
-sanitisé du fichier archivé. En cas de collision à la même minute, l'export
-ajoute les secondes, puis un suffixe numérique si nécessaire.
-
-### Export Mermaid externe (v0.5)
-
-Le projet peut maintenant générer un diagramme Mermaid à partir du JSON stable,
-sans repasser par Ableton Live et sans utiliser de WebView.
-
-Commande :
-
-```bash
-npm run generate:mermaid
-```
-
-Entrée :
-
-- `exports/session-map.json`
-
-Sorties :
-
-- `exports/session-map.mmd`
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm.mmd`
-
-Le fichier `.mmd` représente :
-
-- le Live Set ;
-- les tracks normales dans l'ordre du Set ;
-- les Return Tracks ;
-- le Master Track ;
-- les devices principaux ;
-- les racks via `chainsSummary` et `padsSummary` quand ils sont présents.
-
-Cette génération est entièrement externe au SDK Live : elle ne modifie pas le
-scan Ableton, ne touche pas à l'action Live stable et ne réactive aucune
-WebView. Elle prépare directement la phase v0.6 pour le rendu SVG/PNG.
-
-### Export SVG / PNG externe (v0.6)
-
-Le rendu graphique reste lui aussi entièrement externe à Ableton Live. Il
-part du fichier Mermaid latest, sans toucher au scan SDK ni à l'action Live
-stable.
-
-Commandes :
-
-```bash
-npm run generate:mermaid
-npm run render:mermaid
-npm run export:diagram
-npm run open:diagram
-```
-
-Différence entre les commandes :
-
-- **Export Session Map** dans Live : produit le JSON stable, le HTML viewer et
-  les archives latest + datées.
-- **generate:mermaid** : lit `exports/session-map.json` et écrit le diagramme
-  Mermaid `.mmd`.
-- **render:mermaid** : lit `exports/session-map.mmd` et produit le rendu
-  graphique externe.
-- **export:diagram** : enchaîne `generate:mermaid` puis `render:mermaid`.
-- **open:diagram** : ouvre le SVG latest généré sur macOS.
-
-Sorties latest :
-
-- `exports/session-map.mmd`
-- `exports/session-map.svg`
-- `exports/session-map.png`
-- `exports/session-map-mermaid.html`
-
-Sorties archivées :
-
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm.mmd`
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm.svg`
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm.png`
-
-Le HTML Mermaid local embarque le SVG rendu, pour fournir un aperçu directement
-ouvrable au navigateur sans dépendre d'une WebView Ableton.
-
-### Mermaid visualization profiles (v0.7)
-
-Le même `exports/session-map.json` peut maintenant produire plusieurs profils
-de visualisation Mermaid, toujours en dehors d'Ableton Live.
-
-Profils disponibles :
-
-- **flow** : la vue arborescente classique
-- **git** : une vue `gitGraph` stylisée façon métro
-- **kanban** : une vue colonnes Tracks / Return Tracks / Master
-
-Commandes :
-
-```bash
-npm run generate:mermaid:flow
-npm run generate:mermaid:git
-npm run generate:mermaid:kanban
-npm run render:mermaid:flow
-npm run render:mermaid:git
-npm run render:mermaid:kanban
-npm run export:diagram:flow
-npm run export:diagram:git
-npm run export:diagram:kanban
-npm run export:diagram:all
-```
-
-Fichiers latest :
-
-- `exports/session-map-flow.mmd`
-- `exports/session-map-flow.svg`
-- `exports/session-map-flow.png`
-- `exports/session-map-git.mmd`
-- `exports/session-map-git.svg`
-- `exports/session-map-git.png`
-- `exports/session-map-kanban.mmd`
-- `exports/session-map-kanban.svg`
-- `exports/session-map-kanban.png`
-
-Archives :
-
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm_flow.mmd`
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm_git.mmd`
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm_flow.svg`
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm_git.svg`
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm_flow.png`
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm_git.png`
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm_kanban.mmd`
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm_kanban.svg`
-- `exports/Ableton-Session-Map_YYYY-MM-DD_HH-mm_kanban.png`
-
-Le profil **git** ne cherche pas à représenter Git littéralement : il détourne
-`gitGraph` pour créer une lecture type lignes de métro, avec une branche par
-piste, une branche par return, un commit par piste et un commit par device
-principal. Les racks y sont résumés via `chainsSummary` / `padsSummary` pour
-garder un rendu lisible.
-
-Le profil **kanban** représente le Set en colonnes :
-
-- **Tracks**
-- **Return Tracks**
-- **Master**
-
-Chaque carte résume la piste avec son type, le nombre de devices, le nombre de
-sends et le nombre de racks détectés quand il y en a.
-
-Pour améliorer la lisibilité des rendus SVG/PNG, le projet utilise maintenant
-une configuration commune Mermaid dans
-[mermaid/mermaid.config.json](</Users/jeanclaude/Documents/ableton scripte arborescence/mermaid/mermaid.config.json>),
-avec thème sombre, couleurs plus contrastées et un rendu PNG/SVG plus grand.
-
-Le projet génère aussi un petit index local :
-
-- [exports/session-map-diagrams.html](</Users/jeanclaude/Documents/ableton scripte arborescence/exports/session-map-diagrams.html>)
-
-Il sert maintenant de **Visual Launcher UI** :
-
-- **Session Grid**
-- **HTML Report**
-- **Flow**
-- **Git / Metro**
-- **Kanban**
-- **Raw Data**
-
-Chaque carte gère l'absence éventuelle des rendus Mermaid lourds et affiche la
-commande à lancer pour les produire.
-
-### Visual Launcher UI (v0.7.4)
-
-L'action Ableton **Export Session Map** n'ouvre plus directement
-`session-map.html`. Elle ouvre maintenant :
-
-- [exports/session-map-diagrams.html](</Users/jeanclaude/Documents/ableton scripte arborescence/exports/session-map-diagrams.html>)
-
-Ce launcher visuel reste entièrement externe au navigateur :
-
-- aucune WebView Ableton ;
-- une seule action visible dans Live ;
-- export JSON stable inchangé ;
-- report HTML et Session Grid générés à chaque export ;
-- Mermaid Flow / Git / Kanban HTML + .mmd régénérés à l’export par défaut ;
-- Mermaid SVG / PNG laissés en rendu manuel ;
-- launcher compact par défaut ;
-- vues principales visibles immédiatement ;
-- exports secondaires rangés sous **More** ;
-- diagnostics et commandes repliés par défaut.
-
-Commandes utiles :
-
-```bash
-npm run generate:session-grid
-npm run generate:diagrams-index
-npm run open:diagrams
-npm run export:diagram:all
-npm run export:all
-```
-
-Workflow recommandé :
-
-1. Dans Ableton : **Export Session Map**
-2. La modale intégrée s’ouvre
-3. Le launcher externe permet d’ouvrir rapidement les vues principales
-4. Les exports secondaires SVG / PNG / .mmd restent accessibles via **More**
-5. Pour remettre à jour tous les SVG/PNG : `npm run export:diagram:all`
-6. Pour rouvrir le launcher : `npm run open:diagrams`
-
-## Known limitations
-
-- La modale intégrée reste une **vue légère** : pas de Mermaid runtime, pas de
-  rendu SVG/PNG lourd, pas de diagrammes complets dans Live.
-- L'export principal fonctionne en mode **ultra-safe** pour garantir que
-  l'action Live se termine toujours proprement.
-- Les **devices internes des racks** ne sont pas encore scannés en profondeur
-  dans l'export principal.
-- Les **routings I/O** et les **sidechains** ne sont pas encore exposés de
-  façon exploitable par cette version du SDK, ou pas encore mappés par le
-  projet.
-- La modale intégrée masque volontairement la couche de **routing health** pour
-  éviter de brouiller l’UX tant que le SDK ne fournit pas ces données de façon
-  fiable.
-- **Mermaid Git / Metro** est une visualisation artistique et lisible du Set,
-  pas une topologie audio exacte.
-- En mode installé, l’extension ne dépend pas de `npm start`, mais les rendus
-  Mermaid **SVG/PNG** restent un workflow manuel de développement.
-- Le runtime installé s’appuie sur le **storage directory** du SDK pour les
-  exports persistants ; il n’écrit pas dans ce repo.
-
-## Integrated Viewer and dev action
-
-La modale intégrée s'ouvre maintenant automatiquement depuis l'action normale
-**Export Session Map**.
-
-Une action dev supplémentaire peut rester visible si besoin :
-
-```bash
-ENABLE_INTERNAL_VIEWER_DEV_ACTION=true npm start
-```
-
-ou :
-
-```bash
-ENABLE_DIAGNOSTIC_ACTIONS=true npm start
-```
-
-Dans ce cas, Live affiche aussi :
-
-- **Open Internal Viewer Experimental**
-
-Cette fenêtre interne reste volontairement légère :
-
-- modale demandée en **1400 x 950** ;
-- fallback scrollable si Live / le SDK limite la taille réelle ;
-- onglets **Session / Git-Metro / Outputs / Devices / Files / Overview** ;
-- navigation par **tabs CSS-only** sans dépendre du JS pour changer de vue ;
-- preview interne légère type Session View, basée uniquement sur le JSON exporté ;
-- preview **Git / Metro** interne en HTML/CSS ;
-- métriques simples + date d'export + mode `ultra-safe` ;
-- table légère des outputs basée sur `session-map.json` ;
-- liste compacte des devices par piste ;
-- vérification des fichiers générés avant d'afficher les boutons Open ;
-- aucun Mermaid lourd rendu dans la fenêtre ;
-- aucun gros SVG/PNG injecté ;
-- le launcher externe reste disponible.
-
-Notes importantes :
-
-- les routings I/O peuvent apparaître comme **Non exposé par le SDK** ;
-- la modale intégrée n’affiche plus de badge, warning ou suggestion de refresh
-  liés à `routing-overrides.json` ;
-- le message de fallback reste affiché si aucun export n'existe encore ;
-- les vues internes ne chargent **ni Mermaid.js ni SVG/PNG lourds** ;
-- la preview interne n'est **pas** un rendu Mermaid complet ;
-- le workflow recommandé reste toujours le launcher externe.
-
-### Device classification tuning
-
-La classification affichée dans la modale intégrée est une couche visuelle. Elle
-ne modifie pas le scan stable ni `session-map.json`.
-
-- le SDK peut parfois exposer une classe exploitable ;
-- sinon la catégorie est **inferred** à partir du nom, du type de piste et de
-  la position du device ;
-- pour les patches custom, un override manuel exact par nom est possible via
-  `exports/device-classification-overrides.json`.
-- la modale intégrée masque par défaut les marqueurs `inferred` pour éviter de
-  polluer l’interface ; les cas `manual` et `unknown` restent visibles.
-
-Commande utile :
-
-```bash
-npm run create:device-classification-overrides
-```
-
-Elle crée :
-
-- `exports/device-classification-overrides.example.json`
-
-Vous pouvez ensuite copier ce template vers :
-
-- `exports/device-classification-overrides.json`
-
-Exemples de cas utiles :
-
-- `STING!64` → `max-for-live`
-- `DS Clap` → `instrument`
-- `Max MIDI Effect` → `max-for-live` avec badge `M4L MIDI`
-
-Important :
-
-- si la modale intégrée échoue, le fallback navigateur prend le relais si
-  `FALLBACK_TO_EXTERNAL_LAUNCHER=true` ;
-- le mode recommandé pour les gros diagrammes reste le **launcher externe**.
-
-Troubleshooting :
-
-- si Live devient instable ou plante, relancez simplement sans ce mode :
-
-```bash
-npm start
-```
-
-- le mode recommandé reste le **launcher externe** ;
-- la modale interne ne doit servir qu'aux tests ciblés du SDK.
-
-## v0.9 SDK Capability Matrix
-
-Une matrice de capacité du SDK est maintenant disponible en mode diagnostic.
-
-Objectif :
-
-- identifier ce que le SDK expose réellement ;
-- distinguer ce qui est **supported / partial / unavailable / unsafe / unknown / not-tested** ;
-- garder le scan principal stable totalement inchangé.
-
-Activation :
-
-```bash
-ENABLE_CAPABILITY_MATRIX=true npm start
-```
-
-ou :
-
-```bash
-ENABLE_DIAGNOSTIC_ACTIONS=true npm start
-```
-
-Quand ce mode est actif, une action dev supplémentaire apparaît dans Live :
-
-- **Generate SDK Capability Matrix**
-
-Cette action génère :
-
-- `exports/sdk-capability-matrix.json`
-- `exports/sdk-capability-matrix.html`
-- `exports/sdk-capability-matrix.md`
-
-avec aussi des archives datées correspondantes.
-
-Important :
-
-- ce diagnostic est **désactivé par défaut** ;
-- il ne modifie pas l'action stable **Export Session Map** ;
-- il n'active aucun scan profond récursif par défaut ;
-- le deep rack scan reste volontairement classé **unsafe** ;
-- les routings I/O peuvent rester **unavailable** selon la version Live Beta / SDK ;
-- le résultat dépend du **Set actuellement ouvert**.
-
-## v1.0 Manual routing overrides
-
-La matrice SDK confirme que le SDK bêta n'expose pas encore proprement les
-routings I/O, certaines infos de monitor, ni les sidechains. La v1.0 ajoute
-donc une surcouche optionnelle :
-
-- **SDK data + routing-overrides.json = visualisation complète**
-
-Le scan principal reste inchangé et l'action stable **Export Session Map** ne
-dépend jamais de ce fichier.
-
-Workflow :
+### Overrides / diagnostics
 
 ```bash
 npm run create:routing-overrides
-```
-
-Pour régénérer le template quand vous changez de Live Set :
-
-```bash
 npm run refresh:routing-overrides
+npm run create:device-classification-overrides
+npm run generate:internal-viewer-preview
 ```
 
-Ou, si vous voulez garder la même commande avec écrasement explicite :
+---
 
-```bash
-npm run create:routing-overrides -- --force
-```
+## Runtime modes
 
-Puis éditer :
+### Dev mode
 
-- `exports/routing-overrides.json`
+- started with `npm start`
+- storage is pointed to the repo root
+- exports go to `./exports/`
+- Mermaid SVG/PNG workflow is available
 
-Ensuite relancer :
+### Installed mode
 
-- **Export Session Map** dans Live
+- started by Live from the installed extension package
+- exports go to the SDK persistent storage directory
+- integrated modal remains available
+- HTML Report / Session Grid / Launcher remain available
+- Mermaid SVG/PNG rendering is optional and treated as a dev workflow
 
-Le JSON exporté ajoute :
+---
 
-- `manualRouting.status`
-- `manualRouting.stale`
-- `manualRouting.setMatch`
-- `manualRouting.sourceModifiedAt`
-- `manualRouting.sessionMapModifiedAt`
-- `manualRouting.missingFromCurrent`
-- `manualRouting.missingFromOverrides`
-- `manualRouting.warnings`
-- `manualRouting.connections`
-- `track.routing.source`
+## Why the project avoids heavy in-Live rendering
 
-Quand un override est présent, les viewers externes et le JSON peuvent afficher :
+This project intentionally does **not** rely on heavy embedded WebView rendering for diagrams.
 
-- les champs `MIDI From / MIDI To / Audio From / Audio To / Monitor`
-- un badge **MANUAL**
-- les éventuelles **Manual Connections**
+Reason:
 
-Comportement de sécurité :
+- large integrated WebViews were unstable in Live Beta during development
+- the stable path is:
+  - lightweight integrated modal in Live
+  - richer HTML/diagram outputs externally
 
-- si `routing-overrides.json` est absent, l'export continue normalement ;
-- si le JSON est invalide, warning uniquement ;
-- si une piste référencée est absente, warning uniquement ;
-- aucun routing n'est inventé automatiquement.
-- `npm run create:routing-overrides` reste **non destructif** ;
-- `npm run refresh:routing-overrides` crée toujours un backup avant réécriture ;
-- `npm run create:routing-overrides -- --force` crée aussi un backup avant réécriture.
+This keeps the core export flow reliable.
 
-### Refreshing routing overrides when changing Live Set
+---
 
-Quand vous passez d'un Set à un autre, l'ancien `routing-overrides.json` peut
-encore référencer des pistes qui n'existent plus. Dans ce cas, les outils
-externes ou le JSON peuvent signaler des warnings de type :
+## Known limitations
 
-- `Manual routing override references missing track: ...`
+- the main export runs in **ultra-safe** mode by design
+- internal rack devices are not deeply expanded in the main export
+- routing I/O is not reliably exposed by the current SDK version
+- sidechains are not reliably exposed by the current SDK version
+- Git / Metro is a stylized map, not an exact audio routing graph
+- Mermaid SVG/PNG are optional manual renders in practice
 
-Workflow recommandé :
+---
 
-1. Dans Live : **Export Session Map**
-2. Depuis la racine du projet :
+## Tech stack
 
-   ```bash
-   npm run refresh:routing-overrides
-   ```
+- Ableton Extensions SDK
+- TypeScript
+- Node.js
+- JSON export model
+- HTML/CSS/vanilla JS viewers
+- Mermaid for external diagram generation
 
-3. Éditer `exports/routing-overrides.json`
-4. Relancer **Export Session Map**
-5. Relancer **Export Session Map** puis vérifier le JSON ou les viewers externes si besoin
+---
 
-Comportement :
+## License / notes
 
-- lit `exports/session-map.json` latest ;
-- archive l'ancien `exports/routing-overrides.json` si présent ;
-- écrit un nouveau template aligné sur le Set courant ;
-- garde l'ordre Ableton :
-  1. `session.tracks`
-  2. `returnTracks`
-  3. `masterTrack`
+This project depends on the local Ableton Extensions SDK beta package provided separately by Ableton.
 
-Backups :
+Please follow Ableton’s SDK license and branding guidelines when redistributing extensions built from this project.
 
-- `exports/routing-overrides_YYYY-MM-DD_HH-mm.backup.json`
+---
 
-En cas de collision, un suffixe numérique est ajouté.
+## Quick links
 
-### Detecting stale routing overrides
+- [Extension runtime](./extension)
+- [Exports folder](./exports)
+- [Release package](./release)
+- [External launcher](./exports/session-map-diagrams.html)
+- [HTML report](./exports/session-map.html)
+- [Session grid](./exports/session-map-session-grid.html)
 
-Le projet détecte maintenant automatiquement si `routing-overrides.json` semble
-obsolète pour le Set courant. Cette information reste disponible dans le JSON et
-dans les outils externes, mais n’est plus affichée dans la modale intégrée.
+---
 
-Les viewers peuvent afficher :
-
-- `missing`
-- `loaded`
-- `invalid`
-- `stale`
-- `matching current set`
-
-La détection combine :
-
-- la date du dernier `session-map.json` déjà présent avant export ;
-- les noms de pistes du Set courant ;
-- les clés `tracks` présentes dans `routing-overrides.json`.
-
-Workflow recommandé :
-
-1. Dans Live : **Export Session Map**
-2. Si le JSON ou un viewer externe indique `stale` ou `mismatch` :
-
-   ```bash
-   npm run refresh:routing-overrides
-   ```
-
-3. Éditer le fichier si nécessaire
-4. Relancer **Export Session Map**
-
-### Actions de diagnostic en mode développement
-
-Le code diagnostic est conservé, mais il est caché par défaut. Pour réactiver
-les actions de diagnostic dans Live, lancez l'extension avec :
-
-```bash
-ENABLE_DIAGNOSTIC_ACTIONS=true npm start
-```
-
-Cela réenregistre les entrées suivantes :
-
-- **Export JSON**
-- **Export SDK Diagnostic JSON**
-- **Export Rack Diagnostic JSON**
-
-En mode normal, ces actions ne sont pas enregistrées.
-
-### SDK Data Diagnostic (v0.3)
-
-Le diagnostic teste explicitement les propriétés candidates de routing, groupes,
-mixers, racks, chains, sends et sidechains, puis inventorie aussi les propriétés
-visibles sur les prototypes du SDK. Chaque lecture est marquée `available`,
-`missing` ou `error`; une propriété absente ne bloque jamais le scan.
-
-Deux points d'entrée sont disponibles :
-
-- **Export SDK Diagnostic JSON** dans le menu Extensions écrit le diagnostic
-  général ;
-- **Export Rack Diagnostic JSON** écrit le diagnostic ciblé racks/chains/pads.
-
-Le résultat est écrit dans `exports/sdk-diagnostic.json`. Un diagnostic ciblé
-des racks est aussi écrit dans `exports/rack-diagnostic.json`. Son résumé
-indique le nombre de racks, chains et pads détectés ainsi que les propriétés
-testées explicitement sur les devices de type rack.
-
-Le diagnostic principal indique le
-nombre de tracks, routings, devices, racks, chains et erreurs rencontrés. Le
-détail permet d'identifier les propriétés réellement exposées par la version de
-Live/SDK utilisée avant d'ajouter leur lecture au modèle stable de
-`session-map.json`. Les propriétés `missing` ne doivent pas être ajoutées à
-l'extracteur principal ; les propriétés `available` peuvent servir de base à
-une prochaine itération documentée et testée.
-
-### Rack & Chain View (v0.4)
-
-Le JSON principal exporte désormais les racks détectés avec :
-
-- leurs chains internes ;
-- leurs pads dérivés pour les Drum Racks quand le SDK expose des `DrumChain` ;
-- les devices contenus dans chaque chain ;
-- un sous-ensemble lisible de paramètres utiles, en priorité les macros ;
-- les valeurs de volume/pan de chain quand le SDK les expose.
-
-Le fichier `exports/routing-overrides.example.json` montre maintenant le format
-de la surcouche manuelle utilisée pour compléter les routings absents du SDK.
-
-## Robustesse
-
-Toutes les lectures du modèle Ableton passent par `safeGet`. Une propriété
-absente, un objet supprimé pendant le scan ou une lecture refusée produit une
-valeur de repli (`null`, `[]` ou un libellé générique) au lieu d'interrompre
-l'export. Seule l'absence du Set ou du dossier de stockage empêche l'écriture.
-
-## Limites connues du SDK 1.0.0-beta.0
-
-- Le nom/chemin du Set et la couleur des pistes ne sont pas exposés : `null`.
-- La version actuelle du SDK ne semble pas exposer les routings I/O ni les
-  sidechains. Le projet les laisse à `null` côté scan SDK brut et s'appuie
-  désormais sur `routing-overrides.json` pour les compléter manuellement.
-- Le viewer affiche donc `Routing I/O non disponible dans cette version du SDK`.
-- Les sidechains restent en TODO explicite dans le code jusqu'à exposition SDK.
-- Les racks et chains sont exportés dans un format lisible, pas comme un dump
-  complet du SDK ; certains états de chain restent `null` quand Live ne les
-  expose pas.
-- La classification `group` est déduite des relations `groupTrack` des pistes.
-- Le SDK documente des scopes de menu contextuel pour `AudioTrack`,
-  `MidiTrack`, `AudioClip`, `MidiClip`, `ClipSlot`, `Scene`,
-  `AudioTrack.ArrangementSelection`, `MidiTrack.ArrangementSelection` et
-  `ClipSlotSelection`.
-- Le SDK ne documente pas, dans cette bêta, de scope dédié au clic droit sur un
-  clip d'arrangement individuel. L'action reste néanmoins disponible sur les
-  sélections d'arrangement de pistes audio/MIDI et exporte toujours le Live Set
-  complet.
-- Le viewer React/Vite est volontairement hors périmètre de ce MVP.
+<p align="center">
+  Built for exploring Ableton Live Sets with a more readable, developer-friendly workflow.
+</p>
