@@ -1,10 +1,12 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { basename, dirname, relative, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-type MermaidProfile = "flow" | "git" | "kanban";
+export type MermaidProfile = "flow" | "git" | "kanban";
 
-const mermaidDirectory = dirname(fileURLToPath(import.meta.url));
+const mermaidDirectory = typeof __dirname !== "undefined"
+  ? __dirname
+  : dirname(fileURLToPath(import.meta.url));
 const rootDirectory = resolve(mermaidDirectory, "..");
 
 const argumentValue = (name: string): string | undefined => {
@@ -60,8 +62,8 @@ function safeJsonForScript(value: string): string {
     .replaceAll("\u2029", "\\u2029");
 }
 
-function profileTitle(): string {
-  switch (profile) {
+function profileTitle(activeProfile: MermaidProfile): string {
+  switch (activeProfile) {
     case "git":
       return "Git / Metro";
     case "kanban":
@@ -71,8 +73,8 @@ function profileTitle(): string {
   }
 }
 
-function profileDescription(): string {
-  switch (profile) {
+function profileDescription(activeProfile: MermaidProfile): string {
+  switch (activeProfile) {
     case "git":
       return "Metro-style track/device map generated from the latest session-map.json.";
     case "kanban":
@@ -82,8 +84,8 @@ function profileDescription(): string {
   }
 }
 
-function profileLegendTitle(): string {
-  switch (profile) {
+function profileLegendTitle(activeProfile: MermaidProfile): string {
+  switch (activeProfile) {
     case "git":
       return "Reading guide";
     case "kanban":
@@ -93,8 +95,8 @@ function profileLegendTitle(): string {
   }
 }
 
-function profileLegendItems(): string[] {
-  switch (profile) {
+function profileLegendItems(activeProfile: MermaidProfile): string[] {
+  switch (activeProfile) {
     case "git":
       return [
         "Git / Metro is a stylized track/device map, not an exact audio routing graph.",
@@ -115,13 +117,26 @@ function profileLegendItems(): string[] {
   }
 }
 
-function buildHtml(mermaidSource: string): string {
+export interface BuildMermaidHtmlDocumentOptions {
+  profile: MermaidProfile;
+  mermaidSource: string;
+  mermaidRuntime: string;
+  inputFileName?: string;
+}
+
+export function buildMermaidHtmlDocument(
+  options: BuildMermaidHtmlDocumentOptions,
+): string {
+  const {
+    profile: activeProfile,
+    mermaidSource,
+    mermaidRuntime,
+    inputFileName,
+  } = options;
   const diagramSource = safeJsonForScript(mermaidSource);
-  const title = profileTitle();
-  const mermaidRuntime = safeJsonForScript(
-    `\n${readFileSyncMermaidMin()}\n`,
-  );
-  const legendItems = profileLegendItems()
+  const title = profileTitle(activeProfile);
+  const encodedMermaidRuntime = safeJsonForScript(`\n${mermaidRuntime}\n`);
+  const legendItems = profileLegendItems(activeProfile)
     .map((item) => `<li>${escapeHtml(item)}</li>`)
     .join("");
 
@@ -297,16 +312,16 @@ function buildHtml(mermaidSource: string): string {
       <div>
         <p class="eyebrow">Session Mapper / Mermaid HTML</p>
         <h1>${escapeHtml(title)}</h1>
-        <p class="subline">${escapeHtml(profileDescription())} SVG/PNG remain optional and can be refreshed manually.</p>
+        <p class="subline">${escapeHtml(profileDescription(activeProfile))} SVG/PNG remain optional and can be refreshed manually.</p>
       </div>
       <div class="actions">
-        <a class="button is-accent" href="${escapeHtml(basename(inputPath))}">Open .mmd</a>
+        <a class="button is-accent" href="${escapeHtml(inputFileName ?? "session-map.mmd")}">Open .mmd</a>
       </div>
     </section>
 
     <section class="meta-grid">
       <article class="legend panel">
-        <h2>${escapeHtml(profileLegendTitle())}</h2>
+        <h2>${escapeHtml(profileLegendTitle(activeProfile))}</h2>
         <ul>${legendItems}</ul>
       </article>
       <article class="support panel">
@@ -325,7 +340,7 @@ function buildHtml(mermaidSource: string): string {
   <script>
     (() => {
       const script = document.createElement("script");
-      script.text = ${mermaidRuntime};
+      script.text = ${encodedMermaidRuntime};
       document.head.appendChild(script);
     })();
   </script>
@@ -365,24 +380,66 @@ function buildHtml(mermaidSource: string): string {
 </html>`;
 }
 
-let cachedMermaidMin: string | null = null;
+export interface WriteMermaidHtmlArtifactOptions {
+  profile: MermaidProfile;
+  inputPath: string;
+  outputPath: string;
+  mermaidRuntimePath: string;
+  logPrefix?: string;
+  rootDirectory?: string;
+}
 
-function readFileSyncMermaidMin(): string {
-  if (cachedMermaidMin) return cachedMermaidMin;
-  throw new Error("Mermaid runtime cache not initialized.");
+export async function writeMermaidHtmlArtifact(
+  options: WriteMermaidHtmlArtifactOptions,
+): Promise<string> {
+  const effectiveLogPrefix = options.logPrefix ?? `[mermaid-html:${options.profile}]`;
+  const effectiveRootDirectory = options.rootDirectory ?? rootDirectory;
+  const logOutputPath = (path: string): string => {
+    const rel = relative(effectiveRootDirectory, path);
+    return rel && !rel.startsWith("..") ? rel : path;
+  };
+
+  console.log(`${effectiveLogPrefix} Generate Mermaid HTML started`);
+  const [mermaidRuntime, mermaidSource] = await Promise.all([
+    readFile(options.mermaidRuntimePath, "utf8"),
+    readFile(options.inputPath, "utf8"),
+  ]);
+  await mkdir(dirname(options.outputPath), { recursive: true });
+  await writeFile(
+    options.outputPath,
+    buildMermaidHtmlDocument({
+      profile: options.profile,
+      mermaidSource,
+      mermaidRuntime,
+      inputFileName: basename(options.inputPath),
+    }),
+    "utf8",
+  );
+  console.log(`${effectiveLogPrefix} Generate Mermaid HTML completed: ${logOutputPath(options.outputPath)}`);
+  return options.outputPath;
 }
 
 async function main(): Promise<void> {
-  console.log(`${logPrefix} Generate Mermaid HTML started`);
-  cachedMermaidMin = await readFile(resolve(rootDirectory, "node_modules/mermaid/dist/mermaid.min.js"), "utf8");
-  const mermaidSource = await readFile(inputPath, "utf8");
-  await mkdir(dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, buildHtml(mermaidSource), "utf8");
-  console.log(`${logPrefix} Generate Mermaid HTML completed: ${logPath(outputPath)}`);
+  await writeMermaidHtmlArtifact({
+    profile,
+    inputPath,
+    outputPath,
+    mermaidRuntimePath: resolve(rootDirectory, "node_modules/mermaid/dist/mermaid.min.js"),
+    logPrefix,
+    rootDirectory,
+  });
 }
 
-main().catch((error: unknown) => {
-  const detail = error instanceof Error ? error.message : String(error);
-  console.error(`${logPrefix} Generate Mermaid HTML failed: ${detail}`);
-  process.exitCode = 1;
-});
+const currentModuleHref = typeof __filename !== "undefined"
+  ? pathToFileURL(__filename).href
+  : import.meta.url;
+const isDirectExecution =
+  process.argv[1] != null && currentModuleHref === pathToFileURL(process.argv[1]).href;
+
+if (isDirectExecution) {
+  main().catch((error: unknown) => {
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error(`${logPrefix} Generate Mermaid HTML failed: ${detail}`);
+    process.exitCode = 1;
+  });
+}

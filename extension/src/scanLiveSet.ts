@@ -1,4 +1,5 @@
 import type { ExtensionContext, Track } from "@ableton-extensions/sdk";
+import { APP_VERSION } from "./appInfo.js";
 import { createScanState, scanStateSummary, scanTimedOut } from "./scanDevices.js";
 import { findGroupTrackIds, scanTrack, scanTracks } from "./scanTracks.js";
 import { safeGet, type SessionMap } from "./types.js";
@@ -35,7 +36,7 @@ export async function scanLiveSet(
   console.log("[Ableton Session Mapper] Scan Live Set completed");
 
   return {
-    version: "1.0.0",
+    version: APP_VERSION,
     exportedAt: new Date().toISOString(),
     set: {
       // The current SDK exposes no Live Set name/path.

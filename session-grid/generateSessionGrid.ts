@@ -1,5 +1,6 @@
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { fileURLToPath } from "node:url";
 
 type TrackKind = "audio" | "midi" | "group" | "return" | "master" | "unknown";
@@ -97,7 +98,9 @@ interface OutputPaths {
   archivePath: string;
 }
 
-const gridDirectory = dirname(fileURLToPath(import.meta.url));
+const gridDirectory = typeof __dirname !== "undefined"
+  ? __dirname
+  : dirname(fileURLToPath(import.meta.url));
 const rootDirectory = resolve(gridDirectory, "..");
 
 const argumentValue = (name: string): string | undefined => {
@@ -160,8 +163,11 @@ function buildArchiveBaseName(sessionMap: SessionMap): string {
   return setName ? `${setName}_Session-Grid` : "Ableton-Session-Grid";
 }
 
-async function resolveOutputPaths(sessionMap: SessionMap): Promise<OutputPaths> {
-  const outputDirectory = dirname(latestOutputPath);
+async function resolveOutputPaths(
+  sessionMap: SessionMap,
+  requestedLatestOutputPath: string,
+): Promise<OutputPaths> {
+  const outputDirectory = dirname(requestedLatestOutputPath);
   await mkdir(outputDirectory, { recursive: true });
 
   const baseName = buildArchiveBaseName(sessionMap);
@@ -170,17 +176,17 @@ async function resolveOutputPaths(sessionMap: SessionMap): Promise<OutputPaths> 
   const candidates = [`${baseName}_${minuteStamp}`, `${baseName}_${secondStamp}`];
 
   for (const candidate of candidates) {
-    const archivePath = join(outputDirectory, `${candidate}.html`);
-    if (!(await pathExists(archivePath))) {
-      return { latestPath: latestOutputPath, archivePath };
-    }
+      const archivePath = join(outputDirectory, `${candidate}.html`);
+      if (!(await pathExists(archivePath))) {
+      return { latestPath: requestedLatestOutputPath, archivePath };
+      }
   }
 
   let suffix = 2;
   while (suffix < 10_000) {
     const archivePath = join(outputDirectory, `${baseName}_${secondStamp}-${suffix}.html`);
     if (!(await pathExists(archivePath))) {
-      return { latestPath: latestOutputPath, archivePath };
+      return { latestPath: requestedLatestOutputPath, archivePath };
     }
     suffix += 1;
   }
@@ -738,23 +744,58 @@ function renderTemplate(sessionMap: SessionMap): string {
 }
 
 async function main(): Promise<void> {
-  console.log(`${logPrefix} Read JSON started: ${logPath(jsonPath)}`);
-  const json = await readFile(jsonPath, "utf8");
-  console.log(`${logPrefix} Read JSON completed`);
-  const sessionMap = JSON.parse(json) as SessionMap;
-  const outputPaths = await resolveOutputPaths(sessionMap);
+  await writeSessionGridArtifact({
+    jsonPath,
+    outputPath: latestOutputPath,
+    logPrefix,
+    rootDirectory,
+  });
+}
 
-  console.log(`${logPrefix} Generate Session Grid started`);
+export interface WriteSessionGridArtifactOptions {
+  jsonPath: string;
+  outputPath: string;
+  logPrefix?: string;
+  rootDirectory?: string;
+}
+
+export async function writeSessionGridArtifact(
+  options: WriteSessionGridArtifactOptions,
+): Promise<OutputPaths> {
+  const effectiveLogPrefix = options.logPrefix ?? logPrefix;
+  const effectiveRootDirectory = options.rootDirectory ?? rootDirectory;
+  const logOutputPath = (path: string): string => {
+    const rel = relative(effectiveRootDirectory, path);
+    return rel && !rel.startsWith("..") ? rel : path;
+  };
+
+  console.log(`${effectiveLogPrefix} Read JSON started: ${logOutputPath(options.jsonPath)}`);
+  const json = await readFile(options.jsonPath, "utf8");
+  console.log(`${effectiveLogPrefix} Read JSON completed`);
+  const sessionMap = JSON.parse(json) as SessionMap;
+  const outputPaths = await resolveOutputPaths(sessionMap, options.outputPath);
+
+  console.log(`${effectiveLogPrefix} Generate Session Grid started`);
   const html = renderTemplate(sessionMap);
   await writeFile(outputPaths.latestPath, html, "utf8");
   await writeFile(outputPaths.archivePath, html, "utf8");
-  console.log(`${logPrefix} Write Session Grid latest completed: ${logPath(outputPaths.latestPath)}`);
-  console.log(`${logPrefix} Write Session Grid archive completed: ${logPath(outputPaths.archivePath)}`);
-  console.log(`${logPrefix} Generate Session Grid completed`);
+  console.log(`${effectiveLogPrefix} Write Session Grid latest completed: ${logOutputPath(outputPaths.latestPath)}`);
+  console.log(`${effectiveLogPrefix} Write Session Grid archive completed: ${logOutputPath(outputPaths.archivePath)}`);
+  console.log(`${effectiveLogPrefix} Generate Session Grid completed`);
+
+  return outputPaths;
 }
 
-main().catch((error: unknown) => {
-  const detail = error instanceof Error ? error.message : String(error);
-  console.error(`${logPrefix} Generation failed: ${detail}`);
-  process.exitCode = 1;
-});
+const currentModuleHref = typeof __filename !== "undefined"
+  ? pathToFileURL(__filename).href
+  : import.meta.url;
+const isDirectExecution =
+  process.argv[1] != null && currentModuleHref === pathToFileURL(process.argv[1]).href;
+
+if (isDirectExecution) {
+  main().catch((error: unknown) => {
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error(`${logPrefix} Generation failed: ${detail}`);
+    process.exitCode = 1;
+  });
+}

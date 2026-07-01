@@ -1,5 +1,7 @@
 # Ableton Session Mapper
 
+Version actuelle : `v1.3.0`
+
 ## Preview statique de l’Internal Viewer
 
 Générer puis ouvrir la modale seule, cadrée en `1400x950`, avec des données de démonstration réalistes :
@@ -29,24 +31,60 @@ master, devices, racks, chains, macros lisibles et sends disponibles.
 ## Prérequis
 
 - Une version d'Ableton Live compatible avec Extensions API `1.0.0`
-- Node.js 20 ou plus récent
+- Node.js 24.14.1+ recommandé par la doc SDK locale
 - Le SDK bêta décompressé dans
   `/Users/jeanclaude/Downloads/extensions-sdk-1.0.0-beta.0`
 
 ## Installation
 
+Depuis la racine du projet :
+
 ```bash
-cd extension
 npm install
 npm run build
 ```
 
-Le `package.json` référence les archives SDK et CLI locales fournies. Si le SDK
-est déplacé, adaptez les deux dépendances `file:` avant `npm install`.
+Le `package.json` racine installe les outils externes. Le `package.json`
+de `extension/` référence les archives SDK et CLI locales fournies. Si le SDK
+est déplacé, adaptez les dépendances `file:` avant `npm install`.
+
+## Installable extension package
+
+Le SDK local confirme le format officiel :
+
+- une extension distribuable est packagée en `.ablx` ;
+- l’archive doit contenir au minimum `manifest.json` et le fichier compilé
+  déclaré dans `manifest.json > entry` ;
+- `extensions-cli package` construit cette archive ;
+- l’utilisateur installe ensuite le `.ablx` par glisser-déposer dans
+  **Live Settings > Extensions**.
+
+Pour produire le package installable :
+
+```bash
+npm run package:extension
+```
+
+Résultat :
+
+- dossier de staging : `release/Session Mapper/`
+- archive installable : `release/Ableton-Session-Mapper-v1.3.0.ablx`
+- archive zip de confort : `release/Session-Mapper-v1.3.0.zip`
+
+Le package release inclut seulement ce qui est utile au runtime installé :
+
+- `manifest.json`
+- `dist/extension.js`
+- `README.md`
+- `assets/viewer-simple/styles.css`
+- `assets/vendor/mermaid.min.js`
+
+Il n’inclut pas `exports/`, `.tmp`, previews statiques, captures ou
+`node_modules` complet.
 
 ## Usage
 
-1. Lancez `npm start` depuis `extension/` pour construire et charger l'extension.
+1. Lancez `npm start` depuis la racine pour construire et charger l'extension en mode dev.
 2. Dans Live, faites un clic droit sur un contexte supporté : piste audio,
    piste MIDI, clip audio, clip MIDI, clip slot, scène, ou sélection
    d'arrangement sur piste audio/MIDI.
@@ -59,7 +97,16 @@ est déplacé, adaptez les deux dépendances `file:` avant `npm install`.
 Le clic droit sert uniquement de point d'entrée : l'export couvre toujours le
 Set complet. Un exemple est fourni dans `exports/session-map.example.json`.
 
-## État actuel des vues (v1.1)
+En mode installé :
+
+- l’action visible reste **Export Session Map** ;
+- les exports sont écrits dans le storage persistant fourni par Live ;
+- la modale intégrée continue de fonctionner ;
+- le launcher externe, le HTML report, le Session Grid et le Git / Metro custom
+  HTML restent disponibles ;
+- les rendus Mermaid SVG/PNG restent optionnels et orientés workflow dev.
+
+## État actuel des vues (v1.3.0)
 
 Le projet fournit maintenant :
 
@@ -174,6 +221,9 @@ npm run serve:exports
 Depuis la racine du projet :
 
 ```bash
+npm run build
+npm run package:extension
+npm run clean:release
 npm run generate:session-grid
 npm run generate:diagrams-index
 npm run generate:mermaid:flow
@@ -193,6 +243,10 @@ npm run open:diagram:kanban
 npm run open:diagrams:http
 npm run serve:exports
 ```
+
+En mode dev, `npm start` exporte vers le dossier `exports/` du repo parce que
+le script démarre l’Extension Host avec `--storage-directory ..` et
+`SESSION_MAPPER_RUNTIME_MODE=dev`.
 
 La modale intégrée est activée par défaut. Pour revenir au launcher externe
 comme UX principale :
@@ -521,6 +575,10 @@ Workflow recommandé :
   fiable.
 - **Mermaid Git / Metro** est une visualisation artistique et lisible du Set,
   pas une topologie audio exacte.
+- En mode installé, l’extension ne dépend pas de `npm start`, mais les rendus
+  Mermaid **SVG/PNG** restent un workflow manuel de développement.
+- Le runtime installé s’appuie sur le **storage directory** du SDK pour les
+  exports persistants ; il n’écrit pas dans ce repo.
 
 ## Integrated Viewer and dev action
 

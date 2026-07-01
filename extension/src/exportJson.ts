@@ -1,18 +1,34 @@
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
-import { join } from "node:path";
+import { basename, dirname, join, relative } from "node:path";
 import { promisify } from "node:util";
 import type { ExtensionContext } from "@ableton-extensions/sdk";
+import { renderTemplate } from "../../viewer-simple/template.js";
+import { writeSessionGridArtifact } from "../../session-grid/generateSessionGrid.js";
+import { writeDiagramsIndex } from "../../launcher/diagramsIndexTemplate.js";
+import { buildMetroModel, renderMetroHtml, renderMetroSvg, type MetroSessionMap } from "../../metro/generateMetroView.js";
+import { generateDiagramForProfile, type MermaidProfile, writeMermaidArtifact } from "../../mermaid/generateMermaid.js";
+import { writeMermaidHtmlArtifact } from "../../mermaid/generateMermaidHtml.js";
 import type { RackDiagnostic } from "./scanRackDiagnostic.js";
 import type { CapabilityMatrix } from "./scanCapabilityMatrix.js";
 import type { SdkDiagnostic } from "./scanDiagnostic.js";
-import { safeGet, type SessionMap } from "./types.js";
+import { APP_VERSION } from "./appInfo.js";
+import { resolveRuntimePaths, type RuntimeMode } from "./runtimePaths.js";
+import { safeGet, type ChainInfo, type DeviceInfo, type PadInfo, type SessionMap } from "./types.js";
 
 const execFileAsync = promisify(execFile);
 
 export interface ExportLocations {
+  runtimeMode: RuntimeMode;
+  extensionRoot: string;
+  storageRoot: string;
   projectRoot: string;
   exportDirectory: string;
+  assetsDirectory: string;
+  configDirectory: string;
+  viewerStylesPath: string;
+  mermaidRuntimePath: string | null;
+  workspaceRoot: string | null;
   sessionMapJsonPath: string;
   sessionMapHtmlPath: string;
   sessionGridHtmlPath: string;
@@ -43,19 +59,19 @@ export interface CapabilityMatrixExportPaths {
 export async function resolveExportLocations(
   context: ExtensionContext<"1.0.0">,
 ): Promise<ExportLocations> {
-  const projectRoot = await safeGet(
-    () => context.environment.storageDirectory,
-    undefined,
-    "environment.storageDirectory",
-  );
-  if (!projectRoot) {
-    throw new Error("The extension storage directory is unavailable.");
-  }
-
-  const exportDirectory = join(projectRoot, "exports");
+  const runtimePaths = await resolveRuntimePaths(context);
+  const exportDirectory = runtimePaths.exportDirectory;
   return {
-    projectRoot,
+    runtimeMode: runtimePaths.runtimeMode,
+    extensionRoot: runtimePaths.extensionRoot,
+    storageRoot: runtimePaths.storageRoot,
+    projectRoot: runtimePaths.projectRoot,
     exportDirectory,
+    assetsDirectory: runtimePaths.assetsDirectory,
+    configDirectory: runtimePaths.configDirectory,
+    viewerStylesPath: runtimePaths.viewerStylesPath,
+    mermaidRuntimePath: runtimePaths.mermaidRuntimePath,
+    workspaceRoot: runtimePaths.workspaceRoot,
     sessionMapJsonPath: join(exportDirectory, "session-map.json"),
     sessionMapHtmlPath: join(exportDirectory, "session-map.html"),
     sessionGridHtmlPath: join(exportDirectory, "session-map-session-grid.html"),
@@ -178,6 +194,82 @@ async function reserveGenericArchiveStem(
   throw new Error(`Unable to reserve a unique archive filename for ${baseName}.`);
 }
 
+function logPath(basePath: string, path: string): string {
+  const rel = relative(basePath, path);
+  return rel && !rel.startsWith("..") ? rel : path;
+}
+
+const MAX_VIEWER_RACK_DEPTH = 3;
+const MAX_VIEWER_CHAINS_PER_RACK = 64;
+const MAX_VIEWER_DEVICES_PER_STRUCTURE = 32;
+const MAX_VIEWER_PARAMETERS_PER_DEVICE = 16;
+
+function sanitizeDevices(
+  devices: DeviceInfo[] | undefined,
+  depth: number,
+): DeviceInfo[] {
+  return (devices ?? []).slice(0, MAX_VIEWER_DEVICES_PER_STRUCTURE).map((device) => {
+    const nextDepth = depth + 1;
+    const allowNested = nextDepth < MAX_VIEWER_RACK_DEPTH;
+    const sanitizedChains: ChainInfo[] = allowNested
+      ? (device.chains ?? []).slice(0, MAX_VIEWER_CHAINS_PER_RACK).map((chain) => ({
+          ...chain,
+          devices: sanitizeDevices(chain.devices, nextDepth),
+        }))
+      : [];
+    const sanitizedPads: PadInfo[] = allowNested
+      ? (device.pads ?? []).slice(0, MAX_VIEWER_CHAINS_PER_RACK).map((pad) => ({
+          ...pad,
+          devices: sanitizeDevices(pad.devices, nextDepth),
+        }))
+      : [];
+
+    return {
+      ...device,
+      parameters: (device.parameters ?? []).slice(0, MAX_VIEWER_PARAMETERS_PER_DEVICE),
+      chains: sanitizedChains,
+      pads: sanitizedPads,
+    };
+  });
+}
+
+function sanitizeSessionMapForViewer(data: SessionMap): SessionMap {
+  const sanitizeTrack = (track: SessionMap["tracks"][number]): SessionMap["tracks"][number] => ({
+    ...track,
+    devices: sanitizeDevices(track.devices, 0),
+  });
+
+  return {
+    ...data,
+    tracks: data.tracks.map(sanitizeTrack),
+    returnTracks: data.returnTracks.map(sanitizeTrack),
+    masterTrack: data.masterTrack ? sanitizeTrack(data.masterTrack) : null,
+  };
+}
+
+async function readOptionalDiagnostic(path: string | undefined): Promise<SdkDiagnostic | null> {
+  if (!path) return null;
+  try {
+    return JSON.parse(await readFile(path, "utf8")) as SdkDiagnostic;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+async function readSessionMap(jsonPath: string): Promise<SessionMap> {
+  return JSON.parse(await readFile(jsonPath, "utf8")) as SessionMap;
+}
+
+async function writeLatestAndArchiveHtml(
+  latestPath: string,
+  archivePath: string,
+  html: string,
+): Promise<void> {
+  await writeFile(latestPath, html, "utf8");
+  await writeFile(archivePath, html, "utf8");
+}
+
 export async function resolveSessionExportPaths(
   context: ExtensionContext<"1.0.0">,
   sessionMap: SessionMap,
@@ -246,20 +338,17 @@ export async function generateHtml(
   diagnosticPath?: string,
 ): Promise<SessionExportPaths> {
   const locations = await resolveExportLocations(context);
-  const generatorPath = join(locations.projectRoot, "viewer-simple", "generateHtml.ts");
-  const tsxCliPath = join(locations.projectRoot, "node_modules", "tsx", "dist", "cli.mjs");
-  const args = [
-    tsxCliPath,
-    generatorPath,
-    "--json",
-    jsonPath,
-    "--output",
-    paths.latestHtmlPath,
-  ];
-  if (diagnosticPath) args.push("--diagnostic", diagnosticPath);
-  await execFileAsync(process.execPath, args, { cwd: locations.projectRoot });
-  const html = await readFile(paths.latestHtmlPath, "utf8");
-  await writeFile(paths.archiveHtmlPath, html, "utf8");
+  const [sessionMap, styles, diagnostic] = await Promise.all([
+    readSessionMap(jsonPath),
+    readFile(locations.viewerStylesPath, "utf8"),
+    readOptionalDiagnostic(diagnosticPath),
+  ]);
+  const html = renderTemplate(
+    sanitizeSessionMapForViewer(sessionMap),
+    styles,
+    diagnostic,
+  );
+  await writeLatestAndArchiveHtml(paths.latestHtmlPath, paths.archiveHtmlPath, html);
   console.log(`[Ableton Session Mapper] Generate HTML latest completed: ${paths.latestHtmlPath}`);
   console.log(`[Ableton Session Mapper] Generate HTML archive completed: ${paths.archiveHtmlPath}`);
   return paths;
@@ -280,12 +369,12 @@ export async function generateSessionGrid(
   jsonPath: string,
 ): Promise<string> {
   const locations = await resolveExportLocations(context);
-  await runTsxScript(locations.projectRoot, "session-grid/generateSessionGrid.ts", [
-    "--json",
+  await writeSessionGridArtifact({
     jsonPath,
-    "--output",
-    locations.sessionGridHtmlPath,
-  ]);
+    outputPath: locations.sessionGridHtmlPath,
+    logPrefix: "[session-grid]",
+    rootDirectory: locations.projectRoot,
+  });
   return locations.sessionGridHtmlPath;
 }
 
@@ -294,12 +383,11 @@ export async function generateDiagramsIndex(
   jsonPath: string,
 ): Promise<string> {
   const locations = await resolveExportLocations(context);
-  await runTsxScript(locations.projectRoot, "launcher/generateDiagramsIndex.ts", [
-    "--json",
+  await writeDiagramsIndex({
     jsonPath,
-    "--output",
-    locations.sessionMapDiagramsPath,
-  ]);
+    outputPath: locations.sessionMapDiagramsPath,
+    rootDirectory: locations.projectRoot,
+  });
   return locations.sessionMapDiagramsPath;
 }
 
@@ -307,8 +395,14 @@ export async function generateMermaidDiagrams(
   context: ExtensionContext<"1.0.0">,
 ): Promise<void> {
   const locations = await resolveExportLocations(context);
+  if (locations.runtimeMode !== "dev" || !locations.workspaceRoot) {
+    console.log(
+      "[Ableton Session Mapper] Mermaid SVG/PNG render skipped: available in dev/export workflow only.",
+    );
+    return;
+  }
 
-  await runTsxScript(locations.projectRoot, "mermaid/generateMermaid.ts", [
+  await runTsxScript(locations.workspaceRoot, "mermaid/generateMermaid.ts", [
     "--profile",
     "flow",
     "--output",
@@ -316,7 +410,7 @@ export async function generateMermaidDiagrams(
     "--file-suffix",
     "flow",
   ]);
-  await runTsxScript(locations.projectRoot, "mermaid/renderMermaid.ts", [
+  await runTsxScript(locations.workspaceRoot, "mermaid/renderMermaid.ts", [
     "--profile",
     "flow",
     "--input",
@@ -331,7 +425,7 @@ export async function generateMermaidDiagrams(
     "flow",
   ]);
 
-  await runTsxScript(locations.projectRoot, "mermaid/generateMermaid.ts", [
+  await runTsxScript(locations.workspaceRoot, "mermaid/generateMermaid.ts", [
     "--profile",
     "git",
     "--output",
@@ -339,7 +433,7 @@ export async function generateMermaidDiagrams(
     "--file-suffix",
     "git",
   ]);
-  await runTsxScript(locations.projectRoot, "mermaid/renderMermaid.ts", [
+  await runTsxScript(locations.workspaceRoot, "mermaid/renderMermaid.ts", [
     "--profile",
     "git",
     "--input",
@@ -354,7 +448,7 @@ export async function generateMermaidDiagrams(
     "git",
   ]);
 
-  await runTsxScript(locations.projectRoot, "mermaid/generateMermaid.ts", [
+  await runTsxScript(locations.workspaceRoot, "mermaid/generateMermaid.ts", [
     "--profile",
     "kanban",
     "--output",
@@ -362,7 +456,7 @@ export async function generateMermaidDiagrams(
     "--file-suffix",
     "kanban",
   ]);
-  await runTsxScript(locations.projectRoot, "mermaid/renderMermaid.ts", [
+  await runTsxScript(locations.workspaceRoot, "mermaid/renderMermaid.ts", [
     "--profile",
     "kanban",
     "--input",
@@ -382,57 +476,62 @@ export async function generateMermaidHtmlArtifacts(
   context: ExtensionContext<"1.0.0">,
 ): Promise<void> {
   const locations = await resolveExportLocations(context);
+  const sessionMap = await readSessionMap(locations.sessionMapJsonPath);
+  const diagramProfiles: MermaidProfile[] = ["flow", "git", "kanban"];
 
-  await runTsxScript(locations.projectRoot, "mermaid/generateMermaid.ts", [
-    "--profile",
-    "flow",
-    "--output",
-    "exports/session-map-flow.mmd",
-    "--file-suffix",
-    "flow",
-  ]);
-  await runTsxScript(locations.projectRoot, "mermaid/generateMermaidHtml.ts", [
-    "--profile",
-    "flow",
-    "--input",
-    "exports/session-map-flow.mmd",
-    "--output",
-    "exports/session-map-mermaid-flow.html",
-  ]);
+  for (const diagramProfile of diagramProfiles) {
+    const fileSuffix = diagramProfile;
+    const latestMmdPath = join(
+      locations.exportDirectory,
+      diagramProfile === "flow"
+        ? "session-map-flow.mmd"
+        : diagramProfile === "git"
+          ? "session-map-git.mmd"
+          : "session-map-kanban.mmd",
+    );
 
-  await runTsxScript(locations.projectRoot, "mermaid/generateMermaid.ts", [
-    "--profile",
-    "git",
-    "--output",
-    "exports/session-map-git.mmd",
-    "--file-suffix",
-    "git",
-  ]);
-  await runTsxScript(locations.projectRoot, "mermaid/generateMermaidHtml.ts", [
-    "--profile",
-    "git",
-    "--input",
-    "exports/session-map-git.mmd",
-    "--output",
-    "exports/session-map-mermaid-git.html",
-  ]);
+    const mermaidPaths = await writeMermaidArtifact({
+      jsonPath: locations.sessionMapJsonPath,
+      outputPath: latestMmdPath,
+      profile: diagramProfile,
+      fileSuffix,
+      logPrefix: diagramProfile === "flow" ? "[mermaid]" : `[mermaid:${diagramProfile}]`,
+      rootDirectory: locations.projectRoot,
+    });
 
-  await runTsxScript(locations.projectRoot, "mermaid/generateMermaid.ts", [
-    "--profile",
-    "kanban",
-    "--output",
-    "exports/session-map-kanban.mmd",
-    "--file-suffix",
-    "kanban",
-  ]);
-  await runTsxScript(locations.projectRoot, "mermaid/generateMermaidHtml.ts", [
-    "--profile",
-    "kanban",
-    "--input",
-    "exports/session-map-kanban.mmd",
-    "--output",
-    "exports/session-map-mermaid-kanban.html",
-  ]);
+    if (diagramProfile === "git") {
+      const metroModel = buildMetroModel(sessionMap as unknown as MetroSessionMap);
+      const metroHtml = renderMetroHtml(metroModel, {
+        mmdFileName: basename(mermaidPaths.latestPath),
+        svgFileName: "session-map-git.svg",
+        pngFileName: "session-map-git.png",
+      });
+      await writeFile(join(locations.exportDirectory, "session-map-mermaid-git.html"), metroHtml, "utf8");
+      await writeFile(join(locations.exportDirectory, "session-map-git.svg"), renderMetroSvg(metroModel), "utf8");
+      continue;
+    }
+
+    if (!locations.mermaidRuntimePath) {
+      console.log(
+        `[Ableton Session Mapper] Mermaid HTML skipped for ${diagramProfile}: mermaid runtime unavailable in current runtime.`,
+      );
+      continue;
+    }
+
+    await writeMermaidHtmlArtifact({
+      profile: diagramProfile,
+      inputPath: mermaidPaths.latestPath,
+      outputPath: join(
+        locations.exportDirectory,
+        diagramProfile === "flow"
+          ? "session-map-mermaid-flow.html"
+          : "session-map-mermaid-kanban.html",
+      ),
+      mermaidRuntimePath: locations.mermaidRuntimePath,
+      logPrefix: `[mermaid-html:${diagramProfile}]`,
+      rootDirectory: locations.projectRoot,
+    });
+  }
 }
 
 export async function exportDiagnosticJson(

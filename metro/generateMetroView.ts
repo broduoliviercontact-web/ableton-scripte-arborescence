@@ -110,10 +110,11 @@ function returnTrackAliases(track: MetroTrackInfo): string[] {
   aliases.add(normalized(primaryName));
 
   const letterMatch = primaryName.match(/^([A-Za-z])\s*[-|]/);
-  if (letterMatch) {
-    aliases.add(letterMatch[1].toLowerCase());
-    aliases.add(normalized(`${letterMatch[1]} send`));
-    aliases.add(normalized(`send ${letterMatch[1]}`));
+  const letter = letterMatch?.[1];
+  if (letter) {
+    aliases.add(letter.toLowerCase());
+    aliases.add(normalized(`${letter} send`));
+    aliases.add(normalized(`send ${letter}`));
   }
 
   return [...aliases].filter(Boolean);

@@ -18,6 +18,7 @@ import {
   resolveExportLocations,
   resolveSessionExportPaths,
 } from "./exportJson.js";
+import { APP_NAME, APP_VERSION } from "./appInfo.js";
 import { showInternalViewerExperimental } from "./internal-viewer/createInternalViewer.js";
 import {
   renderCapabilityMatrixHtml,
@@ -157,6 +158,9 @@ async function exportSession(
   let sessionMapForViewer: SessionMap | null = null;
   let partial = false;
   const locations = await resolveExportLocations(context);
+  console.log(`[Ableton Session Mapper] Runtime mode: ${locations.runtimeMode}`);
+  console.log(`[Ableton Session Mapper] Resolved extension root: ${locations.extensionRoot}`);
+  console.log(`[Ableton Session Mapper] Resolved storage root: ${locations.storageRoot}`);
   console.log(`[Ableton Session Mapper] Resolved project root: ${locations.projectRoot}`);
   console.log(`[Ableton Session Mapper] Resolved exports directory: ${locations.exportDirectory}`);
   await context.ui.withinProgressDialog(
@@ -482,12 +486,14 @@ export function activate(activation: ActivationContext): void {
     }
   }
 
+  console.log(`[Ableton Session Mapper] ${APP_NAME} v${APP_VERSION}`);
   console.log(
     "[Ableton Session Mapper] Extension activated. Right-click a supported track, clip, clip slot, scene, or arrangement selection.",
   );
   console.log(
     "[Ableton Session Mapper] Lightweight integrated modal enabled for Session Mapper. Heavy Mermaid/SVG rendering remains external.",
   );
+  console.log("[Ableton Session Mapper] WebView disabled for heavy integrated rendering.");
   console.log(
     `[Ableton Session Mapper] Diagnostic actions ${ENABLE_DIAGNOSTIC_ACTIONS ? "enabled" : "disabled"}${ENABLE_DIAGNOSTIC_ACTIONS ? " via ENABLE_DIAGNOSTIC_ACTIONS=true" : ""}.`,
   );

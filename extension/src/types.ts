@@ -167,7 +167,7 @@ export interface TrackInfo {
 }
 
 export interface SessionMap {
-  version: "1.0.0";
+  version: string;
   exportedAt: string;
   set: {
     name: string | null;

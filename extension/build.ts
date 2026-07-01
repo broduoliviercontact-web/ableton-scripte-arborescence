@@ -14,6 +14,9 @@ await esbuild.build({
   platform: "node",
   sourcesContent: false,
   logLevel: "info",
+  logOverride: {
+    "empty-import-meta": "silent",
+  },
   minify: production,
   sourcemap: !production,
 });

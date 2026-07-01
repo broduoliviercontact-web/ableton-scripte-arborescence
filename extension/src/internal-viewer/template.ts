@@ -86,6 +86,7 @@ export interface InternalViewerFileEntry {
 }
 
 export interface InternalViewerModel {
+  appVersion: string;
   setName: string | null;
   exportedAt: string | null;
   statusMessage: string;
@@ -203,6 +204,10 @@ function renderOverview(model: InternalViewerModel): string {
     : "";
 
   return `<div class="overview-grid">
+      <article class="overview-card">
+        <span class="label">Version</span>
+        <strong>${escapeHtml(model.appVersion)}</strong>
+      </article>
       <article class="overview-card">
         <span class="label">Set</span>
         <strong>${escapeHtml(model.setName ?? "Untitled Set")}</strong>
@@ -1470,6 +1475,7 @@ export function createInternalViewerHtml(model: InternalViewerModel): string {
         <p class="subline">Lightweight internal hub for the latest Live Set export. External launcher remains available for full diagrams.</p>
       </div>
       <div class="hero-meta">
+        <div>Version: ${escapeHtml(model.appVersion)}</div>
         <div>Set: ${escapeHtml(model.setName ?? "Untitled Set")}</div>
         <div>Export: ${escapeHtml(formatExportDate(model.exportedAt))}</div>
         <div>Mode: ${escapeHtml(model.scanMode)}</div>

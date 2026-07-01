@@ -205,7 +205,8 @@ function buildArtifact(
     status,
     role,
   };
-  artifact.note = statusNote(artifact);
+  const note = statusNote(artifact);
+  if (note) artifact.note = note;
   return artifact;
 }
 
@@ -320,10 +321,7 @@ function renderDataRow(artifact: ArtifactEntry): string {
 function buildMetricsHtml(sessionMap: SessionMap): string {
   return metricSummary(sessionMap)
     .map(
-      (metric) => `<article class="metric">
-        <strong>${escapeHtml(metric.value)}</strong>
-        <span>${escapeHtml(metric.label)}</span>
-      </article>`,
+      (metric) => `<span class="metric-chip"><strong>${escapeHtml(metric.label)}</strong> ${escapeHtml(metric.value)}</span>`,
     )
     .join("\n");
 }
@@ -469,11 +467,15 @@ export async function buildDiagramsIndexHtml(
       font-family: "Avenir Next", "SF Pro Text", "Segoe UI", sans-serif;
     }
     .shell {
+      --compact-gap: 8px;
+      --compact-pad: 10px;
+      --button-height: 26px;
+      --card-min-height: 124px;
       max-width: 1440px;
       margin: 0 auto;
-      padding: 16px;
+      padding: 12px;
       display: grid;
-      gap: 10px;
+      gap: var(--compact-gap);
     }
     .panel {
       background: var(--live-panel);
@@ -483,8 +485,8 @@ export async function buildDiagramsIndexHtml(
     }
     .header {
       display: grid;
-      gap: 10px;
-      padding: 12px 14px;
+      gap: 8px;
+      padding: 10px 12px;
     }
     .header-top {
       display: grid;
@@ -503,14 +505,14 @@ export async function buildDiagramsIndexHtml(
     }
     h1 {
       margin: 0;
-      font-size: 21px;
+      font-size: 19px;
       line-height: 1.05;
     }
     .header-line {
-      margin: 4px 0 0;
+      margin: 3px 0 0;
       color: var(--live-muted);
-      font-size: 12px;
-      line-height: 1.4;
+      font-size: 11px;
+      line-height: 1.35;
     }
     .meta {
       display: flex;
@@ -522,28 +524,27 @@ export async function buildDiagramsIndexHtml(
     }
     .meta strong { color: var(--live-text); font-weight: 700; }
     .metrics {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
       border-top: 1px solid var(--live-border-soft);
-      padding-top: 10px;
-      gap: 8px;
+      padding-top: 8px;
     }
-    .metric {
-      padding: 6px 8px;
+    .metric-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 24px;
+      padding: 0 8px;
       border: 1px solid var(--live-border-soft);
-      border-radius: 4px;
+      border-radius: 999px;
       background: rgba(255,255,255,0.14);
-      display: grid;
-      gap: 2px;
-      text-align: center;
+      font-size: 11px;
+      color: var(--live-text);
     }
-    .metric strong {
-      font-size: 18px;
-      line-height: 1;
-    }
-    .metric span {
+    .metric-chip strong {
       font-size: 10px;
+      line-height: 1;
       color: var(--live-muted);
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -551,26 +552,28 @@ export async function buildDiagramsIndexHtml(
     .note-strip {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
       color: var(--live-muted);
-      font-size: 11px;
+      font-size: 10px;
     }
     .note-chip {
-      padding: 5px 8px;
+      padding: 4px 7px;
       border: 1px solid var(--live-border-soft);
       border-radius: 999px;
       background: rgba(255,255,255,0.15);
     }
     .primary-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: var(--compact-gap);
     }
     .view-card {
-      padding: 12px;
+      min-height: var(--card-min-height);
+      padding: 10px;
       display: grid;
-      gap: 8px;
+      gap: 6px;
+      grid-template-rows: auto auto 1fr auto;
       background: var(--live-panel-light);
       border: 1px solid var(--live-border);
       border-left-width: 4px;
@@ -590,23 +593,23 @@ export async function buildDiagramsIndexHtml(
     }
     .view-copy h2 {
       margin: 0;
-      font-size: 15px;
+      font-size: 14px;
       line-height: 1.15;
     }
     .view-copy p {
-      margin: 3px 0 0;
+      margin: 2px 0 0;
       color: var(--live-muted);
-      font-size: 11px;
-      line-height: 1.3;
+      font-size: 10px;
+      line-height: 1.25;
     }
     .status-badge {
       display: inline-flex;
       align-items: center;
-      min-height: 21px;
-      padding: 0 7px;
+      min-height: 20px;
+      padding: 0 6px;
       border-radius: 999px;
       border: 1px solid rgba(0,0,0,0.12);
-      font-size: 10px;
+      font-size: 9px;
       line-height: 1;
       font-weight: 700;
       text-transform: uppercase;
@@ -621,28 +624,29 @@ export async function buildDiagramsIndexHtml(
     .status-note {
       margin: 0;
       color: var(--live-muted);
-      font-size: 11px;
-      line-height: 1.25;
-      min-height: 14px;
+      font-size: 10px;
+      line-height: 1.2;
+      min-height: 12px;
     }
     .view-actions {
       display: grid;
-      gap: 6px;
+      gap: 5px;
       align-items: start;
+      align-self: end;
     }
     .open-button,
     .mini-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 28px;
-      padding: 0 10px;
+      min-height: var(--button-height);
+      padding: 0 9px;
       border-radius: 4px;
       border: 1px solid #8d8d8d;
       background: linear-gradient(180deg, #eeeeee, #cfcfcf);
       color: #1a1a1a;
       text-decoration: none;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
     }
@@ -667,8 +671,8 @@ export async function buildDiagramsIndexHtml(
     .fold summary {
       cursor: pointer;
       list-style: none;
-      padding: 8px 10px;
-      font-size: 11px;
+      padding: 6px 8px;
+      font-size: 10px;
       font-weight: 700;
       color: var(--live-text);
     }
@@ -688,17 +692,17 @@ export async function buildDiagramsIndexHtml(
     }
     .more-list,
     .fold-body {
-      padding: 0 8px 8px;
+      padding: 0 7px 7px;
       display: grid;
-      gap: 6px;
+      gap: 5px;
     }
     .more-row,
     .compact-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
-      padding: 7px 8px;
+      padding: 6px 7px;
       border-radius: 4px;
       border: 1px solid var(--live-border-soft);
       background: rgba(255,255,255,0.12);
@@ -711,13 +715,13 @@ export async function buildDiagramsIndexHtml(
     }
     .more-copy strong,
     .compact-copy strong {
-      font-size: 11px;
+      font-size: 10px;
       line-height: 1.2;
     }
     .more-copy small,
     .compact-copy small {
       color: var(--live-muted);
-      font-size: 10px;
+      font-size: 9px;
       line-height: 1.3;
       word-break: break-word;
     }
@@ -732,7 +736,7 @@ export async function buildDiagramsIndexHtml(
     .view-foot {
       margin: 0;
       color: var(--live-muted);
-      font-size: 10px;
+      font-size: 9px;
       line-height: 1.25;
     }
     .fold {
@@ -744,17 +748,17 @@ export async function buildDiagramsIndexHtml(
     .fold p {
       margin: 0;
       color: var(--live-muted);
-      font-size: 11px;
-      line-height: 1.4;
+      font-size: 10px;
+      line-height: 1.35;
     }
     .commands {
       display: grid;
-      gap: 6px;
+      gap: 5px;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 11px;
+      font-size: 10px;
     }
     .command {
-      padding: 7px 8px;
+      padding: 6px 7px;
       border-radius: 4px;
       border: 1px solid var(--live-border-soft);
       background: rgba(255,255,255,0.12);
@@ -776,10 +780,10 @@ export async function buildDiagramsIndexHtml(
     @media (max-width: 900px) {
       .header-top { grid-template-columns: 1fr; }
       .meta { justify-content: flex-start; }
-      .metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .primary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
     @media (max-width: 640px) {
-      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .primary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .more-row,
       .compact-row,
       .footer { grid-template-columns: 1fr; display: grid; }
@@ -795,7 +799,7 @@ export async function buildDiagramsIndexHtml(
         <div>
           <p class="eyebrow">Session Mapper / External Launcher</p>
           <h1>Session Mapper</h1>
-          <p class="header-line">Set: <strong>${escapeHtml(projectName)}</strong> · Export: <strong>${escapeHtml(formatExportDate(sessionMap.exportedAt))}</strong> · Mode: <strong>${escapeHtml(sessionMap.scan?.mode ?? "unknown")}</strong></p>
+          <p class="header-line">Set <strong>${escapeHtml(projectName)}</strong> · Export <strong>${escapeHtml(formatExportDate(sessionMap.exportedAt))}</strong> · Mode <strong>${escapeHtml(sessionMap.scan?.mode ?? "unknown")}</strong></p>
         </div>
         <div class="meta">
           <span><strong>JSON</strong> ${escapeHtml(relativeJsonPath)}</span>
@@ -813,6 +817,13 @@ export async function buildDiagramsIndexHtml(
         ${!hasOutdatedPrimaryViews && hasOlderManualRenders ? `<span class="note-chip">Some older renders</span>` : ""}
         ${hasMissingPrimaryViews ? `<span class="note-chip">Some files missing</span>` : ""}
       </div>
+
+      <details class="fold">
+        <summary>Workflow</summary>
+        <div class="fold-body">
+          <p>Export from Live, open a primary view, then use More only when you need SVG / PNG / .mmd.</p>
+        </div>
+      </details>
     </section>
 
     <section class="primary-grid" aria-label="Primary views">

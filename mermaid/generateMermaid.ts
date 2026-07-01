@@ -1,9 +1,9 @@
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 type TrackKind = "audio" | "midi" | "group" | "return" | "master" | "unknown";
-type MermaidProfile = "flow" | "git" | "kanban";
+export type MermaidProfile = "flow" | "git" | "kanban";
 const USE_EMOJI_LABELS = false;
 
 interface StructureSummaryItem {
@@ -83,7 +83,9 @@ interface MermaidPaths {
   archivePath: string;
 }
 
-const mermaidDirectory = dirname(fileURLToPath(import.meta.url));
+const mermaidDirectory = typeof __dirname !== "undefined"
+  ? __dirname
+  : dirname(fileURLToPath(import.meta.url));
 const rootDirectory = resolve(mermaidDirectory, "..");
 
 const argumentValue = (name: string): string | undefined => {
@@ -726,8 +728,11 @@ function kanbanDiagram(sessionMap: SessionMap): string {
   return `${lines.join("\n")}\n`;
 }
 
-function generateDiagram(sessionMap: SessionMap): string {
-  switch (profile) {
+export function generateDiagramForProfile(
+  sessionMap: SessionMap,
+  selectedProfile: MermaidProfile,
+): string {
+  switch (selectedProfile) {
     case "git":
       return gitDiagram(sessionMap);
     case "kanban":
@@ -737,24 +742,111 @@ function generateDiagram(sessionMap: SessionMap): string {
   }
 }
 
-async function main(): Promise<void> {
-  console.log(`${logPrefix} Read JSON started: ${logPath(jsonPath)}`);
-  const json = await readFile(jsonPath, "utf8");
-  console.log(`${logPrefix} Read JSON completed`);
-  const sessionMap = JSON.parse(json) as SessionMap;
-
-  console.log(`${logPrefix} Generate Mermaid started`);
-  const mermaid = generateDiagram(sessionMap);
-  const paths = await resolveMermaidPaths(sessionMap);
-  await writeFile(paths.latestPath, mermaid, "utf8");
-  await writeFile(paths.archivePath, mermaid, "utf8");
-  console.log(`${logPrefix} Write Mermaid latest completed: ${logPath(paths.latestPath)}`);
-  console.log(`${logPrefix} Write Mermaid archive completed: ${logPath(paths.archivePath)}`);
-  console.log(`${logPrefix} Generate Mermaid completed`);
+export interface WriteMermaidArtifactOptions {
+  jsonPath: string;
+  outputPath: string;
+  profile: MermaidProfile;
+  fileSuffix?: string;
+  logPrefix?: string;
+  rootDirectory?: string;
 }
 
-main().catch((error: unknown) => {
-  const detail = error instanceof Error ? error.message : String(error);
-  console.error(`${logPrefix} Generation failed: ${detail}`);
-  process.exitCode = 1;
-});
+export async function writeMermaidArtifact(
+  options: WriteMermaidArtifactOptions,
+): Promise<MermaidPaths> {
+  const effectiveLogPrefix = options.logPrefix
+    ?? (options.fileSuffix
+      ? `[mermaid:${options.fileSuffix}]`
+      : options.profile === "flow"
+        ? "[mermaid]"
+        : `[mermaid:${options.profile}]`);
+  const effectiveRootDirectory = options.rootDirectory ?? rootDirectory;
+  const logOutputPath = (path: string): string => {
+    const rel = relative(effectiveRootDirectory, path);
+    return rel && !rel.startsWith("..") ? rel : path;
+  };
+
+  console.log(`${effectiveLogPrefix} Read JSON started: ${logOutputPath(options.jsonPath)}`);
+  const json = await readFile(options.jsonPath, "utf8");
+  console.log(`${effectiveLogPrefix} Read JSON completed`);
+  const sessionMap = JSON.parse(json) as SessionMap;
+
+  console.log(`${effectiveLogPrefix} Generate Mermaid started`);
+  const mermaid = generateDiagramForProfile(sessionMap, options.profile);
+  const outputDirectory = dirname(options.outputPath);
+  await mkdir(outputDirectory, { recursive: true });
+
+  const baseName = buildArchiveBaseName(sessionMap);
+  const profileSuffix = options.fileSuffix ? `_${options.fileSuffix}` : "";
+  const minuteStamp = formatArchiveTimestamp(sessionMap.exportedAt, false);
+  const secondStamp = formatArchiveTimestamp(sessionMap.exportedAt, true);
+  const candidates = [
+    `${baseName}_${minuteStamp}${profileSuffix}`,
+    `${baseName}_${secondStamp}${profileSuffix}`,
+  ];
+
+  let archivePath: string | null = null;
+  for (const candidate of candidates) {
+    const candidatePath = join(outputDirectory, `${candidate}.mmd`);
+    if (!(await pathExists(candidatePath))) {
+      archivePath = candidatePath;
+      break;
+    }
+  }
+
+  if (!archivePath) {
+    let suffix = 2;
+    while (suffix < 10_000) {
+      const candidatePath = join(
+        outputDirectory,
+        `${baseName}_${secondStamp}${profileSuffix}-${suffix}.mmd`,
+      );
+      if (!(await pathExists(candidatePath))) {
+        archivePath = candidatePath;
+        break;
+      }
+      suffix += 1;
+    }
+  }
+
+  if (!archivePath) {
+    throw new Error("Unable to reserve a unique Mermaid archive filename.");
+  }
+
+  const paths = {
+    latestPath: options.outputPath,
+    archivePath,
+  };
+
+  await writeFile(paths.latestPath, mermaid, "utf8");
+  await writeFile(paths.archivePath, mermaid, "utf8");
+  console.log(`${effectiveLogPrefix} Write Mermaid latest completed: ${logOutputPath(paths.latestPath)}`);
+  console.log(`${effectiveLogPrefix} Write Mermaid archive completed: ${logOutputPath(paths.archivePath)}`);
+  console.log(`${effectiveLogPrefix} Generate Mermaid completed`);
+  return paths;
+}
+
+async function main(): Promise<void> {
+  await writeMermaidArtifact({
+    jsonPath,
+    outputPath: latestOutputPath,
+    profile,
+    fileSuffix: profileFileSuffix,
+    logPrefix,
+    rootDirectory,
+  });
+}
+
+const currentModuleHref = typeof __filename !== "undefined"
+  ? pathToFileURL(__filename).href
+  : import.meta.url;
+const isDirectExecution =
+  process.argv[1] != null && currentModuleHref === pathToFileURL(process.argv[1]).href;
+
+if (isDirectExecution) {
+  main().catch((error: unknown) => {
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error(`${logPrefix} Generation failed: ${detail}`);
+    process.exitCode = 1;
+  });
+}

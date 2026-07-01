@@ -1,6 +1,7 @@
 import { access, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import type { ExtensionContext } from "@ableton-extensions/sdk";
+import { APP_VERSION } from "../appInfo.js";
 import { resolveExportLocations } from "../exportJson.js";
 import type { DeviceInfo, SessionMap, TrackInfo } from "../types.js";
 import {
@@ -981,6 +982,7 @@ function buildModel(
   console.log("[Ableton Session Mapper] Internal Viewer tab model completed");
 
   return {
+    appVersion: APP_VERSION,
     setName: sessionMap?.set.name ?? null,
     exportedAt: sessionMap?.exportedAt ?? null,
     statusMessage,
